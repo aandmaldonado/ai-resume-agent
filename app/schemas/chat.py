@@ -9,8 +9,17 @@ from datetime import datetime
 
 class ChatRequest(BaseModel):
     """Request para enviar un mensaje al chatbot"""
-    message: str = Field(..., min_length=1, max_length=500, description="Mensaje del usuario")
-    session_id: Optional[str] = Field(None, description="ID de sesión para mantener contexto")
+    message: str = Field(
+        ..., 
+        min_length=1, 
+        max_length=600,  # Límite óptimo para preguntas profesionales detalladas
+        description="Mensaje del usuario"
+    )
+    session_id: Optional[str] = Field(
+        None, 
+        max_length=100,  # Prevenir session_id maliciosos
+        description="ID de sesión para mantener contexto"
+    )
     
     class Config:
         json_schema_extra = {

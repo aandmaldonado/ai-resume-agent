@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     GROQ_MODEL: str = "llama-3.3-70b-versatile"  # Modelo actualizado
     GROQ_TEMPERATURE: float = 0.7
     GROQ_MAX_TOKENS: int = 1024
+    GROQ_TIMEOUT: int = 30  # Timeout en segundos (protección anti-DoS)
     
     # Vertex AI (Embeddings gratis)
     VERTEX_AI_EMBEDDING_MODEL: str = "textembedding-gecko@003"  # Versión más reciente
@@ -44,9 +45,14 @@ class Settings(BaseSettings):
     VECTOR_COLLECTION_NAME: str = "portfolio_knowledge"
     VECTOR_SEARCH_K: int = 3  # Top K documentos a recuperar
     
+    # Conversational Memory
+    MAX_CONVERSATION_HISTORY: int = 5  # Últimos N pares de mensajes a recordar
+    SESSION_TIMEOUT_MINUTES: int = 60  # Limpiar sesiones inactivas después de 60 min
+    
     # CORS
     CORS_ORIGINS: list = [
         "http://localhost:3000",
+        "http://localhost:3001",
         "http://localhost:5173",
         "https://almapi.dev",
         "https://*.almapi.dev"

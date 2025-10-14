@@ -28,7 +28,7 @@ ENVIRONMENT=development
 LOG_LEVEL=INFO
 
 # === CORS (para desarrollo local) ===
-CORS_ORIGINS=http://localhost:3000,http://localhost:8080
+CORS_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:8080
 ```
 
 ## Cómo Obtener los Valores:
