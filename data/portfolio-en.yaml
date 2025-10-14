@@ -1,0 +1,321 @@
+# Professional Portfolio - Detailed Knowledge Base for AI Chatbot
+# Final Version by Career Advisor
+
+personal_info:
+  name: "Álvaro Andrés Maldonado Pinto"
+  title: "Senior Software Engineer | Product Engineer & AI Specialist"
+  email: "readme.md@almapi.dev"
+  location: "Gandía, Valencia, Spain"
+  website: "https://almapi.dev"
+  linkedin: "https://linkedin.com/in/almapidev"
+  github: "https://github.com/aandmaldonado"
+
+professional_summary:
+  short: "Senior Software Engineer with expertise in AI & Product Engineering. 15+ years of experience building scalable business solutions."
+  detailed: |
+    I am a Senior Software Engineer and Product Engineer with 15 years of experience building bridges between complex business challenges and high-impact technology solutions. My mission is simple: to use technology to solve real-world problems.
+
+    My career has taken me from backend development roles to leadership positions such as Technical Lead and CTO. This journey taught me that the best technology serves a clear purpose, leading me to embrace a 'Product Engineer' mindset: I prioritize deeply understanding the business 'why' before engineering the technical 'how'.
+
+    Today, my passion is centered on Artificial Intelligence—not just as a technology, but as a strategic accelerator. I leverage AI to automate complexity, freeing up human potential to focus on creativity and strategy, thereby enhancing team autonomy and productivity.
+
+experience:
+  - company: "InAdvance Consulting Group (for BCI Bank)"
+    position: "Senior Software Engineer"
+    duration: "2024 - Present"
+    location: "Santiago, Chile (Remote)"
+    related_projects: ["Andes Online"]
+    description: |
+      As an integration specialist on the strategic 'Andes Online' project, I am leading the backend modernization for a new credit card processing platform, focusing on the transition to a robust and scalable microservices architecture.
+      - **Key Responsibilities:**
+        - Analysis and translation of complex financial requirements into technical specifications.
+        - Design and implementation of resilient and secure APIs for system interoperability.
+        - Application of Clean Code principles and 'shift-left testing' strategies.
+        - Active participation in the technical selection and evaluation of new engineering talent.
+      - **Key Achievements:**
+        - Designed and implemented a resilient microservices solution, crafting APIs that ensured seamless and secure communication between legacy systems and the new platform.
+        - Applied a 'shift-left testing' strategy within a DevOps culture, taking ownership of code quality (Clean Code) and security from the earliest stages of development.
+        - Served as the primary liaison between business areas and development, translating complex financial system requirements into clear, actionable technical specifications for the team.
+    technologies: ["Java", "Spring Boot", "Microservices", "DevOps", "Agile", "CI/CD", "Testing"]
+
+  - company: "Imagemaker (for Banco de Chile)"
+    position: "Senior Software Engineer"
+    duration: "2023 - 2024"
+    location: "Santiago, Chile (Remote)"
+    related_projects: ["Faculty Engine"]
+    description: |
+      I acted as a technical consultant and backend developer, designing and implementing custom solutions for clients in the financial and legal sectors.
+      - **Key Responsibilities:**
+        - Provided external technical consulting to optimize projects and resolve complex service issues.
+        - Developed microservices using modern Java versions and Spring Boot.
+        - Conducted automated code reviews to ensure quality and security standards (Veracode, SonarQube).
+        - Ensured system health through proactive service monitoring with Splunk and Dynatrace.
+      - **Key Achievements:**
+        - Led a Proof of Concept (PoC) with AI to redefine service offerings for SME clients by automating the analysis of legal documents with NLP and Computer Vision.
+        - Designed and implemented robust microservices, establishing cloud-native best practices and automated quality standards.
+        - Acted as a key technical consultant for clients, implementing proactive monitoring solutions that significantly reduced system downtime.
+    technologies: ["Java", "Spring Boot", "AI/ML", "Computer Vision", "NLP", "Elasticsearch", "AWS"]
+
+  - company: "Falabella"
+    position: "Technical Lead"
+    duration: "2022 - 2023"
+    location: "Santiago, Chile (Remote)"
+    related_projects: ["Time & Attendance (T&A)"]
+    description: |
+      I led the development and implementation of a corporate attendance management system for over 50,000 employees across multiple countries.
+      - **Key Responsibilities:**
+        - Collaborated with Product Owners and business stakeholders to define requirements.
+        - Managed the backlog and prioritized key project functionalities.
+        - Provided technical leadership to the development team, ensuring compliance with architectural guidelines.
+        - Coordinated with internal and external teams, including managing SaaS provider relationships.
+      - **Key Achievements:**
+        - Led the delivery of a multi-country attendance management system, orchestrating the full product lifecycle and optimizing the company's regional operational efficiency.
+        - Spearheaded the modernization of legacy systems by applying Domain-Driven Design (DDD) and an event-driven architecture to decouple complex business domains.
+        - Led the implementation and integration strategy with a SaaS provider, serving as the main liaison between technical teams, business stakeholders, and external vendors.
+    technologies: ["Java", "Spring Boot", "Event-Driven Architecture", "DDD", "Microservices", "AWS", "Agile"]
+
+  - company: "Neurogenesis IA Technologies"
+    position: "CTO & Co-Founder | AI Engineer"
+    duration: "2021 - 2022"
+    location: "Barcelona, Spain (Remote)"
+    related_projects: ["AcuaMattic AI & Robotics", "JuezSW", "on-premise2cloud"]
+    description: |
+      I co-founded the company and defined the product vision and technology strategy. I led the development of AI solutions with a social and environmental impact.
+      - **Key Responsibilities:**
+        - Defined the company's initial product vision and technology strategy.
+        - Designed and implemented a scalable cloud architecture on AWS for AI projects.
+        - Applied R&D in Deep Learning and Computer Vision.
+        - Managed and mentored master's thesis projects in AI, Cloud, and DevOps.
+      - **Key Achievements:**
+        - As a Co-Founder, I participated in the company's conception, legal incorporation, and registration.
+        - I led the 'AcuaMattic' project, an end-to-end AI system featuring a proprietary dataset (+10,000 images), a CNN model (92% accuracy), and defined the architecture for its future integration with a robot prototype.
+        - I orchestrated the complete infrastructure migration to AWS, laying the foundation for deploying large-scale Machine Learning models.
+        - I served as a bridge between industry and academia by mentoring multiple master's thesis projects.
+    technologies: ["Python", "TensorFlow", "PyTorch", "Computer Vision", "NLP", "AWS", "CNN", "Deep Learning", "Robotics"]
+
+  - company: "NTT DATA Europe & LATAM (for Transbank)"
+    position: "Senior Software Engineer"
+    duration: "2019 - 2021"
+    location: "Santiago, Chile"
+    related_projects: ["Transbank Migration", "Cancellations 2.0"]
+    description: |
+      I led the modernization of Transbank's back-office systems in a high-volume transactional environment.
+      - **Key Responsibilities:**
+        - Analyzed technical and functional requirements for financial sector clients.
+        - Designed robust and secure IT solutions and strategies.
+        - Developed RESTful Web Services with Java 8 and Spring Boot 2.
+        - Implemented robust authentication and authorization with Spring Security and JWT.
+      - **Key Achievements:**
+        - Designed and implemented high-availability solutions capable of handling over 1 million daily transactions, applying financial security standards (OWASP, PCI).
+        - Acted as the team's technical reference, establishing quality standards that reduced technical debt through the use of static code analysis tools.
+    technologies: ["Java", "Spring Boot", "Spring Security", "JWT", "Oracle", "WebLogic", "OWASP", "PCI"]
+
+  - company: "Falabella"
+    position: "Senior IT Analyst"
+    duration: "2015 - 2019"
+    location: "Santiago, Chile"
+    related_projects: ["SPR (Personnel & Remuneration System)", "Electronic Supervisor"]
+    description: |
+      I led the development and integration of corporate solutions for the Falabella Group, focusing on improving operational efficiency and the internal user experience.
+      - **Key Responsibilities:**
+        - Managed and developed requirements for internal business units.
+        - Built Java web solutions to integrate legacy systems.
+        - Supervised technical team assignments and external providers.
+        - Collaborated directly with different areas to implement custom solutions.
+      - **Key Achievements:**
+        - Led the development of the 'Personnel and Payroll System' (SPR), a key corporate platform that unified HR management for over 50,000 employees.
+        - Served as the main point of contact for non-technical business stakeholders, leading requirements gathering and translating their needs into user-oriented software solutions.
+    technologies: ["Java", "MVC", "Web Services", "Oracle", "Agile", "Project Management", "Integration"]
+
+  - company: "NTT DATA Europe & LATAM (for Movistar Chile)"
+    position: "Solutions Analyst"
+    duration: "2010 - 2014"
+    location: "Santiago, Chile"
+    description: |
+      I played a key role in the migration of the Movistar Chile customer portal on the IBM WebSphere platform, developing both backend and frontend components.
+      - **Key Responsibilities:**
+        - Developed front-end portlets (HTML, CSS, JavaScript, JSP) with WebSphere Portlet Factory.
+        - Developed backend SOAP Web Services with Java.
+        - Applied the DAO design pattern for data abstraction.
+        - Authored technical documentation and user guides.
+      - **Key Achievements:**
+        - Contributed to significantly improving the user experience and customer autonomy through new functionalities and intuitive interfaces.
+    technologies: ["Java", "WebSphere", "JSP", "SOAP", "HTML", "CSS", "JavaScript"]
+
+education:
+  - degree: "AI4DEVS"
+    institution: "LIDR.co"
+    period: "2025 - Present"
+    knowledge_acquired:
+      - "Strategic application of AI across all stages of the software development lifecycle."
+      - "Advanced proficiency in AI-assisted development tools (Copilot, ChatGPT, Cursor)."
+  
+  - degree: "AI Development Bootcamp"
+    institution: "Hackio by thePower"
+    period: "2025"
+    knowledge_acquired:
+      - "Advanced Python programming for Artificial Intelligence and Machine Learning."
+      - "Development of generative models and NLP with Hugging Face and OpenAI."
+      - "Backend implementation for AI solutions with Flask and FastAPI."
+
+  - degree: "Cybersecurity Bootcamp"
+    institution: "thePower"
+    period: "2025"
+    knowledge_acquired:
+      - "Understanding of fundamentals, threats, and attack vectors."
+      - "Offensive security and secure development (DevSecOps) practices."
+
+  - degree: "Master's Degree in Artificial Intelligence"
+    institution: "Universitat Politècnica de Catalunya"
+    period: "2020 - 2021"
+    details: "My final project, 'AcuaMattic', was recognized as the 'Best Project of the Graduating Class'."
+    knowledge_acquired:
+      - "Mastery of the theoretical and practical fundamentals of AI."
+      - "Development and application of Machine Learning and Neural Network models."
+      - "Management and implementation of end-to-end AI projects."
+
+  - degree: "Computer Science Engineering"
+    institution: "Universidad de Santiago de Chile"
+    period: "2012 - 2017"
+    details: "I was recognized as the 'Top Student of the Graduating Class'."
+    knowledge_acquired:
+      - "Solid foundation in computer science, software architecture, and project management."
+
+  - degree: "Bachelor's Degree in Engineering Sciences"
+    institution: "Universidad de Santiago de Chile"
+    period: "2012 - 2015"
+    knowledge_acquired:
+      - "Foundational studies in Basic and Engineering Sciences."
+
+  - degree: "Computer Engineering"
+    institution: "INACAP"
+    period: "2006 - 2010"
+    knowledge_acquired:
+      - "Development of comprehensive software solutions, resource administration, and leadership of technology projects."
+
+skills:
+  - category: "Core Languages & Frameworks"
+    items: ["Java", "Spring Boot", "Python", "FastAPI", "JavaScript", "React"]
+  - category: "AI / ML"
+    items: ["TensorFlow", "PyTorch", "LangChain", "HuggingFace", "OpenAI API", "LLMs", "RAG", "Computer Vision", "NLP"]
+  - category: "Cloud Infrastructure & DevOps"
+    items: ["AWS", "GCP", "Docker", "Kubernetes", "Jenkins", "GitHub Actions", "Elasticsearch"]
+  - category: "Databases & Storage"
+    items: ["SQL", "Oracle", "PostgreSQL", "MongoDB", "JPA", "Hibernate"]
+  - category: "Testing & Code Quality"
+    items: ["JUnit", "Mockito", "Sonar", "Veracode", "TDD", "Shift-Left Testing"]
+  - category: "Agile Management & Methodologies"
+    items: ["Agile", "Scrum", "Jira", "Confluence"]
+  - category: "Developer Tools"
+    items: ["Git", "Maven", "Gradle", "OpenAPI/Swagger"]
+
+projects:
+  - name: "AcuaMattic: AI & Robotics for Aquariums"
+    company: "Neurogenesis IA Technologies"
+    description: "As CTO, I led the creation of an intelligent aquarium assistant. The project included building a proprietary dataset (+10,000 images) and training a CNN model with 92% accuracy."
+    technologies: ["Python", "TensorFlow", "Computer Vision", "AWS", "Robotics"]
+    
+  - name: "JuezSW: AI for Insolvency Administration"
+    company: "Neurogenesis IA Technologies"
+    description: "I participated in the conception and design phase of an AI system to automate the creation of asset liquidation plans by analyzing insolvency law with NLP models."
+    technologies: ["Python", "NLP", "Document Analysis"]
+    
+  - name: "Faculty Engine: AI-Powered Legal Analysis"
+    company: "Imagemaker"
+    description: "I led a PoC for a bank that automates the analysis of legal documents (PDFs) using NLP and Computer Vision to optimize service offerings for SMEs."
+    technologies: ["AI/ML", "NLP", "Computer Vision", "Python", "TensorFlow"]
+
+  - name: "Time & Attendance (T&A)"
+    company: "Falabella"
+    description: "A multi-country digital attendance system to improve the management and experience for over 50,000 employees."
+    technologies: ["Java", "Spring Boot", "Event-Driven Architecture", "DDD", "Microservices"]
+
+  - name: "Transbank Migration"
+    company: "NTT DATA Europe & LATAM"
+    description: "Modernization of a core banking system to improve performance and significantly reduce maintenance costs."
+    technologies: ["Java", "Spring Boot", "Oracle", "Microservices", "Security"]
+
+  - name: "Andes Online"
+    company: "InAdvance Consulting Group"
+    description: "A strategic migration project to replace a legacy credit card processing platform with a modern solution."
+    technologies: ["Java", "Spring Boot", "Microservices", "Integration", "CI/CD"]
+
+  - name: "SPR (Personnel & Remuneration System)"
+    company: "Falabella"
+    description: "Corporate HR system for the comprehensive management of Falabella Group personnel."
+    technologies: ["Java", "Web Services", "Oracle", "Integration"]
+
+  - name: "Movistar Online Channel"
+    company: "NTT DATA Europe & LATAM"
+    description: "Migration of the Movistar Chile portal to improve customer experience and autonomy."
+    technologies: ["Java", "IBM WebSphere", "JSP", "SOAP"]
+
+  - name: "S-Box (Thesis Project)"
+    company: "Universidad de Santiago de Chile"
+    description: "My first AI project. An affective computing environment using Computer Vision to analyze videos with smile episodes for research."
+    technologies: ["Python", "OpenCV", "Computer Vision"]
+
+  - name: "Cancellations 2.0"
+    company: "NTT DATA Europe & LATAM"
+    description: "Back-office system for managing sales cancellations at Transbank."
+    technologies: ["Java", "Spring Boot", "Oracle"]
+
+  - name: "Electronic Supervisor"
+    company: "Falabella"
+    description: "Electronic supervision solution to optimize the purchase process at the point of sale (POS)."
+    technologies: ["Java", "MVC"]
+
+  - name: "on-premise2cloud"
+    company: "Neurogenesis IA Technologies"
+    description: "Migration of on-premise infrastructure to AWS to scale and modernize AI operations."
+    technologies: ["AWS", "Cloud", "DevOps"]
+
+languages:
+  - name: "Spanish"
+    level: "Native"
+  - name: "English"
+    level: "Professional Working Proficiency (B2/C1)"
+
+availability:
+  status: "Actively seeking a long-term opportunity in Spain"
+  notice_period: "15 days"
+  remote_work: "Open exclusively to 100% remote positions."
+
+personal_details:
+  nationality: "Chilean"
+  marital_status: "Information available upon request in advanced stages of the process."
+  children: "Information not available."
+  age: "Born in 1984"
+  work_permit:
+    status: "I do not currently have a work permit for Spain. My objective is to find a company that can sponsor a visa for Highly Qualified Professionals (PAC)."
+    target_country: "Spain"
+  salary_expectations:
+    - role: "Senior Software Engineer"
+      range_euros_gross_annual: "€50,000 - €55,000"
+    - role: "Technical Lead"
+      range_euros_gross_annual: "€55,000 - €60,000"
+  notes: "My range is flexible and negotiable depending on the total compensation package, benefits, and the nature of the project."
+
+chatbot_context:
+  personality: "Professional, technical yet approachable, passionate about solving business problems with technology."
+  tone: "Conversational, direct, and confident."
+  expertise_areas: ["Product Engineering", "Artificial Intelligence", "Software Architecture", "Technical Leadership", "Backend Development"]
+  common_questions:
+    - "What is your experience with AI in a professional setting?"
+    - "Can you explain your 'Product Engineer' mindset?"
+    - "What kind of software architectures have you designed?"
+    - "What is your biggest professional achievement?"
+    - "Are you looking for a job in Spain?"
+
+philosophy_and_interests:
+  - title: "Work Philosophy"
+    description: "My philosophy is centered on the 'Product Engineer' mindset. I believe the best technology is born from a deep understanding of the business problem. My goal is not just to build software, but to build the right solution that delivers measurable, real-world value."
+
+  - title: "Passion for Continuous Learning"
+    description: "I am a self-taught professional by nature. I dedicate much of my free time to continuous learning about the latest trends in Artificial Intelligence, researching new software architectures, and reading technical blogs to always stay at the forefront."
+
+  - title: "Complex Problem-Solving"
+    description: "What motivates me most is tackling problems that don't have an obvious solution. I enjoy the process of analysis, collaborating with the team, and applying technology to find creative solutions to complex challenges."
+
+  - title: "Personal Interests"
+    description: "Outside of the world of code, my biggest priority is my family. I greatly enjoy outdoor activities, whether it's traveling to discover new landscapes or simply connecting with nature on a hiking trail. This balance allows me to recharge and return to technological challenges with a fresh and renewed perspective."
