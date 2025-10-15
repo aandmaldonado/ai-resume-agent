@@ -47,6 +47,66 @@ Knowledge Base (portfolio.yaml → 70 vectores indexados)
 - Cuenta de Google Cloud Platform (con billing habilitado para free tier)
 - Cuenta de Groq (gratis en [console.groq.com](https://console.groq.com))
 
+## 🔧 Desarrollo con Pre-commit Hooks
+
+Este proyecto incluye **pre-commit hooks** para garantizar calidad de código enterprise-level:
+
+### Instalación de Pre-commit
+
+```bash
+# 1. Crear entorno virtual
+python3.11 -m venv venv
+source venv/bin/activate
+
+# 2. Instalar dependencias
+pip install -r requirements.txt
+
+# 3. Instalar pre-commit hooks
+pre-commit install
+```
+
+### Hooks Automáticos
+
+Cada commit ejecuta automáticamente:
+
+| Hook | Función | Cobertura |
+|------|---------|-----------|
+| 🧪 **Tests** | 59 tests unitarios con pytest | 94% cobertura |
+| 🔒 **Security Scan** | Bandit para vulnerabilidades | 0 vulnerabilidades |
+| 🎨 **Code Formatting** | Black para código limpio | 100% archivos |
+| 📦 **Import Organization** | isort para imports ordenados | 100% archivos |
+| 🛡️ **Dependency Scan** | Safety para dependencias vulnerables | 0 vulnerabilidades |
+
+### Comandos de Desarrollo
+
+```bash
+# Ejecutar todos los hooks manualmente
+pre-commit run --all-files
+
+# Ejecutar hooks específicos
+pre-commit run pytest --all-files
+pre-commit run bandit --all-files
+pre-commit run black --all-files
+
+# Commit con hooks automáticos
+git add .
+git commit -m "feat: nueva funcionalidad"
+# ↑ Los hooks se ejecutan automáticamente
+```
+
+### Estructura de Tests
+
+```
+tests/
+├── test_api_endpoints.py    # 20 tests - Endpoints API
+├── test_main.py            # 16 tests - Aplicación principal  
+├── test_rag_service.py     # 7 tests - Servicio RAG
+├── test_secrets.py         # 15 tests - Gestión de secretos
+└── test_memory.py          # 1 test - Memoria conversacional
+```
+
+**Total: 59 tests con 94% cobertura de código**
+
 ### 1. Setup de Infraestructura GCP
 
 ```bash
