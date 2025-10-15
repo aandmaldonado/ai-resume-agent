@@ -33,7 +33,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar código de la aplicación
 COPY app/ ./app/
-COPY data/ ./data/
 
 # Crear usuario no-root para seguridad
 RUN useradd -m -u 1000 appuser && \
