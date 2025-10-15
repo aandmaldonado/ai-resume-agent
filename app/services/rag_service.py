@@ -3,15 +3,16 @@ Servicio RAG (Retrieval Augmented Generation) principal.
 Combina Groq (LLM), Vertex AI (Embeddings) y pgvector (Vector DB).
 """
 import logging
-from typing import Dict, List, Optional
 from datetime import datetime, timedelta
-from langchain_groq import ChatGroq
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import PGVector
+from typing import Dict, List, Optional
+
 from langchain.chains import ConversationalRetrievalChain
-from langchain.prompts import PromptTemplate
 from langchain.docstore.document import Document
 from langchain.memory import ConversationBufferWindowMemory
+from langchain.prompts import PromptTemplate
+from langchain_community.vectorstores import PGVector
+from langchain_groq import ChatGroq
+from langchain_huggingface import HuggingFaceEmbeddings
 
 from app.core.config import settings
 
@@ -23,15 +24,15 @@ class RAGService:
     Servicio principal de RAG para el chatbot.
     Inicializa LLM, embeddings y vector store, y maneja la generación de respuestas.
     """
-    
+
     def __init__(self):
         """Inicializa los componentes del RAG"""
         logger.info("Inicializando RAGService...")
-        
+
         # Almacenamiento de memoria conversacional por sesión
         self.conversations: Dict[str, Dict] = {}
         # {session_id: {"memory": ConversationBufferWindowMemory, "last_access": datetime}}
-        
+
         # 1. LLM: Groq (Llama 3.1 - gratis y ultra rápido)
         logger.info(f"Configurando LLM: {settings.GROQ_MODEL}")
         self.llm = ChatGroq(
@@ -39,30 +40,30 @@ class RAGService:
             temperature=settings.GROQ_TEMPERATURE,
             max_tokens=settings.GROQ_MAX_TOKENS,
             groq_api_key=settings.GROQ_API_KEY,
-            timeout=settings.GROQ_TIMEOUT  # Timeout para protección anti-DoS
+            timeout=settings.GROQ_TIMEOUT,  # Timeout para protección anti-DoS
         )
-        
+
         # 2. Embeddings: HuggingFace (local, 100% gratis, sin APIs)
         logger.info("Configurando HuggingFace Embeddings (local)")
         self.embeddings = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2",
-            model_kwargs={'device': 'cpu'},
-            encode_kwargs={'normalize_embeddings': True}
+            model_kwargs={"device": "cpu"},
+            encode_kwargs={"normalize_embeddings": True},
         )
-        
+
         # 3. Vector Store: pgvector en Cloud SQL
         logger.info(f"Conectando a vector store: {settings.VECTOR_COLLECTION_NAME}")
         self.vector_store = PGVector(
             connection_string=settings.database_url,
             embedding_function=self.embeddings,
-            collection_name=settings.VECTOR_COLLECTION_NAME
+            collection_name=settings.VECTOR_COLLECTION_NAME,
         )
-        
+
         # 4. System Prompt optimizado
         self.system_prompt = self._create_system_prompt()
-        
+
         logger.info("✓ RAGService inicializado correctamente")
-    
+
     def _create_system_prompt(self) -> PromptTemplate:
         """
         Crea el prompt template para el chatbot.
@@ -136,76 +137,84 @@ class RAGService:
 
 **MI RESPUESTA (como Álvaro, sin saludar y capturando datos si es necesario):**
 """
-        
+
         return PromptTemplate(
-            template=template,
-            input_variables=["context", "question"]
+            template=template, input_variables=["context", "question"]
         )
-    
+
     def _sanitize_response(self, response: str) -> str:
         """
         Sanitiza la respuesta del LLM para prevenir ataques de output.
-        
+
         Args:
             response: Respuesta cruda del LLM
-            
+
         Returns:
             Respuesta sanitizada
         """
         import re
-        
+
         # Remover posibles scripts maliciosos
-        response = re.sub(r'<script.*?</script>', '', response, flags=re.DOTALL | re.IGNORECASE)
-        response = re.sub(r'javascript:', '', response, flags=re.IGNORECASE)
-        
-        # Remover enlaces sospechosos (excepto almapi.dev y dominios seguros)
-        safe_domains = ['almapi.dev', 'linkedin.com', 'github.com', 'gmail.com']
-        safe_pattern = '|'.join(safe_domains)
         response = re.sub(
-            rf'https?://(?!{safe_pattern})[^\s]+', 
-            '[ENLACE REMOVIDO POR SEGURIDAD]', 
-            response
+            r"<script.*?</script>", "", response, flags=re.DOTALL | re.IGNORECASE
         )
-        
+        response = re.sub(r"javascript:", "", response, flags=re.IGNORECASE)
+
+        # Remover enlaces sospechosos (excepto almapi.dev y dominios seguros)
+        safe_domains = ["almapi.dev", "linkedin.com", "github.com", "gmail.com"]
+        safe_pattern = "|".join(safe_domains)
+        response = re.sub(
+            rf"https?://(?!{safe_pattern})[^\s]+",
+            "[ENLACE REMOVIDO POR SEGURIDAD]",
+            response,
+        )
+
         # Remover comandos de sistema potencialmente peligrosos
         # Solo si aparecen al inicio de línea o después de ; (contexto de comando)
         dangerous_patterns = [
-            r'^\s*rm\s+',           # rm al inicio de línea
-            r';\s*rm\s+',           # rm después de ;
-            r'^\s*sudo\s+',         # sudo al inicio de línea
-            r';\s*sudo\s+',         # sudo después de ;
-            r'^\s*chmod\s+',        # chmod al inicio de línea
-            r';\s*chmod\s+',        # chmod después de ;
-            r'^\s*chown\s+',        # chown al inicio de línea
-            r';\s*chown\s+',        # chown después de ;
-            r'^\s*shutdown',        # shutdown al inicio de línea
-            r'^\s*reboot',          # reboot al inicio de línea
+            r"^\s*rm\s+",  # rm al inicio de línea
+            r";\s*rm\s+",  # rm después de ;
+            r"^\s*sudo\s+",  # sudo al inicio de línea
+            r";\s*sudo\s+",  # sudo después de ;
+            r"^\s*chmod\s+",  # chmod al inicio de línea
+            r";\s*chmod\s+",  # chmod después de ;
+            r"^\s*chown\s+",  # chown al inicio de línea
+            r";\s*chown\s+",  # chown después de ;
+            r"^\s*shutdown",  # shutdown al inicio de línea
+            r"^\s*reboot",  # reboot al inicio de línea
         ]
         for pattern in dangerous_patterns:
-            response = re.sub(pattern, '[COMANDO REMOVIDO] ', response, flags=re.IGNORECASE | re.MULTILINE)
-        
+            response = re.sub(
+                pattern,
+                "[COMANDO REMOVIDO] ",
+                response,
+                flags=re.IGNORECASE | re.MULTILINE,
+            )
+
         # Limitar longitud para prevenir ataques de denegación de servicio
         if len(response) > 2000:
-            response = response[:2000] + "... [Respuesta truncada por límite de seguridad]"
-        
+            response = (
+                response[:2000] + "... [Respuesta truncada por límite de seguridad]"
+            )
+
         # Remover caracteres de control potencialmente peligrosos
-        response = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', response)
-        
+        response = re.sub(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]", "", response)
+
         return response.strip()
-    
+
     def _get_or_create_memory(self, session_id: str) -> ConversationBufferWindowMemory:
         """
         Obtiene o crea memoria conversacional para una sesión.
-        
+
         Args:
             session_id: ID de la sesión
-            
+
         Returns:
             ConversationBufferWindowMemory para la sesión
         """
         # Limpiar sesiones antiguas primero
         self._cleanup_old_sessions()
-        
+
         # Si no existe, crear nueva memoria
         if session_id not in self.conversations:
             logger.info(f"Creando nueva memoria para sesión: {session_id}")
@@ -213,145 +222,147 @@ class RAGService:
                 k=settings.MAX_CONVERSATION_HISTORY,  # Últimos N pares de mensajes
                 memory_key="chat_history",
                 return_messages=True,
-                output_key="answer"
+                output_key="answer",
             )
             self.conversations[session_id] = {
                 "memory": memory,
-                "last_access": datetime.now()
+                "last_access": datetime.now(),
             }
         else:
             # Actualizar timestamp de último acceso
             self.conversations[session_id]["last_access"] = datetime.now()
-        
+
         return self.conversations[session_id]["memory"]
-    
+
     def _cleanup_old_sessions(self):
         """
         Limpia sesiones inactivas después del timeout configurado.
         """
         now = datetime.now()
         timeout = timedelta(minutes=settings.SESSION_TIMEOUT_MINUTES)
-        
+
         sessions_to_remove = [
-            session_id 
+            session_id
             for session_id, data in self.conversations.items()
             if now - data["last_access"] > timeout
         ]
-        
+
         for session_id in sessions_to_remove:
             logger.info(f"Limpiando sesión inactiva: {session_id}")
             del self.conversations[session_id]
-        
+
         if sessions_to_remove:
             logger.info(f"✓ Limpiadas {len(sessions_to_remove)} sesiones inactivas")
 
     async def generate_response(
-        self, 
-        question: str, 
-        session_id: Optional[str] = None
+        self, question: str, session_id: Optional[str] = None
     ) -> Dict:
         """
         Genera una respuesta usando RAG con memoria conversacional.
-        
+
         Args:
             question: Pregunta del usuario
             session_id: ID de sesión para mantener historial de conversación
-            
+
         Returns:
             Dict con la respuesta y metadatos
         """
         try:
-            logger.info(f"Generando respuesta para sesión '{session_id}': '{question[:50]}...'")
-            
+            logger.info(
+                f"Generando respuesta para sesión '{session_id}': '{question[:50]}...'"
+            )
+
             # Si no hay session_id, generar uno temporal
             if not session_id:
                 from uuid import uuid4
+
                 session_id = f"temp-{uuid4()}"
-                logger.warning(f"No se proporcionó session_id. Usando temporal: {session_id}")
-            
+                logger.warning(
+                    f"No se proporcionó session_id. Usando temporal: {session_id}"
+                )
+
             # Obtener o crear memoria para esta sesión
             memory = self._get_or_create_memory(session_id)
-            
+
             # Crear chain conversacional con memoria
             qa_chain = ConversationalRetrievalChain.from_llm(
                 llm=self.llm,
                 retriever=self.vector_store.as_retriever(
                     search_type="similarity",
-                    search_kwargs={"k": settings.VECTOR_SEARCH_K}
+                    search_kwargs={"k": settings.VECTOR_SEARCH_K},
                 ),
                 memory=memory,
                 return_source_documents=True,
                 combine_docs_chain_kwargs={"prompt": self.system_prompt},
-                verbose=False
+                verbose=False,
             )
-            
+
             # Generar respuesta (la memoria se actualiza automáticamente)
             result = qa_chain({"question": question})
-            
+
             # Formatear sources
             sources = self._format_sources(result.get("source_documents", []))
-            
-            logger.info(f"✓ Respuesta generada. Fuentes: {len(sources)} | Historial: {len(memory.chat_memory.messages)//2} pares")
-            
+
+            logger.info(
+                f"✓ Respuesta generada. Fuentes: {len(sources)} | Historial: {len(memory.chat_memory.messages)//2} pares"
+            )
+
             # Sanitizar la respuesta antes de devolverla
             sanitized_response = self._sanitize_response(result["answer"])
-            
+
             return {
                 "response": sanitized_response,  # ← Respuesta sanitizada
                 "sources": sources,
                 "session_id": session_id,
-                "model": settings.GROQ_MODEL
+                "model": settings.GROQ_MODEL,
             }
-            
+
         except Exception as e:
             logger.error(f"Error generando respuesta: {e}", exc_info=True)
             raise
-    
+
     def _format_sources(self, documents: List[Document]) -> List[Dict]:
         """
         Formatea los documentos fuente para la respuesta.
-        
+
         Args:
             documents: Documentos recuperados del vector store
-            
+
         Returns:
             Lista de sources formateados
         """
         sources = []
-        
+
         for doc in documents:
             source = {
                 "type": doc.metadata.get("type", "unknown"),
-                "content_preview": doc.page_content[:100] + "..." if len(doc.page_content) > 100 else doc.page_content,
+                "content_preview": doc.page_content[:100] + "..."
+                if len(doc.page_content) > 100
+                else doc.page_content,
                 "metadata": {
-                    k: v for k, v in doc.metadata.items() 
-                    if k not in ["page_content"]
-                }
+                    k: v for k, v in doc.metadata.items() if k not in ["page_content"]
+                },
             }
             sources.append(source)
-        
+
         return sources
-    
+
     async def test_connection(self) -> bool:
         """
         Prueba que todos los componentes están conectados correctamente.
-        
+
         Returns:
             True si todo está OK, False otherwise
         """
         try:
             logger.info("Probando conexión al vector store...")
-            
+
             # Hacer una búsqueda de prueba
-            test_results = self.vector_store.similarity_search(
-                "test", 
-                k=1
-            )
-            
+            test_results = self.vector_store.similarity_search("test", k=1)
+
             logger.info(f"✓ Conexión OK. Documentos en DB: {len(test_results) > 0}")
             return True
-            
+
         except Exception as e:
             logger.error(f"❌ Error en test de conexión: {e}")
             return False
-

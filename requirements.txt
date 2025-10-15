@@ -1,5 +1,5 @@
 # FastAPI y servidor
-fastapi==0.104.1
+fastapi==0.109.1
 uvicorn[standard]==0.24.0
 python-multipart==0.0.20
 
@@ -21,11 +21,12 @@ langchain-huggingface==0.3.1
 sentence-transformers>=2.6.0
 
 # Vector DB: pgvector (requiere Python 3.11)
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.11
 pgvector==0.2.5
 
 # GCP (solo para Cloud Storage y autenticación)
 google-cloud-storage==2.14.0
+google-cloud-secret-manager==2.16.4
 
 # Utilidades
 PyYAML==6.0.1
