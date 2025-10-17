@@ -1,0 +1,13 @@
+[tool.basedpyright]
+exclude = [
+    ".coveragerc",
+    "alembic.ini", 
+    "*.md",
+    "docs/**",
+    "tests/**",
+    "venv/**",
+    "env/**"
+]
+
+pythonVersion = "3.11"
+typeCheckingMode = "basic"

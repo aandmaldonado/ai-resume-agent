@@ -2,6 +2,7 @@
 Configuración de la aplicación usando Pydantic Settings.
 Lee variables de entorno y proporciona valores por defecto.
 """
+
 from typing import Optional
 
 from pydantic_settings import BaseSettings
@@ -64,6 +65,19 @@ class Settings(BaseSettings):
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = 10
 
+    # Testing
+    TESTING: bool = False
+    TESTING_DATABASE_URL: Optional[str] = None
+
+    # Analytics y Captura de Leads
+    ENABLE_ANALYTICS: bool = True
+    DATA_CAPTURE_AFTER_MESSAGES: int = 2  # Capturar datos después de N mensajes
+    ENGAGEMENT_THRESHOLD: float = 0.6  # Umbral mínimo de engagement para captura
+
+    # GDPR Compliance
+    DATA_RETENTION_DAYS: int = 365  # Retención máxima de datos
+    ANONYMIZE_AFTER_DAYS: int = 90  # Anonimizar después de N días sin actividad
+
     # Logging
     LOG_LEVEL: str = "INFO"
 
@@ -83,6 +97,25 @@ class Settings(BaseSettings):
             # Desarrollo local o conexión directa
             return (
                 f"postgresql://{self.CLOUD_SQL_USER}:{self.CLOUD_SQL_PASSWORD}@"
+                f"{self.CLOUD_SQL_HOST}:{self.CLOUD_SQL_PORT}/{self.CLOUD_SQL_DB}"
+            )
+
+    @property
+    def ASYNC_DATABASE_URL(self) -> str:
+        """
+        Construye la URL asíncrona de la base de datos según el entorno.
+        En Cloud Run usa Unix socket, en local usa TCP.
+        """
+        if self.CLOUD_SQL_CONNECTION_NAME:
+            # Cloud Run con Cloud SQL Proxy (Unix socket)
+            return (
+                f"postgresql+asyncpg://{self.CLOUD_SQL_USER}:{self.CLOUD_SQL_PASSWORD}@/"
+                f"{self.CLOUD_SQL_DB}?host=/cloudsql/{self.CLOUD_SQL_CONNECTION_NAME}"
+            )
+        else:
+            # Desarrollo local o conexión directa
+            return (
+                f"postgresql+asyncpg://{self.CLOUD_SQL_USER}:{self.CLOUD_SQL_PASSWORD}@"
                 f"{self.CLOUD_SQL_HOST}:{self.CLOUD_SQL_PORT}/{self.CLOUD_SQL_DB}"
             )
 

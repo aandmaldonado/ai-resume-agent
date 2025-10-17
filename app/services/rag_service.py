@@ -2,6 +2,7 @@
 Servicio RAG (Retrieval Augmented Generation) principal.
 Combina Groq (LLM), Vertex AI (Embeddings) y pgvector (Vector DB).
 """
+
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
@@ -336,9 +337,11 @@ class RAGService:
         for doc in documents:
             source = {
                 "type": doc.metadata.get("type", "unknown"),
-                "content_preview": doc.page_content[:100] + "..."
-                if len(doc.page_content) > 100
-                else doc.page_content,
+                "content_preview": (
+                    doc.page_content[:100] + "..."
+                    if len(doc.page_content) > 100
+                    else doc.page_content
+                ),
                 "metadata": {
                     k: v for k, v in doc.metadata.items() if k not in ["page_content"]
                 },

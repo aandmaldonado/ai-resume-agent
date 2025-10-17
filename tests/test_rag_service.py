@@ -1,6 +1,7 @@
 """
 Tests para el servicio RAG
 """
+
 from unittest.mock import Mock, patch
 
 import pytest

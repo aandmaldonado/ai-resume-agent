@@ -2,6 +2,7 @@
 Tests para el módulo de gestión de secretos.
 Cubre Secret Manager y fallback a variables de entorno.
 """
+
 import os
 from unittest.mock import MagicMock, Mock, patch
 
@@ -135,7 +136,7 @@ class TestSecretFunctions:
             result = get_database_password()
 
             assert result == "db_password_123"
-            mock_sm.get_secret.assert_called_once_with("cloud-sql-password")
+            mock_sm.get_secret.assert_called_once_with("CLOUD_SQL_PASSWORD")
 
     def test_get_groq_api_key_from_secret_manager(self):
         """Test obtención de API key de Groq desde Secret Manager"""
@@ -145,7 +146,7 @@ class TestSecretFunctions:
             result = get_groq_api_key()
 
             assert result == "groq_api_key_456"
-            mock_sm.get_secret.assert_called_once_with("groq-api-key")
+            mock_sm.get_secret.assert_called_once_with("GROQ_API_KEY")
 
     def test_get_gcp_project_id_with_default(self):
         """Test obtención de Project ID con valor por defecto"""
@@ -156,7 +157,7 @@ class TestSecretFunctions:
 
             assert result == "ai-resume-agent"
             mock_sm.get_secret.assert_called_once_with(
-                "gcp-project-id", default_value="ai-resume-agent"
+                "GCP_PROJECT_ID", default_value="ai-resume-agent"
             )
 
     def test_get_gcp_project_id_custom_default(self):
@@ -168,7 +169,7 @@ class TestSecretFunctions:
 
             assert result == "custom-project"
             mock_sm.get_secret.assert_called_once_with(
-                "gcp-project-id", default_value="ai-resume-agent"
+                "GCP_PROJECT_ID", default_value="ai-resume-agent"
             )
 
 

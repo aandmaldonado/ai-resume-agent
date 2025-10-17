@@ -1,0 +1,19 @@
+[tool.basedpyright]
+exclude = [
+    ".coveragerc",
+    "alembic.ini",
+    "*.md",
+    "docs/**",
+    "tests/**"
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.safety]
+# Usar requirements.txt en lugar de pyproject.toml para dependencias

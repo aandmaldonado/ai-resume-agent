@@ -2,6 +2,7 @@
 FastAPI application principal.
 Configuración de la app, middlewares, CORS y routers.
 """
+
 import logging
 
 from fastapi import FastAPI
@@ -12,7 +13,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from app.api.v1.endpoints import chat
+from app.api.v1.endpoints import analytics, chat
 from app.core.config import settings
 
 # Configurar logging
@@ -63,6 +64,7 @@ app.add_middleware(
 
 # Incluir routers
 app.include_router(chat.router, prefix=settings.API_V1_STR, tags=["chat"])
+app.include_router(analytics.router, prefix=settings.API_V1_STR, tags=["analytics"])
 
 
 @app.on_event("startup")
@@ -109,9 +111,9 @@ async def global_exception_handler(request, exc):
         status_code=500,
         content={
             "detail": "Internal server error",
-            "message": str(exc)
-            if settings.LOG_LEVEL == "DEBUG"
-            else "An error occurred",
+            "message": (
+                str(exc) if settings.LOG_LEVEL == "DEBUG" else "An error occurred"
+            ),
         },
     )
 

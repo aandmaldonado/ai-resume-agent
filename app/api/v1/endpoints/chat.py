@@ -1,8 +1,11 @@
 """
 Endpoints de chat para el chatbot RAG.
-Maneja las peticiones de chat y respuestas del usuario.
+Maneja las peticiones de chat y respuestas del usuario con analytics integrados.
 """
+
 import logging
+import time
+from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import JSONResponse
@@ -11,6 +14,8 @@ from slowapi.util import get_remote_address
 
 from app.core.config import settings
 from app.schemas.chat import ChatRequest, ChatResponse, HealthResponse
+from app.services.analytics_service import analytics_service
+from app.services.flow_controller import ActionType, FlowState, flow_controller
 from app.services.rag_service import RAGService
 
 logger = logging.getLogger(__name__)
@@ -33,15 +38,16 @@ except Exception as e:
 @limiter.limit(f"{settings.RATE_LIMIT_PER_MINUTE}/minute")
 async def chat(request: Request, chat_request: ChatRequest) -> ChatResponse:
     """
-    Endpoint principal de chat.
+    Endpoint principal de chat con analytics integrados.
     Recibe un mensaje del usuario y devuelve una respuesta generada por RAG.
+    Maneja el flujo de captura de datos y consentimiento GDPR.
 
     Args:
         request: Starlette Request (para rate limiting)
         chat_request: ChatRequest con el mensaje del usuario
 
     Returns:
-        ChatResponse con la respuesta generada y fuentes
+        ChatResponse con la respuesta generada, fuentes y estado del flujo
 
     Raises:
         HTTPException: Si hay un error en el procesamiento
@@ -61,23 +67,114 @@ async def chat(request: Request, chat_request: ChatRequest) -> ChatResponse:
             detail="El mensaje no puede estar vacío",
         )
 
+    start_time = time.time()
+    session_id = (
+        chat_request.session_id or f"session-{int(time.time())}-{hash(message) % 10000}"
+    )
+
     try:
-        logger.info(f"Petición de chat recibida. Sesión: {chat_request.session_id}")
+        logger.info(f"Petición de chat recibida. Sesión: {session_id}")
 
-        # Generar respuesta usando RAG
-        result = await rag_service.generate_response(
-            question=chat_request.message, session_id=chat_request.session_id
+        # 1. Crear o actualizar sesión de analytics (solo si analytics está habilitado)
+        if settings.ENABLE_ANALYTICS and not settings.TESTING:
+            session = await analytics_service.get_or_create_session(
+                session_id=session_id,
+                email=chat_request.email,
+                user_type=chat_request.user_type,
+            )
+
+            # Incrementar contador de mensajes
+            await analytics_service.increment_message_count(session_id)
+
+            # Obtener sesión actualizada después del incremento
+            session = await analytics_service.get_or_create_session(session_id)
+
+            # 2. Determinar siguiente acción según el estado del flujo (después de incrementar)
+            (
+                action_type,
+                next_flow_state,
+                flow_data,
+            ) = await flow_controller.determine_next_action(
+                session=session, message=message
+            )
+        else:
+            # Modo testing o analytics deshabilitado - respuesta normal
+            action_type = ActionType.NORMAL_RESPONSE
+            next_flow_state = FlowState.CONVERSATION_ACTIVE
+            flow_data = {"testing_mode": True}
+
+        logger.info(
+            f"🔍 Flow controller devolvió: action_type={action_type.value}, next_state={next_flow_state.value}"
         )
 
-        # Construir response
-        response = ChatResponse(
-            message=result["response"],
-            sources=result.get("sources", []),
-            session_id=result.get("session_id"),
-            model=result.get("model", settings.GROQ_MODEL),
-        )
+        # 3. Manejar diferentes tipos de acciones
+        if action_type == ActionType.SHOW_WELCOME:
+            # Mostrar mensaje de bienvenida
+            response = ChatResponse(
+                message="¡Hola! Soy el asistente virtual de Álvaro Maldonado. Puedo ayudarte con información sobre mi experiencia profesional, habilidades técnicas y proyectos. ¿En qué puedo ayudarte?",
+                sources=[],
+                session_id=session_id,
+                model=settings.GROQ_MODEL,
+                action_type="show_welcome",
+                next_flow_state=next_flow_state.value,
+                requires_data_capture=False,
+                requires_gdpr_consent=False,
+            )
 
-        logger.info("✓ Respuesta generada exitosamente")
+        elif action_type == ActionType.REQUEST_DATA_CAPTURE:
+            # Solicitar captura de datos
+            response = ChatResponse(
+                message="",  # El frontend manejará el mensaje
+                sources=[],
+                session_id=session_id,
+                model=settings.GROQ_MODEL,
+                action_type="request_data_capture",
+                next_flow_state=next_flow_state.value,
+                requires_data_capture=True,
+                requires_gdpr_consent=False,
+            )
+
+        elif action_type == ActionType.REQUEST_GDPR_CONSENT:
+            # Solicitar consentimiento GDPR
+            response = ChatResponse(
+                message="",  # El frontend manejará el mensaje
+                sources=[],
+                session_id=session_id,
+                model=settings.GROQ_MODEL,
+                action_type="request_gdpr_consent",
+                next_flow_state=next_flow_state.value,
+                requires_data_capture=False,
+                requires_gdpr_consent=True,
+            )
+
+        else:
+            # 4. Procesar mensaje normal con RAG
+            result = await rag_service.generate_response(
+                question=message, session_id=session_id
+            )
+
+            # 5. Trackear métricas del mensaje (solo si analytics está habilitado)
+            if settings.ENABLE_ANALYTICS and not settings.TESTING:
+                response_time_ms = int((time.time() - start_time) * 1000)
+                await analytics_service.track_message_metrics(
+                    session_id=session_id,
+                    message=message,
+                    response_time_ms=response_time_ms,
+                )
+
+            # 6. Construir respuesta normal
+            response = ChatResponse(
+                message=result["response"],
+                sources=result.get("sources", []),
+                session_id=session_id,
+                model=result.get("model", settings.GROQ_MODEL),
+                action_type="normal_response",
+                next_flow_state=next_flow_state.value,
+                requires_data_capture=False,
+                requires_gdpr_consent=False,
+            )
+
+        logger.info(f"✓ Respuesta generada exitosamente. Acción: {action_type.value}")
         return response
 
     except HTTPException:

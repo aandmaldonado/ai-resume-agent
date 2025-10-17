@@ -2,6 +2,7 @@
 Gestión de secretos usando Google Cloud Secret Manager.
 Fallback a variables de entorno para desarrollo local.
 """
+
 import logging
 from typing import Optional
 
@@ -83,14 +84,14 @@ secret_manager = SecretManager()
 
 def get_database_password() -> str:
     """Obtiene la contraseña de la base de datos"""
-    return secret_manager.get_secret("cloud-sql-password")
+    return secret_manager.get_secret("CLOUD_SQL_PASSWORD")
 
 
 def get_groq_api_key() -> str:
     """Obtiene la API key de Groq"""
-    return secret_manager.get_secret("groq-api-key")
+    return secret_manager.get_secret("GROQ_API_KEY")
 
 
 def get_gcp_project_id() -> str:
     """Obtiene el Project ID de GCP"""
-    return secret_manager.get_secret("gcp-project-id", default_value="ai-resume-agent")
+    return secret_manager.get_secret("GCP_PROJECT_ID", default_value="ai-resume-agent")

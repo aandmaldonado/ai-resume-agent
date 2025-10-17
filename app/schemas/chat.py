@@ -2,6 +2,17 @@
 Esquemas Pydantic para los endpoints de chat.
 Define los modelos de request y response.
 """
+
+import re
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field, validator
+
+"""
+Esquemas Pydantic para los endpoints de chat.
+Define los modelos de request y response.
+"""
 import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -66,11 +77,27 @@ class ChatRequest(BaseModel):
 
         return v
 
+    # Campos adicionales para analytics y captura de datos
+    email: Optional[str] = Field(None, description="Email del usuario (opcional)")
+    user_type: Optional[str] = Field(
+        None, description="Tipo de usuario: recruiter, client, curious"
+    )
+    gdpr_consent: Optional[bool] = Field(False, description="Consentimiento GDPR dado")
+
+    @validator("user_type")
+    def validate_user_type(cls, v):
+        if v is not None and v not in ["recruiter", "client", "curious"]:
+            raise ValueError("user_type debe ser: recruiter, client, o curious")
+        return v
+
     class Config:
         json_schema_extra = {
             "example": {
                 "message": "¿Cuál es tu experiencia con Python?",
                 "session_id": "user-123-session-456",
+                "email": "user@example.com",
+                "user_type": "recruiter",
+                "gdpr_consent": True,
             }
         }
 
@@ -98,7 +125,24 @@ class ChatResponse(BaseModel):
     timestamp: datetime = Field(
         default_factory=datetime.utcnow, description="Timestamp de la respuesta"
     )
-    model: str = Field(default="llama-3.1-70b", description="Modelo usado para generar")
+    model: str = Field(
+        default="llama-3.3-70b-versatile", description="Modelo usado para generar"
+    )
+
+    # Campos adicionales para flujo de captura de datos
+    action_type: str = Field(
+        default="normal_response",
+        description="Tipo de acción: show_welcome, request_data_capture, request_gdpr_consent, normal_response",
+    )
+    next_flow_state: str = Field(
+        default="conversation_active", description="Siguiente estado del flujo"
+    )
+    requires_data_capture: bool = Field(
+        default=False, description="Requiere captura de datos del usuario"
+    )
+    requires_gdpr_consent: bool = Field(
+        default=False, description="Requiere consentimiento GDPR"
+    )
 
     class Config:
         json_schema_extra = {
@@ -116,7 +160,11 @@ class ChatResponse(BaseModel):
                 ],
                 "session_id": "user-123-session-456",
                 "timestamp": "2025-01-15T10:30:00",
-                "model": "llama-3.1-70b",
+                "model": "llama-3.3-70b-versatile",
+                "action_type": "normal_response",
+                "next_flow_state": "conversation_active",
+                "requires_data_capture": False,
+                "requires_gdpr_consent": False,
             }
         }
 

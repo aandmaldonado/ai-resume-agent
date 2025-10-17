@@ -2,6 +2,7 @@
 Tests para los endpoints de la API.
 Cubre endpoints de chat, health check y validaciones.
 """
+
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
@@ -67,7 +68,7 @@ class TestChatEndpoints:
             assert response.status_code == 200
             data = response.json()
             assert "session_id" in data
-            assert data["session_id"].startswith("temp-")
+            assert data["session_id"].startswith("session-")
 
     def test_chat_endpoint_empty_message(self):
         """Test con mensaje vacío"""

@@ -2,6 +2,7 @@
 Tests para app/main.py
 Cubre eventos de startup/shutdown, exception handler y configuración.
 """
+
 from unittest.mock import Mock, patch
 
 import pytest
