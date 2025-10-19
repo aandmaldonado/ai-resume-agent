@@ -6,7 +6,7 @@ repos:
         name: Run tests
         entry: bash
         language: system
-        args: [-c, 'TESTING=true ENABLE_ANALYTICS=false pytest tests/ --cov=app --cov-fail-under=50 -v --ignore=tests/test_analytics_endpoints.py']
+        args: [-c, 'source venv/bin/activate && TESTING=true ENABLE_ANALYTICS=false pytest tests/ --cov=app --cov-fail-under=50 -v --ignore=tests/test_analytics_endpoints.py']
         pass_filenames: false
         always_run: true
       
