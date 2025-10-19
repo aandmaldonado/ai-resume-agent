@@ -137,16 +137,144 @@
             border-radius: 8px;
             margin-bottom: 20px;
         }
+
+        /* Estilos para modales y formularios */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            color: #667eea;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .flow-indicator {
+            background: #e3f2fd;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #1976d2;
+            display: none;
+        }
+
+        .gdpr-banner {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #e65100;
+        }
+
+        .gdpr-banner button {
+            background: #ff9800;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🤖 Test Chatbot Local</h1>
-        <p class="subtitle">Probando RAG con Groq + HuggingFace + pgvector</p>
+        <p class="subtitle">Probando RAG con Analytics, Lead Capture y GDPR</p>
 
         <div class="status" id="status">
             ✅ Conectado a: http://localhost:8080
         </div>
+
+        <div class="flow-indicator" id="flowIndicator"></div>
 
         <div class="chat-container" id="chat"></div>
 
@@ -160,12 +288,95 @@
             <button onclick="sendMessage()" id="sendBtn">Enviar</button>
         </div>
 
+        <!-- Modal para captura de datos -->
+        <div id="dataCaptureModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">📝 Información de Contacto</h3>
+                    <span class="close" onclick="closeModal('dataCaptureModal')">&times;</span>
+                </div>
+                <p style="margin-bottom: 20px; color: #666;">
+                    Para brindarte un mejor servicio, nos gustaría conocer un poco más sobre ti.
+                </p>
+                <form id="dataCaptureForm">
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userType">Tipo de Usuario</label>
+                        <select id="userType">
+                            <option value="">Seleccionar...</option>
+                            <option value="recruiter">Reclutador</option>
+                            <option value="client">Cliente Potencial</option>
+                            <option value="curious">Curioso</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Empresa</label>
+                        <input type="text" id="company">
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Rol/Cargo</label>
+                        <input type="text" id="role">
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" class="btn-secondary" onclick="closeModal('dataCaptureModal')">Cancelar</button>
+                        <button type="submit" class="btn-primary">Enviar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal para consentimiento GDPR -->
+        <div id="gdprModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">🔒 Consentimiento GDPR</h3>
+                    <span class="close" onclick="closeModal('gdprModal')">&times;</span>
+                </div>
+                <p style="margin-bottom: 20px; color: #666;">
+                    Para continuar, necesitamos tu consentimiento para procesar tus datos de acuerdo con el GDPR.
+                </p>
+                <form id="gdprForm">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="analyticsConsent" required>
+                            Consentimiento para Analytics
+                        </label>
+                        <small style="display: block; color: #666; margin-top: 5px;">
+                            Permite el análisis de interacciones para mejorar el servicio
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="dataProcessingConsent" required>
+                            Consentimiento para Procesamiento de Datos
+                        </label>
+                        <small style="display: block; color: #666; margin-top: 5px;">
+                            Permite el almacenamiento y procesamiento de tus datos de contacto
+                        </small>
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" class="btn-secondary" onclick="closeModal('gdprModal')">Cancelar</button>
+                        <button type="submit" class="btn-primary">Aceptar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <script>
             const API_URL = 'http://localhost:8080/api/v1';
             const chatContainer = document.getElementById('chat');
             const messageInput = document.getElementById('messageInput');
             const sendBtn = document.getElementById('sendBtn');
             const status = document.getElementById('status');
+            const flowIndicator = document.getElementById('flowIndicator');
+
+            // Variables de estado
+            let currentSessionId = null;
+            let dataCaptured = false;
+            let gdprConsentGiven = false;
 
             // Agregar mensaje inicial del bot
             addMessage('bot', '¡Hola! Soy el asistente virtual de Álvaro. Puedo responder preguntas sobre su experiencia profesional, habilidades técnicas, proyectos y más. ¿En qué puedo ayudarte?');
@@ -191,12 +402,17 @@
                 chatContainer.scrollTop = chatContainer.scrollHeight;
 
                 try {
+                    const requestBody = { message };
+                    if (currentSessionId) {
+                        requestBody.session_id = currentSessionId;
+                    }
+
                     const response = await fetch(`${API_URL}/chat`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ message })
+                        body: JSON.stringify(requestBody)
                     });
 
                     // Remover loading
@@ -209,6 +425,14 @@
 
                     const data = await response.json();
                     
+                    // Actualizar session_id si viene en la respuesta
+                    if (data.session_id) {
+                        currentSessionId = data.session_id;
+                    }
+
+                    // Manejar diferentes tipos de acción
+                    handleFlowAction(data);
+
                     // Mostrar respuesta
                     let botMessage = data.message;
                     
@@ -247,6 +471,139 @@
                 chatContainer.appendChild(messageDiv);
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
+
+            // Manejar acciones del flujo de analytics
+            function handleFlowAction(data) {
+                // Mostrar indicador de flujo
+                if (data.action_type && data.action_type !== 'normal_response') {
+                    showFlowIndicator(data.action_type, data.next_flow_state);
+                } else {
+                    hideFlowIndicator();
+                }
+
+                // Manejar captura de datos
+                if (data.requires_data_capture && !dataCaptured) {
+                    setTimeout(() => {
+                        showModal('dataCaptureModal');
+                    }, 1000);
+                }
+
+                // Manejar consentimiento GDPR
+                if (data.requires_gdpr_consent && !gdprConsentGiven) {
+                    setTimeout(() => {
+                        showModal('gdprModal');
+                    }, 1000);
+                }
+            }
+
+            // Mostrar indicador de flujo
+            function showFlowIndicator(actionType, nextState) {
+                const indicators = {
+                    'show_welcome': '👋 Mostrando bienvenida',
+                    'request_data_capture': '📝 Solicitando información de contacto',
+                    'request_gdpr_consent': '🔒 Solicitando consentimiento GDPR',
+                    'normal_response': '💬 Conversación activa'
+                };
+                
+                flowIndicator.textContent = indicators[actionType] || `Estado: ${nextState}`;
+                flowIndicator.style.display = 'block';
+            }
+
+            // Ocultar indicador de flujo
+            function hideFlowIndicator() {
+                flowIndicator.style.display = 'none';
+            }
+
+            // Mostrar modal
+            function showModal(modalId) {
+                document.getElementById(modalId).style.display = 'block';
+            }
+
+            // Cerrar modal
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+
+            // Manejar envío de datos de captura
+            document.getElementById('dataCaptureForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const formData = {
+                    session_id: currentSessionId,
+                    email: document.getElementById('email').value,
+                    user_type: document.getElementById('userType').value,
+                    company: document.getElementById('company').value,
+                    role: document.getElementById('role').value
+                };
+
+                try {
+                    const response = await fetch(`${API_URL}/capture-data`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (response.ok) {
+                        dataCaptured = true;
+                        closeModal('dataCaptureModal');
+                        addMessage('bot', '✅ Gracias por proporcionar tu información. Ahora puedo brindarte un mejor servicio.');
+                    } else {
+                        throw new Error('Error al capturar datos');
+                    }
+                } catch (error) {
+                    alert('Error al enviar datos: ' + error.message);
+                }
+            });
+
+            // Manejar consentimiento GDPR
+            document.getElementById('gdprForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const consentTypes = [];
+                if (document.getElementById('analyticsConsent').checked) {
+                    consentTypes.push('analytics');
+                }
+                if (document.getElementById('dataProcessingConsent').checked) {
+                    consentTypes.push('data_processing');
+                }
+
+                const consentData = {
+                    session_id: currentSessionId,
+                    consent_types: consentTypes
+                };
+
+                try {
+                    const response = await fetch(`${API_URL}/gdpr/consent`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(consentData)
+                    });
+
+                    if (response.ok) {
+                        gdprConsentGiven = true;
+                        closeModal('gdprModal');
+                        addMessage('bot', '✅ Consentimiento registrado. Puedes continuar con la conversación.');
+                    } else {
+                        throw new Error('Error al registrar consentimiento');
+                    }
+                } catch (error) {
+                    alert('Error al registrar consentimiento: ' + error.message);
+                }
+            });
+
+            // Cerrar modales al hacer clic fuera
+            window.onclick = function(event) {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            };
 
             // Test de conexión al iniciar
             fetch(`${API_URL}/health`)
