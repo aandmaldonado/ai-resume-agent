@@ -83,6 +83,12 @@ class ChatSession(Base):
     consents: Mapped[List["GDPRConsent"]] = relationship(
         "GDPRConsent", back_populates="session", cascade="all, delete-orphan"
     )
+    messages: Mapped[List["ChatMessage"]] = relationship(
+        "ChatMessage", cascade="all, delete-orphan"
+    )
+    conversation_pairs: Mapped[List["ConversationPair"]] = relationship(
+        "ConversationPair", cascade="all, delete-orphan"
+    )
 
     # Constraints
     __table_args__ = (
@@ -210,6 +216,152 @@ class GDPRConsent(Base):
 
     def __repr__(self) -> str:
         return f"<GDPRConsent(session_id='{self.session_id}', timestamp={self.consent_timestamp})>"
+
+
+class ChatMessage(Base):
+    """
+    Modelo para almacenar mensajes individuales de chat.
+
+    Almacena el contenido de cada mensaje del usuario y respuesta del bot
+    para análisis detallado y seguimiento de conversaciones.
+    """
+
+    __tablename__ = "chat_messages"
+
+    # Primary key
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+
+    # Foreign key
+    session_id: Mapped[str] = mapped_column(
+        String(100),
+        ForeignKey("chat_sessions.session_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+
+    # Contenido del mensaje
+    message_type: Mapped[str] = mapped_column(
+        String(20), nullable=False, comment="Tipo: user, bot"
+    )
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+
+    # Metadatos del mensaje
+    response_time_ms: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    sources_used: Mapped[Optional[List[str]]] = mapped_column(
+        ARRAY(Text), nullable=True, comment="Fuentes utilizadas para generar respuesta"
+    )
+
+    # Análisis del contenido
+    detected_language: Mapped[Optional[str]] = mapped_column(
+        String(10), nullable=True, comment="Idioma detectado: es, en, fr, etc."
+    )
+    topics_mentioned: Mapped[Optional[List[str]]] = mapped_column(
+        ARRAY(Text), nullable=True, comment="Temas mencionados en el mensaje"
+    )
+
+    # Timestamp
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default="NOW()", nullable=False
+    )
+
+    # Relación
+    session: Mapped["ChatSession"] = relationship("ChatSession")
+
+    # Constraints
+    __table_args__ = (
+        CheckConstraint(
+            "message_type IN ('user', 'bot')", name="check_message_type_valid"
+        ),
+        CheckConstraint("response_time_ms >= 0", name="check_response_time_positive"),
+        Index("idx_chat_messages_session_id", "session_id"),
+        Index("idx_chat_messages_created_at", "created_at"),
+        Index("idx_chat_messages_type", "message_type"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<ChatMessage(session_id='{self.session_id}', type='{self.message_type}', content='{self.content[:50]}...')>"
+
+
+class ConversationPair(Base):
+    """
+    Modelo para pares de conversación (pregunta-respuesta).
+
+    Almacena preguntas del usuario y respuestas del bot asociadas
+    para facilitar el análisis de contenido y validación de respuestas.
+    """
+
+    __tablename__ = "conversation_pairs"
+
+    # Primary key
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+
+    # Foreign key
+    session_id: Mapped[str] = mapped_column(
+        String(100),
+        ForeignKey("chat_sessions.session_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+
+    # Contenido de la conversación
+    user_question: Mapped[str] = mapped_column(Text, nullable=False)
+    bot_response: Mapped[str] = mapped_column(Text, nullable=False)
+
+    # Metadatos de rendimiento
+    response_time_ms: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    sources_used: Mapped[Optional[List[str]]] = mapped_column(
+        ARRAY(Text), nullable=True, comment="Fuentes utilizadas para generar respuesta"
+    )
+
+    # Análisis de idiomas
+    user_language: Mapped[Optional[str]] = mapped_column(
+        String(10),
+        nullable=True,
+        comment="Idioma detectado del usuario: es, en, fr, etc.",
+    )
+    bot_language: Mapped[Optional[str]] = mapped_column(
+        String(10), nullable=True, comment="Idioma de la respuesta del bot"
+    )
+
+    # Análisis de contenido
+    topics_mentioned: Mapped[Optional[List[str]]] = mapped_column(
+        ARRAY(Text), nullable=True, comment="Temas mencionados en la conversación"
+    )
+    technologies_detected: Mapped[Optional[List[str]]] = mapped_column(
+        ARRAY(Text), nullable=True, comment="Tecnologías detectadas en la pregunta"
+    )
+    intent_category: Mapped[Optional[str]] = mapped_column(
+        String(50),
+        nullable=True,
+        comment="Categoría de intención: experience, skills, projects, contact",
+    )
+
+    # Métricas de calidad
+    engagement_score: Mapped[Optional[float]] = mapped_column(
+        Float, nullable=True, comment="Score de engagement de esta conversación"
+    )
+
+    # Timestamp
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, server_default="NOW()", nullable=False
+    )
+
+    # Relación
+    session: Mapped["ChatSession"] = relationship("ChatSession")
+
+    # Constraints
+    __table_args__ = (
+        CheckConstraint("response_time_ms >= 0", name="check_response_time_positive"),
+        CheckConstraint(
+            "engagement_score >= 0.0 AND engagement_score <= 1.0",
+            name="check_engagement_score_range",
+        ),
+        Index("idx_conversation_pairs_session_id", "session_id"),
+        Index("idx_conversation_pairs_created_at", "created_at"),
+        Index("idx_conversation_pairs_intent", "intent_category"),
+        Index("idx_conversation_pairs_engagement", "engagement_score"),
+    )
+
+    def __repr__(self) -> str:
+        return f"<ConversationPair(session_id='{self.session_id}', question='{self.user_question[:30]}...', intent='{self.intent_category}')>"
 
 
 class DailyAnalytics(Base):

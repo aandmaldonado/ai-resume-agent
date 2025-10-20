@@ -123,6 +123,40 @@ async def chat(request: Request, chat_request: ChatRequest) -> ChatResponse:
                     response_time_ms=response_time_ms,
                 )
 
+                # Guardar par de conversación (pregunta-respuesta asociadas)
+                logger.info(
+                    f"🔍 Intentando guardar par de conversación para sesión {session_id}"
+                )
+                # Normalizar fuentes a TEXT[] (strings) antes de guardar
+                raw_sources = result.get("sources", [])
+                normalized_sources = []
+                for s in raw_sources:
+                    if isinstance(s, str):
+                        normalized_sources.append(s)
+                    elif isinstance(s, dict):
+                        meta = s.get("metadata") or {}
+                        t = s.get("type") or meta.get("type")
+                        src = meta.get("source")
+                        preview = s.get("content_preview")
+                        parts = [p for p in [t, src] if p]
+                        normalized_sources.append(
+                            " | ".join(parts) if parts else (preview or "unknown")
+                        )
+                    else:
+                        normalized_sources.append(str(s))
+                save_result = await analytics_service.save_conversation_pair(
+                    session_id=session_id,
+                    user_question=message,
+                    bot_response=result["response"],
+                    response_time_ms=response_time_ms,
+                    sources_used=normalized_sources,
+                    user_language="auto",  # Se puede mejorar con detección real
+                    bot_language="auto",  # Se puede mejorar con detección real
+                    intent_category="general",  # Se puede mejorar con análisis real
+                    engagement_score=0.5,  # Score por defecto, se puede calcular
+                )
+                logger.info(f"🔍 Resultado del guardado: {save_result}")
+
             # Construir respuesta con RAG (sin mensaje de bienvenida redundante)
             response = ChatResponse(
                 message=result["response"],
@@ -149,6 +183,40 @@ async def chat(request: Request, chat_request: ChatRequest) -> ChatResponse:
                     message=message,
                     response_time_ms=response_time_ms,
                 )
+
+                # Guardar par de conversación (pregunta-respuesta asociadas)
+                logger.info(
+                    f"🔍 Intentando guardar par de conversación para sesión {session_id}"
+                )
+                # Normalizar fuentes a TEXT[] (strings) antes de guardar
+                raw_sources = result.get("sources", [])
+                normalized_sources = []
+                for s in raw_sources:
+                    if isinstance(s, str):
+                        normalized_sources.append(s)
+                    elif isinstance(s, dict):
+                        meta = s.get("metadata") or {}
+                        t = s.get("type") or meta.get("type")
+                        src = meta.get("source")
+                        preview = s.get("content_preview")
+                        parts = [p for p in [t, src] if p]
+                        normalized_sources.append(
+                            " | ".join(parts) if parts else (preview or "unknown")
+                        )
+                    else:
+                        normalized_sources.append(str(s))
+                save_result = await analytics_service.save_conversation_pair(
+                    session_id=session_id,
+                    user_question=message,
+                    bot_response=result["response"],
+                    response_time_ms=response_time_ms,
+                    sources_used=normalized_sources,
+                    user_language="auto",
+                    bot_language="auto",
+                    intent_category="general",
+                    engagement_score=0.5,
+                )
+                logger.info(f"🔍 Resultado del guardado: {save_result}")
 
             # 6. Construir respuesta con RAG + solicitud de captura
             response = ChatResponse(
@@ -177,6 +245,40 @@ async def chat(request: Request, chat_request: ChatRequest) -> ChatResponse:
                     response_time_ms=response_time_ms,
                 )
 
+                # Guardar par de conversación (pregunta-respuesta asociadas)
+                logger.info(
+                    f"🔍 Intentando guardar par de conversación para sesión {session_id}"
+                )
+                # Normalizar fuentes a TEXT[] (strings) antes de guardar
+                raw_sources = result.get("sources", [])
+                normalized_sources = []
+                for s in raw_sources:
+                    if isinstance(s, str):
+                        normalized_sources.append(s)
+                    elif isinstance(s, dict):
+                        meta = s.get("metadata") or {}
+                        t = s.get("type") or meta.get("type")
+                        src = meta.get("source")
+                        preview = s.get("content_preview")
+                        parts = [p for p in [t, src] if p]
+                        normalized_sources.append(
+                            " | ".join(parts) if parts else (preview or "unknown")
+                        )
+                    else:
+                        normalized_sources.append(str(s))
+                save_result = await analytics_service.save_conversation_pair(
+                    session_id=session_id,
+                    user_question=message,
+                    bot_response=result["response"],
+                    response_time_ms=response_time_ms,
+                    sources_used=normalized_sources,
+                    user_language="auto",
+                    bot_language="auto",
+                    intent_category="general",
+                    engagement_score=0.5,
+                )
+                logger.info(f"🔍 Resultado del guardado: {save_result}")
+
             # 6. Construir respuesta con RAG + solicitud de GDPR
             response = ChatResponse(
                 message=result["response"],
@@ -204,6 +306,40 @@ async def chat(request: Request, chat_request: ChatRequest) -> ChatResponse:
                     response_time_ms=response_time_ms,
                 )
 
+                # Guardar par de conversación (pregunta-respuesta asociadas)
+                logger.info(
+                    f"🔍 Intentando guardar par de conversación para sesión {session_id}"
+                )
+                # Normalizar fuentes a TEXT[] (strings) antes de guardar
+                raw_sources = result.get("sources", [])
+                normalized_sources = []
+                for s in raw_sources:
+                    if isinstance(s, str):
+                        normalized_sources.append(s)
+                    elif isinstance(s, dict):
+                        meta = s.get("metadata") or {}
+                        t = s.get("type") or meta.get("type")
+                        src = meta.get("source")
+                        preview = s.get("content_preview")
+                        parts = [p for p in [t, src] if p]
+                        normalized_sources.append(
+                            " | ".join(parts) if parts else (preview or "unknown")
+                        )
+                    else:
+                        normalized_sources.append(str(s))
+                save_result = await analytics_service.save_conversation_pair(
+                    session_id=session_id,
+                    user_question=message,
+                    bot_response=result["response"],
+                    response_time_ms=response_time_ms,
+                    sources_used=normalized_sources,
+                    user_language="auto",
+                    bot_language="auto",
+                    intent_category="general",
+                    engagement_score=0.5,
+                )
+                logger.info(f"🔍 Resultado del guardado: {save_result}")
+
             # 6. Construir respuesta normal
             response = ChatResponse(
                 message=result["response"],
@@ -228,6 +364,73 @@ async def chat(request: Request, chat_request: ChatRequest) -> ChatResponse:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error interno del servidor. Por favor, intenta de nuevo más tarde.",
+        )
+
+
+@router.get("/conversations", status_code=status.HTTP_200_OK)
+async def get_conversation_pairs():
+    """
+    Obtiene todos los pares de conversación para análisis.
+
+    Returns:
+        Lista de pares de conversación con metadatos
+    """
+    try:
+        pairs = await analytics_service.get_conversation_pairs()
+        return {"total_pairs": len(pairs), "conversations": pairs}
+    except Exception as e:
+        logger.error(f"Error obteniendo pares de conversación: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error obteniendo pares de conversación",
+        )
+
+
+@router.get("/conversations/{session_id}", status_code=status.HTTP_200_OK)
+async def get_session_conversations(session_id: str):
+    """
+    Obtiene todos los pares de conversación de una sesión específica.
+
+    Args:
+        session_id: ID de la sesión
+
+    Returns:
+        Lista de pares de conversación de la sesión
+    """
+    try:
+        pairs = await analytics_service.get_conversation_pairs(session_id)
+        return {
+            "session_id": session_id,
+            "total_pairs": len(pairs),
+            "conversations": pairs,
+        }
+    except Exception as e:
+        logger.error(f"Error obteniendo conversaciones de sesión {session_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error obteniendo conversaciones de la sesión",
+        )
+
+
+@router.get("/top-questions", status_code=status.HTTP_200_OK)
+async def get_top_questions(limit: int = 20):
+    """
+    Obtiene las preguntas más frecuentes para análisis de interés.
+
+    Args:
+        limit: Número máximo de resultados (default: 20)
+
+    Returns:
+        Lista de preguntas más frecuentes con conteos
+    """
+    try:
+        top_questions = await analytics_service.get_top_questions(limit)
+        return {"total_questions": len(top_questions), "top_questions": top_questions}
+    except Exception as e:
+        logger.error(f"Error obteniendo preguntas top: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error obteniendo preguntas más frecuentes",
         )
 
 

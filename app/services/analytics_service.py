@@ -16,7 +16,9 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.core.config import settings
 from app.models.analytics import (
     Base,
+    ChatMessage,
     ChatSession,
+    ConversationPair,
     DailyAnalytics,
     GDPRConsent,
     SessionAnalytics,
@@ -806,6 +808,271 @@ class AnalyticsService:
                     top_technologies={},
                     top_intents={},
                 )
+
+    async def save_message(
+        self,
+        session_id: str,
+        message_type: str,
+        content: str,
+        response_time_ms: Optional[int] = None,
+        sources_used: Optional[List[str]] = None,
+        detected_language: Optional[str] = None,
+        topics_mentioned: Optional[List[str]] = None,
+    ) -> bool:
+        """
+        Guarda un mensaje individual en la base de datos.
+
+        Args:
+            session_id: ID de la sesión
+            message_type: 'user' o 'bot'
+            content: Contenido del mensaje
+            response_time_ms: Tiempo de respuesta en milisegundos
+            sources_used: Fuentes utilizadas para generar respuesta
+            detected_language: Idioma detectado
+            topics_mentioned: Temas mencionados en el mensaje
+
+        Returns:
+            bool: True si se guardó exitosamente
+        """
+        if settings.TESTING:
+            logger.info(
+                f"🧪 Modo testing - Simulando guardado de mensaje: {message_type}"
+            )
+            return True
+
+        try:
+            async with await self.get_session() as db:
+                message = ChatMessage(
+                    session_id=session_id,
+                    message_type=message_type,
+                    content=content,
+                    response_time_ms=response_time_ms,
+                    sources_used=sources_used,
+                    detected_language=detected_language,
+                    topics_mentioned=topics_mentioned,
+                )
+
+                db.add(message)
+                await db.commit()
+
+                logger.info(
+                    f"✅ Mensaje guardado: {message_type} para sesión {session_id}"
+                )
+                return True
+
+        except SQLAlchemyError as e:
+            logger.error(f"❌ Error guardando mensaje: {e}")
+            return False
+
+    async def get_session_messages(self, session_id: str) -> List[Dict[str, Any]]:
+        """
+        Obtiene todos los mensajes de una sesión.
+
+        Args:
+            session_id: ID de la sesión
+
+        Returns:
+            Lista de mensajes con sus metadatos
+        """
+        if settings.TESTING:
+            logger.info(
+                f"🧪 Modo testing - Simulando obtención de mensajes para {session_id}"
+            )
+            return []
+
+        try:
+            async with await self.get_session() as db:
+                result = await db.execute(
+                    select(ChatMessage)
+                    .where(ChatMessage.session_id == session_id)
+                    .order_by(ChatMessage.created_at)
+                )
+                messages = result.scalars().all()
+
+                return [
+                    {
+                        "id": msg.id,
+                        "message_type": msg.message_type,
+                        "content": msg.content,
+                        "response_time_ms": msg.response_time_ms,
+                        "sources_used": msg.sources_used,
+                        "detected_language": msg.detected_language,
+                        "topics_mentioned": msg.topics_mentioned,
+                        "created_at": msg.created_at,
+                    }
+                    for msg in messages
+                ]
+
+        except SQLAlchemyError as e:
+            logger.error(f"❌ Error obteniendo mensajes de sesión {session_id}: {e}")
+            return []
+
+    async def save_conversation_pair(
+        self,
+        session_id: str,
+        user_question: str,
+        bot_response: str,
+        response_time_ms: Optional[int] = None,
+        sources_used: Optional[List[str]] = None,
+        user_language: Optional[str] = None,
+        bot_language: Optional[str] = None,
+        topics_mentioned: Optional[List[str]] = None,
+        technologies_detected: Optional[List[str]] = None,
+        intent_category: Optional[str] = None,
+        engagement_score: Optional[float] = None,
+    ) -> bool:
+        """
+        Guarda un par de conversación (pregunta-respuesta) en la base de datos.
+
+        Args:
+            session_id: ID de la sesión
+            user_question: Pregunta del usuario
+            bot_response: Respuesta del bot
+            response_time_ms: Tiempo de respuesta en milisegundos
+            sources_used: Fuentes utilizadas para generar respuesta
+            user_language: Idioma detectado del usuario
+            bot_language: Idioma de la respuesta del bot
+            topics_mentioned: Temas mencionados en la conversación
+            technologies_detected: Tecnologías detectadas en la pregunta
+            intent_category: Categoría de intención
+            engagement_score: Score de engagement de esta conversación
+
+        Returns:
+            bool: True si se guardó exitosamente
+        """
+        if settings.TESTING:
+            logger.info(f"🧪 Modo testing - Simulando guardado de par de conversación")
+            return True
+
+        try:
+            async with await self.get_session() as db:
+                # Asegurar que la sesión existe
+                await self.get_or_create_session(session_id)
+
+                conversation_pair = ConversationPair(
+                    session_id=session_id,
+                    user_question=user_question,
+                    bot_response=bot_response,
+                    response_time_ms=response_time_ms,
+                    sources_used=sources_used,
+                    user_language=user_language,
+                    bot_language=bot_language,
+                    topics_mentioned=topics_mentioned,
+                    technologies_detected=technologies_detected,
+                    intent_category=intent_category,
+                    engagement_score=engagement_score,
+                )
+
+                db.add(conversation_pair)
+                await db.commit()
+
+                logger.info(f"✅ Par de conversación guardado para sesión {session_id}")
+                return True
+
+        except SQLAlchemyError as e:
+            logger.error(f"❌ Error guardando par de conversación: {e}")
+            return False
+
+    async def get_conversation_pairs(
+        self, session_id: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Obtiene pares de conversación, opcionalmente filtrados por sesión.
+
+        Args:
+            session_id: ID de la sesión (opcional)
+
+        Returns:
+            Lista de pares de conversación con sus metadatos
+        """
+        if settings.TESTING:
+            logger.info(
+                f"🧪 Modo testing - Simulando obtención de pares de conversación"
+            )
+            return []
+
+        try:
+            async with await self.get_session() as db:
+                query = select(ConversationPair)
+                if session_id:
+                    query = query.where(ConversationPair.session_id == session_id)
+
+                query = query.order_by(ConversationPair.created_at.desc())
+                result = await db.execute(query)
+                pairs = result.scalars().all()
+
+                return [
+                    {
+                        "id": pair.id,
+                        "session_id": pair.session_id,
+                        "user_question": pair.user_question,
+                        "bot_response": pair.bot_response,
+                        "response_time_ms": pair.response_time_ms,
+                        "sources_used": pair.sources_used,
+                        "user_language": pair.user_language,
+                        "bot_language": pair.bot_language,
+                        "topics_mentioned": pair.topics_mentioned,
+                        "technologies_detected": pair.technologies_detected,
+                        "intent_category": pair.intent_category,
+                        "engagement_score": pair.engagement_score,
+                        "created_at": pair.created_at,
+                    }
+                    for pair in pairs
+                ]
+
+        except SQLAlchemyError as e:
+            logger.error(f"❌ Error obteniendo pares de conversación: {e}")
+            return []
+
+    async def get_top_questions(self, limit: int = 20) -> List[Dict[str, Any]]:
+        """
+        Obtiene las preguntas más frecuentes para análisis de interés.
+
+        Args:
+            limit: Número máximo de resultados
+
+        Returns:
+            Lista de preguntas con conteos
+        """
+        if settings.TESTING:
+            logger.info(f"🧪 Modo testing - Simulando obtención de preguntas top")
+            return []
+
+        try:
+            async with await self.get_session() as db:
+                # Usar SQL crudo para manejar unnest y remover nulos de forma segura
+                from sqlalchemy import text
+
+                sql = text(
+                    """
+                    SELECT 
+                      cp.user_question AS user_question,
+                      COUNT(cp.id) AS count,
+                      array_remove(array_agg(cp.intent_category), NULL) AS intents,
+                      array_remove(array_agg(DISTINCT tech.tech), NULL) AS technologies
+                    FROM conversation_pairs cp
+                    LEFT JOIN LATERAL unnest(COALESCE(cp.technologies_detected, ARRAY[]::text[])) AS tech(tech) ON TRUE
+                    GROUP BY cp.user_question
+                    ORDER BY COUNT(cp.id) DESC
+                    LIMIT :limit
+                    """
+                )
+                result = await db.execute(sql, {"limit": limit})
+                rows = result.fetchall()
+
+                return [
+                    {
+                        "question": r.user_question,
+                        "count": r.count,
+                        "intents": list(r.intents or []),
+                        "technologies": list(r.technologies or []),
+                    }
+                    for r in rows
+                ]
+
+        except SQLAlchemyError as e:
+            logger.error(f"❌ Error obteniendo preguntas top: {e}")
+            return []
 
 
 # Instancia global del servicio
