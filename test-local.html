@@ -488,7 +488,7 @@
                     <input type="text" id="email" required placeholder="nombre@empresa.com" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false">
                 </div>
                 <div class="form-group">
-                    <label for="userType">Tipo de Usuario</label>
+                    <label for="userType">Tipo de Usuario * <span id="userTypeError" class="error-text"></span></label>
                     <select id="userType">
                         <option value="">Seleccionar...</option>
                         <option value="recruiter">Profesional RRHH</option>
@@ -497,11 +497,11 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="company">Empresa *</label>
+                    <label for="company">Empresa * <span id="companyError" class="error-text"></span></label>
                     <input type="text" id="company" required placeholder="Nombre de la empresa">
                 </div>
                 <div class="form-group">
-                    <label for="role">Rol/Cargo *</label>
+                    <label for="role">Rol/Cargo * <span id="roleError" class="error-text"></span></label>
                     <input type="text" id="role" required placeholder="Ej: Recruiter Sr., CTO, Hiring Manager">
                 </div>
                 <div class="modal-buttons">
@@ -885,10 +885,40 @@
                 const emailErrorEl = document.getElementById('emailError');
                 if (emailErrorEl) emailErrorEl.textContent = '';
 
+                // Limpiar mensajes previos
+                const emailErrorEl = document.getElementById('emailError');
+                const userTypeErrorEl = document.getElementById('userTypeError');
+                const companyErrorEl = document.getElementById('companyError');
+                const roleErrorEl = document.getElementById('roleError');
+                if (emailErrorEl) emailErrorEl.textContent = '';
+                if (userTypeErrorEl) userTypeErrorEl.textContent = '';
+                if (companyErrorEl) companyErrorEl.textContent = '';
+                if (roleErrorEl) roleErrorEl.textContent = '';
+
                 // Email obligatorio y con formato válido
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!email || !emailRegex.test(email)) {
+                if (!email) {
+                    if (emailErrorEl) emailErrorEl.textContent = 'email obligatorio';
+                    return;
+                }
+                if (!emailRegex.test(email)) {
                     if (emailErrorEl) emailErrorEl.textContent = 'formato de email incorrecto';
+                    return;
+                }
+
+                // Tipo de usuario obligatorio
+                if (!userType) {
+                    if (userTypeErrorEl) userTypeErrorEl.textContent = 'obligatorio';
+                    return;
+                }
+
+                // Empresa y Rol/Cargo obligatorios
+                if (!company) {
+                    if (companyErrorEl) companyErrorEl.textContent = 'obligatorio';
+                    return;
+                }
+                if (!role) {
+                    if (roleErrorEl) roleErrorEl.textContent = 'obligatorio';
                     return;
                 }
 
