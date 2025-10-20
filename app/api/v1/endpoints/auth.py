@@ -23,29 +23,28 @@ router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
 
 
-@router.get("/config", response_model=ConfigResponse, status_code=status.HTTP_200_OK)
+@router.get("/config", status_code=status.HTTP_200_OK)
 @limiter.limit("30/minute")
-async def get_public_config(request: Request) -> ConfigResponse:
+async def get_public_config(request: Request) -> dict:
     """
-    Devuelve configuración pública para el frontend.
-    No requiere autenticación - información pública.
+    Obtener configuración pública NO-SENSIBLE para el frontend.
+    Solo información que puede ser pública (sin API Keys).
 
     Args:
         request: Starlette Request (para rate limiting)
 
     Returns:
-        ConfigResponse con configuración pública
+        Dict con configuración pública (sin API Keys)
     """
     try:
         logger.info("Solicitud de configuración pública")
 
-        return ConfigResponse(
-            public_api_key=settings.PUBLIC_API_KEY,
-            frontend_api_key=settings.FRONTEND_API_KEY,
-            api_base_url=f"https://{request.url.hostname}",
-            version=settings.VERSION,
-            environment="production" if settings.GCP_PROJECT_ID else "development",
-        )
+        return {
+            "api_base_url": f"https://{request.url.hostname}",
+            "version": settings.VERSION,
+            "environment": "production" if settings.GCP_PROJECT_ID else "development",
+            # NO incluir API Keys por seguridad
+        }
 
     except Exception as e:
         logger.error(f"Error obteniendo configuración: {e}")
