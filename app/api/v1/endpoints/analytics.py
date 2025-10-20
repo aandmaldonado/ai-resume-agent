@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
+from app.core.auth import verify_admin_api_key
 from app.core.config import settings
 from app.schemas.analytics import (
     AnalyticsConfigResponse,
@@ -176,9 +177,12 @@ async def record_gdpr_consent(
     status_code=status.HTTP_200_OK,
 )
 @limiter.limit("5/minute")
-async def get_user_data(request: Request, session_id: str) -> GDPRDataResponse:
+async def get_user_data(
+    request: Request, session_id: str, _: bool = Depends(verify_admin_api_key)
+) -> GDPRDataResponse:
     """
     Obtener todos los datos del usuario (derecho de acceso GDPR).
+    Requiere autenticación administrativa.
 
     Args:
         request: Starlette Request (para rate limiting)
@@ -441,9 +445,12 @@ async def get_flow_configuration(request: Request) -> AnalyticsConfigResponse:
 
 @router.get("/metrics", response_model=AnalyticsMetrics, status_code=status.HTTP_200_OK)
 @limiter.limit("10/minute")
-async def get_overall_metrics(request: Request) -> AnalyticsMetrics:
+async def get_overall_metrics(
+    request: Request, _: bool = Depends(verify_admin_api_key)
+) -> AnalyticsMetrics:
     """
     Obtener métricas generales del sistema (endpoint admin).
+    Requiere autenticación administrativa.
 
     Args:
         request: Starlette Request (para rate limiting)
@@ -473,10 +480,11 @@ async def get_overall_metrics(request: Request) -> AnalyticsMetrics:
 )
 @limiter.limit("10/minute")
 async def get_daily_metrics(
-    request: Request, days: int = 30
+    request: Request, days: int = 30, _: bool = Depends(verify_admin_api_key)
 ) -> List[DailyAnalyticsResponse]:
     """
     Obtener métricas diarias de los últimos N días (endpoint admin).
+    Requiere autenticación administrativa.
 
     Args:
         request: Starlette Request (para rate limiting)

@@ -5,6 +5,7 @@ Lee variables de entorno y proporciona valores por defecto.
 
 from typing import Optional
 
+from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
@@ -78,6 +79,12 @@ class Settings(BaseSettings):
         3  # Máximo número de intentos para captura de datos
     )
     MAX_GDPR_CONSENT_ATTEMPTS: int = 3  # Máximo número de intentos para GDPR
+
+    # Autenticación para endpoints administrativos
+    ADMIN_API_KEY: str = Field(
+        default="admin-key-change-in-production",
+        description="API Key para acceder a endpoints administrativos de analytics",
+    )
 
     # GDPR Compliance
     DATA_RETENTION_DAYS: int = 365  # Retención máxima de datos

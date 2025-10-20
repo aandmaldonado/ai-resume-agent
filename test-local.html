@@ -881,10 +881,6 @@
                 const company = document.getElementById('company').value.trim();
                 const role = document.getElementById('role').value.trim();
 
-                // Limpiar mensaje previo
-                const emailErrorEl = document.getElementById('emailError');
-                if (emailErrorEl) emailErrorEl.textContent = '';
-
                 // Limpiar mensajes previos
                 const emailErrorEl = document.getElementById('emailError');
                 const userTypeErrorEl = document.getElementById('userTypeError');
@@ -922,15 +918,7 @@
                     return;
                 }
 
-                // Empresa y Rol/Cargo obligatorios
-                if (!company) {
-                    alert('El campo Empresa es obligatorio.');
-                    return;
-                }
-                if (!role) {
-                    alert('El campo Rol/Cargo es obligatorio.');
-                    return;
-                }
+                // (sin alerts, mensajes inline ya aplicados)
 
                 const formData = {
                     session_id: currentSessionId,

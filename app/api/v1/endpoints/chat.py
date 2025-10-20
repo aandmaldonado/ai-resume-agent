@@ -7,11 +7,12 @@ import logging
 import time
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
+from app.core.auth import verify_admin_api_key
 from app.core.config import settings
 from app.schemas.chat import ChatRequest, ChatResponse, HealthResponse
 from app.services.analytics_service import analytics_service
@@ -368,9 +369,10 @@ async def chat(request: Request, chat_request: ChatRequest) -> ChatResponse:
 
 
 @router.get("/conversations", status_code=status.HTTP_200_OK)
-async def get_conversation_pairs():
+async def get_conversation_pairs(_: bool = Depends(verify_admin_api_key)):
     """
     Obtiene todos los pares de conversación para análisis.
+    Requiere autenticación administrativa.
 
     Returns:
         Lista de pares de conversación con metadatos
@@ -387,9 +389,12 @@ async def get_conversation_pairs():
 
 
 @router.get("/conversations/{session_id}", status_code=status.HTTP_200_OK)
-async def get_session_conversations(session_id: str):
+async def get_session_conversations(
+    session_id: str, _: bool = Depends(verify_admin_api_key)
+):
     """
     Obtiene todos los pares de conversación de una sesión específica.
+    Requiere autenticación administrativa.
 
     Args:
         session_id: ID de la sesión
@@ -413,9 +418,10 @@ async def get_session_conversations(session_id: str):
 
 
 @router.get("/top-questions", status_code=status.HTTP_200_OK)
-async def get_top_questions(limit: int = 20):
+async def get_top_questions(limit: int = 20, _: bool = Depends(verify_admin_api_key)):
     """
     Obtiene las preguntas más frecuentes para análisis de interés.
+    Requiere autenticación administrativa.
 
     Args:
         limit: Número máximo de resultados (default: 20)
