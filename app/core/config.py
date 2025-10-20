@@ -74,6 +74,10 @@ class Settings(BaseSettings):
     ENABLE_ANALYTICS: bool = True
     DATA_CAPTURE_AFTER_MESSAGES: int = 2  # Capturar datos después de N mensajes
     ENGAGEMENT_THRESHOLD: float = 0.6  # Umbral mínimo de engagement para captura
+    MAX_DATA_CAPTURE_ATTEMPTS: int = (
+        3  # Máximo número de intentos para captura de datos
+    )
+    MAX_GDPR_CONSENT_ATTEMPTS: int = 3  # Máximo número de intentos para GDPR
 
     # GDPR Compliance
     DATA_RETENTION_DAYS: int = 365  # Retención máxima de datos

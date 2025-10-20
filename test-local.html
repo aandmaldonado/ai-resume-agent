@@ -400,6 +400,7 @@
         <div id="dataCaptureBanner" class="discrete-banner">
             <span>💡 ¿Te gustaría que Álvaro te envíe información adicional sobre proyectos específicos? </span>
             <button onclick="showDataCaptureModal()">Compartir datos</button>
+            <button onclick="rejectDataCapture()" style="background: #6b7280; margin-left: 4px;">No, gracias</button>
             <button class="close-banner" onclick="hideBanner('dataCaptureBanner')">✕</button>
         </div>
 
@@ -407,6 +408,7 @@
         <div id="gdprBanner" class="discrete-banner">
             <span>🔒 Para enviarte información personalizada, necesito tu consentimiento para procesar datos según GDPR </span>
             <button onclick="showGDPRModal()">Dar consentimiento</button>
+            <button onclick="rejectGDPRConsent()" style="background: #6b7280; margin-left: 4px;">No, gracias</button>
             <button class="close-banner" onclick="hideBanner('gdprBanner')">✕</button>
         </div>
 
@@ -729,6 +731,21 @@
             window.showGDPRModal = function() {
                 window.hideBanner('gdprBanner');
                 window.showModal('gdprModal');
+            };
+
+            // Funciones para rechazar captura de datos y GDPR
+            window.rejectDataCapture = function() {
+                dataCaptured = false; // Marcar como rechazado
+                dataCaptureBannerShown = true; // No mostrar más el banner
+                window.hideBanner('dataCaptureBanner');
+                addMessage('bot', '✅ Entendido. Puedes continuar con la conversación sin compartir datos adicionales.');
+            };
+
+            window.rejectGDPRConsent = function() {
+                gdprConsentGiven = false; // Marcar como rechazado
+                gdprBannerShown = true; // No mostrar más el banner
+                window.hideBanner('gdprBanner');
+                addMessage('bot', '✅ Entendido. Continuaremos sin procesar datos adicionales según GDPR.');
             };
 
             // Funciones de prueba
