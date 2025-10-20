@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient
 # Set testing environment variables
 os.environ["TESTING"] = "true"
 os.environ["ENABLE_ANALYTICS"] = "false"
-os.environ["PUBLIC_API_KEY"] = "test-public-key"
+os.environ["API_KEY"] = "test-api-key"
 
 from app.main import app
 
@@ -20,7 +20,7 @@ from app.main import app
 client = TestClient(app)
 
 # Headers para tests con autenticación
-AUTH_HEADERS = {"X-Public-API-Key": "test-public-key"}
+AUTH_HEADERS = {"X-API-Key": "test-api-key"}
 
 
 class TestChatEndpoints:

@@ -66,9 +66,9 @@ async def verify_service_account_token(
     return True
 
 
-async def verify_admin_api_key(x_api_key: Optional[str] = Header(None)) -> bool:
+async def verify_api_key(x_api_key: Optional[str] = Header(None)) -> bool:
     """
-    Verifica que el API Key proporcionado sea válido para acceso administrativo.
+    Verifica que el API Key sea válido para TODOS los endpoints.
 
     Args:
         x_api_key: API Key enviado en el header X-API-Key
@@ -83,11 +83,11 @@ async def verify_admin_api_key(x_api_key: Optional[str] = Header(None)) -> bool:
         logger.warning("Intento de acceso sin API Key")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="API Key requerido para acceso administrativo",
+            detail="API Key requerido para acceder a este endpoint",
             headers={"WWW-Authenticate": "ApiKey"},
         )
 
-    if x_api_key != settings.ADMIN_API_KEY:
+    if x_api_key != settings.API_KEY:
         logger.warning(f"Intento de acceso con API Key inválido: {x_api_key[:8]}...")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -95,7 +95,7 @@ async def verify_admin_api_key(x_api_key: Optional[str] = Header(None)) -> bool:
             headers={"WWW-Authenticate": "ApiKey"},
         )
 
-    logger.info("Acceso administrativo autorizado")
+    logger.info("Acceso autorizado con API Key válida")
     return True
 
 
@@ -146,16 +146,12 @@ async def verify_frontend_token(
     return True
 
 
-def get_admin_dependency():
+def get_api_key_dependency():
     """
-    Retorna la dependencia de autenticación para endpoints administrativos.
-    En Cloud Run usa Service Account, en local usa API Key.
+    Retorna la dependencia de autenticación para TODOS los endpoints.
+    Usa una sola API Key para todo el sistema.
     """
-    # En Cloud Run, usar Service Account
-    if settings.GCP_PROJECT_ID and settings.CLOUD_SQL_CONNECTION_NAME:
-        return verify_service_account_token
-    # En desarrollo local, usar API Key
-    return verify_admin_api_key
+    return verify_api_key
 
 
 async def verify_public_api_key(x_public_api_key: Optional[str] = Header(None)) -> bool:

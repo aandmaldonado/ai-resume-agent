@@ -80,22 +80,10 @@ class Settings(BaseSettings):
     )
     MAX_GDPR_CONSENT_ATTEMPTS: int = 3  # Máximo número de intentos para GDPR
 
-    # Autenticación para endpoints administrativos
-    ADMIN_API_KEY: str = Field(
-        default="admin-key-change-in-production",
-        description="API Key para acceder a endpoints administrativos de analytics",
-    )
-
-    # Frontend API Key (para intercambio de tokens)
-    FRONTEND_API_KEY: str = Field(
-        default="frontend-key-2024",
-        description="API Key para que el frontend pueda intercambiar por tokens temporales",
-    )
-
-    # Public API Key (para chat público)
-    PUBLIC_API_KEY: str = Field(
-        default="public-key-2024",
-        description="API Key pública para acceso al chat (requerida para todos los usuarios)",
+    # API Key única para todos los endpoints
+    API_KEY: str = Field(
+        default="api-key-change-in-production",
+        description="API Key única requerida para acceder a TODOS los endpoints",
     )
 
     # GDPR Compliance

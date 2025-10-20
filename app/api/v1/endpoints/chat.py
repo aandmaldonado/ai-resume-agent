@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from app.core.auth import get_admin_dependency, get_public_dependency
+from app.core.auth_simple import get_api_key_dependency
 from app.core.config import settings
 from app.schemas.chat import ChatRequest, ChatResponse, HealthResponse
 from app.services.analytics_service import analytics_service
@@ -40,7 +40,7 @@ except Exception as e:
 async def chat(
     request: Request,
     chat_request: ChatRequest,
-    _: bool = Depends(get_public_dependency()),
+    _: bool = Depends(get_api_key_dependency()),
 ) -> ChatResponse:
     """
     Endpoint principal de chat con analytics integrados.
@@ -373,7 +373,7 @@ async def chat(
 
 
 @router.get("/conversations", status_code=status.HTTP_200_OK)
-async def get_conversation_pairs(_: bool = Depends(get_admin_dependency())):
+async def get_conversation_pairs(_: bool = Depends(get_api_key_dependency())):
     """
     Obtiene todos los pares de conversación para análisis.
     Requiere autenticación administrativa.
@@ -394,7 +394,7 @@ async def get_conversation_pairs(_: bool = Depends(get_admin_dependency())):
 
 @router.get("/conversations/{session_id}", status_code=status.HTTP_200_OK)
 async def get_session_conversations(
-    session_id: str, _: bool = Depends(get_admin_dependency())
+    session_id: str, _: bool = Depends(get_api_key_dependency())
 ):
     """
     Obtiene todos los pares de conversación de una sesión específica.
@@ -422,7 +422,9 @@ async def get_session_conversations(
 
 
 @router.get("/top-questions", status_code=status.HTTP_200_OK)
-async def get_top_questions(limit: int = 20, _: bool = Depends(get_admin_dependency())):
+async def get_top_questions(
+    limit: int = 20, _: bool = Depends(get_api_key_dependency())
+):
     """
     Obtiene las preguntas más frecuentes para análisis de interés.
     Requiere autenticación administrativa.
