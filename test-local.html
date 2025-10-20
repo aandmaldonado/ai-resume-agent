@@ -447,12 +447,14 @@
         </div>
 
         <script>
-            const API_URL = 'http://localhost:8080/api/v1';
-            const chatContainer = document.getElementById('chat');
-            const messageInput = document.getElementById('messageInput');
-            const sendBtn = document.getElementById('sendBtn');
-            const status = document.getElementById('status');
-            const flowIndicator = document.getElementById('flowIndicator');
+            // Esperar a que el DOM esté completamente cargado
+            document.addEventListener('DOMContentLoaded', function() {
+                const API_URL = 'http://localhost:8080/api/v1';
+                const chatContainer = document.getElementById('chat');
+                const messageInput = document.getElementById('messageInput');
+                const sendBtn = document.getElementById('sendBtn');
+                const status = document.getElementById('status');
+                const flowIndicator = document.getElementById('flowIndicator');
 
             // Variables de estado
             let currentSessionId = null;
@@ -518,7 +520,10 @@
                     messageCount++;
                     
                     // Actualizar contador visible
-                    document.getElementById('messageCount').textContent = `Mensajes: ${messageCount}`;
+                    const messageCountElement = document.getElementById('messageCount');
+                    if (messageCountElement) {
+                        messageCountElement.textContent = `Mensajes: ${messageCount}`;
+                    }
 
                     // SIEMPRE mostrar la respuesta del RAG (flujo no intrusivo)
                     let botMessage = data.message;
@@ -794,7 +799,10 @@
                 
                 // Simular 5 mensajes para activar banner de captura
                 messageCount = 5;
-                document.getElementById('messageCount').textContent = `Mensajes: ${messageCount}`;
+                const messageCountElement = document.getElementById('messageCount');
+                if (messageCountElement) {
+                    messageCountElement.textContent = `Mensajes: ${messageCount}`;
+                }
                 
                 setTimeout(() => {
                     showBanner('dataCaptureBanner');
@@ -809,7 +817,10 @@
                 dataCaptureBannerShown = false;
                 gdprBannerShown = false;
                 
-                document.getElementById('messageCount').textContent = 'Mensajes: 0';
+                const messageCountElement = document.getElementById('messageCount');
+                if (messageCountElement) {
+                    messageCountElement.textContent = 'Mensajes: 0';
+                }
                 hideBanner('dataCaptureBanner');
                 hideBanner('gdprBanner');
                 hideFlowIndicator();
@@ -842,6 +853,7 @@
                     status.className = 'error';
                     status.textContent = '❌ No se puede conectar al backend. ¿Está corriendo en localhost:8080?';
                 });
+            }); // Cerrar DOMContentLoaded
         </script>
     </div>
 </body>
