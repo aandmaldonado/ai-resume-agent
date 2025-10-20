@@ -636,10 +636,8 @@
                     // SIEMPRE mostrar la respuesta del RAG (flujo no intrusivo)
                     let botMessage = data.message;
                     
-                    // Si el mensaje está vacío, generar respuesta con RAG
-                    if (!botMessage || botMessage.trim() === '') {
-                        botMessage = await getRAGResponse(message);
-                    }
+                    // El backend ahora SIEMPRE proporciona una respuesta RAG
+                    // No necesitamos generar una respuesta adicional
                     
                     // Agregar sources si existen
                     if (data.sources && data.sources.length > 0) {
