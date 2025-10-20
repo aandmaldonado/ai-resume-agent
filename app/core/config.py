@@ -86,6 +86,18 @@ class Settings(BaseSettings):
         description="API Key para acceder a endpoints administrativos de analytics",
     )
 
+    # Frontend API Key (para intercambio de tokens)
+    FRONTEND_API_KEY: str = Field(
+        default="frontend-key-2024",
+        description="API Key para que el frontend pueda intercambiar por tokens temporales",
+    )
+
+    # Public API Key (para chat público)
+    PUBLIC_API_KEY: str = Field(
+        default="public-key-2024",
+        description="API Key pública para acceso al chat (requerida para todos los usuarios)",
+    )
+
     # GDPR Compliance
     DATA_RETENTION_DAYS: int = 365  # Retención máxima de datos
     ANONYMIZE_AFTER_DAYS: int = 90  # Anonimizar después de N días sin actividad

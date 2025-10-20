@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from app.core.auth import get_admin_dependency
+from app.core.auth import get_admin_dependency, get_public_dependency
 from app.core.config import settings
 from app.schemas.chat import ChatRequest, ChatResponse, HealthResponse
 from app.services.analytics_service import analytics_service
@@ -37,7 +37,11 @@ except Exception as e:
 
 @router.post("/chat", response_model=ChatResponse, status_code=status.HTTP_200_OK)
 @limiter.limit(f"{settings.RATE_LIMIT_PER_MINUTE}/minute")
-async def chat(request: Request, chat_request: ChatRequest) -> ChatResponse:
+async def chat(
+    request: Request,
+    chat_request: ChatRequest,
+    _: bool = Depends(get_public_dependency()),
+) -> ChatResponse:
     """
     Endpoint principal de chat con analytics integrados.
     Recibe un mensaje del usuario y devuelve una respuesta generada por RAG.

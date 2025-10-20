@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from app.core.auth import get_admin_dependency
+from app.core.auth import get_admin_dependency, get_public_dependency
 from app.core.config import settings
 from app.schemas.analytics import (
     AnalyticsConfigResponse,
@@ -52,7 +52,9 @@ limiter = Limiter(key_func=get_remote_address)
 )
 @limiter.limit("10/minute")  # Límite más estricto para captura de datos
 async def capture_user_data(
-    request: Request, data_request: DataCaptureRequest
+    request: Request,
+    data_request: DataCaptureRequest,
+    _: bool = Depends(get_public_dependency()),
 ) -> DataCaptureResponse:
     """
     Capturar datos del usuario (email, tipo de usuario, empresa, rol).
@@ -115,7 +117,9 @@ async def capture_user_data(
 )
 @limiter.limit("5/minute")  # Límite muy estricto para consentimientos
 async def record_gdpr_consent(
-    request: Request, consent_request: GDPRConsentRequest
+    request: Request,
+    consent_request: GDPRConsentRequest,
+    _: bool = Depends(get_public_dependency()),
 ) -> GDPRConsentResponse:
     """
     Registrar consentimiento GDPR del usuario.
@@ -226,7 +230,9 @@ async def get_user_data(
     status_code=status.HTTP_200_OK,
 )
 @limiter.limit("3/minute")  # Límite muy estricto para eliminación
-async def delete_user_data(request: Request, session_id: str) -> SuccessResponse:
+async def delete_user_data(
+    request: Request, session_id: str, _: bool = Depends(get_admin_dependency())
+) -> SuccessResponse:
     """
     Eliminar todos los datos del usuario (derecho al olvido GDPR).
 
@@ -266,7 +272,9 @@ async def delete_user_data(request: Request, session_id: str) -> SuccessResponse
     status_code=status.HTTP_200_OK,
 )
 @limiter.limit("3/minute")  # Límite muy estricto para exportación
-async def export_user_data(request: Request, session_id: str) -> GDPRExportResponse:
+async def export_user_data(
+    request: Request, session_id: str, _: bool = Depends(get_admin_dependency())
+) -> GDPRExportResponse:
     """
     Exportar datos del usuario en formato JSON (derecho de portabilidad GDPR).
 

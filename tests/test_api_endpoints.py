@@ -3,15 +3,24 @@ Tests para los endpoints de la API.
 Cubre endpoints de chat, health check y validaciones.
 """
 
+import os
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 from fastapi.testclient import TestClient
 
+# Set testing environment variables
+os.environ["TESTING"] = "true"
+os.environ["ENABLE_ANALYTICS"] = "false"
+os.environ["PUBLIC_API_KEY"] = "test-public-key"
+
 from app.main import app
 
 # Crear cliente de test
 client = TestClient(app)
+
+# Headers para tests con autenticación
+AUTH_HEADERS = {"X-Public-API-Key": "test-public-key"}
 
 
 class TestChatEndpoints:
@@ -41,6 +50,7 @@ class TestChatEndpoints:
                     "message": "¿Cuál es tu experiencia con Python?",
                     "session_id": "test-session-123",
                 },
+                headers=AUTH_HEADERS,
             )
 
             assert response.status_code == 200
@@ -63,7 +73,9 @@ class TestChatEndpoints:
                 }
             )
 
-            response = client.post("/api/v1/chat", json={"message": "¿Hola?"})
+            response = client.post(
+                "/api/v1/chat", json={"message": "¿Hola?"}, headers=AUTH_HEADERS
+            )
 
             assert response.status_code == 200
             data = response.json()
@@ -72,14 +84,18 @@ class TestChatEndpoints:
 
     def test_chat_endpoint_empty_message(self):
         """Test con mensaje vacío"""
-        response = client.post("/api/v1/chat", json={"message": ""})
+        response = client.post(
+            "/api/v1/chat", json={"message": ""}, headers=AUTH_HEADERS
+        )
 
         assert response.status_code == 422  # Validation error
 
     def test_chat_endpoint_malicious_message(self):
         """Test con mensaje malicioso"""
         response = client.post(
-            "/api/v1/chat", json={"message": "<script>alert('xss')</script>"}
+            "/api/v1/chat",
+            json={"message": "<script>alert('xss')</script>"},
+            headers=AUTH_HEADERS,
         )
 
         assert response.status_code == 422  # Validation error
@@ -87,7 +103,9 @@ class TestChatEndpoints:
     def test_chat_endpoint_malicious_session_id(self):
         """Test con session_id malicioso"""
         response = client.post(
-            "/api/v1/chat", json={"message": "Hola", "session_id": "../../etc/passwd"}
+            "/api/v1/chat",
+            json={"message": "Hola", "session_id": "../../etc/passwd"},
+            headers=AUTH_HEADERS,
         )
 
         assert response.status_code == 422  # Validation error
@@ -96,14 +114,18 @@ class TestChatEndpoints:
         """Test con mensaje muy largo"""
         long_message = "a" * 601  # Excede el límite de 600 caracteres
 
-        response = client.post("/api/v1/chat", json={"message": long_message})
+        response = client.post(
+            "/api/v1/chat", json={"message": long_message}, headers=AUTH_HEADERS
+        )
 
         assert response.status_code == 422  # Validation error
 
     def test_chat_endpoint_rag_service_unavailable(self):
         """Test cuando RAG service no está disponible"""
         with patch("app.api.v1.endpoints.chat.rag_service", None):
-            response = client.post("/api/v1/chat", json={"message": "Test"})
+            response = client.post(
+                "/api/v1/chat", json={"message": "Test"}, headers=AUTH_HEADERS
+            )
 
             assert response.status_code == 503
             data = response.json()
@@ -116,7 +138,9 @@ class TestChatEndpoints:
                 side_effect=Exception("Internal error")
             )
 
-            response = client.post("/api/v1/chat", json={"message": "Test"})
+            response = client.post(
+                "/api/v1/chat", json={"message": "Test"}, headers=AUTH_HEADERS
+            )
 
             assert response.status_code == 500
             data = response.json()
@@ -215,13 +239,19 @@ class TestRateLimiting:
             )
 
             # Primer request debería pasar
-            response1 = client.post("/api/v1/chat", json={"message": "Test 1"})
+            response1 = client.post(
+                "/api/v1/chat", json={"message": "Test 1"}, headers=AUTH_HEADERS
+            )
             assert response1.status_code == 200
 
             # Si hacemos muchos requests rápidos, alguno debería ser rate limited
             # (esto depende de la configuración de rate limiting)
             for i in range(15):  # Más que el límite de 10/min
-                response = client.post("/api/v1/chat", json={"message": f"Test {i}"})
+                response = client.post(
+                    "/api/v1/chat",
+                    json={"message": f"Test {i}"},
+                    headers=AUTH_HEADERS,
+                )
                 if response.status_code == 429:  # Rate limited
                     break
             else:
@@ -255,7 +285,9 @@ class TestChatEndpointEdgeCases:
         """Test cuando RAG service es None durante inicialización"""
         # Simular el caso donde RAG service falla al inicializar
         with patch("app.api.v1.endpoints.chat.rag_service", None):
-            response = client.post("/api/v1/chat", json={"message": "Test message"})
+            response = client.post(
+                "/api/v1/chat", json={"message": "Test message"}, headers=AUTH_HEADERS
+            )
 
             assert response.status_code in [503, 429]  # Puede ser rate limited
             if response.status_code == 503:
@@ -275,7 +307,9 @@ class TestChatEndpointEdgeCases:
             )
 
             response = client.post(
-                "/api/v1/chat", json={"message": "   "}  # Solo espacios
+                "/api/v1/chat",
+                json={"message": "   "},  # Solo espacios
+                headers=AUTH_HEADERS,
             )
 
             # Debería fallar validación porque strip() hace que esté vacío
@@ -290,7 +324,9 @@ class TestChatEndpointEdgeCases:
                 side_effect=HTTPException(status_code=400, detail="Custom error")
             )
 
-            response = client.post("/api/v1/chat", json={"message": "Test"})
+            response = client.post(
+                "/api/v1/chat", json={"message": "Test"}, headers=AUTH_HEADERS
+            )
 
             # Debería re-lanzar la HTTPException original o ser rate limited
             assert response.status_code in [400, 429]

@@ -99,6 +99,53 @@ async def verify_admin_api_key(x_api_key: Optional[str] = Header(None)) -> bool:
     return True
 
 
+async def verify_frontend_token(
+    authorization: Optional[str] = Header(None),
+) -> bool:
+    """
+    Verifica token temporal generado por el frontend.
+
+    Args:
+        authorization: Header Authorization con Bearer token
+
+    Returns:
+        bool: True si el token es válido
+
+    Raises:
+        HTTPException: Si el token es inválido o no se proporciona
+    """
+    if not authorization:
+        logger.warning("Intento de acceso sin token de autorización")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token de autorización requerido",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not authorization.startswith("Bearer "):
+        logger.warning("Formato de token inválido")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Formato de token inválido. Use 'Bearer <token>'",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    token = authorization[7:]  # Remove "Bearer " prefix
+
+    # TODO: Implementar verificación real del token temporal
+    # Por ahora, aceptar cualquier token que empiece con "temp_"
+    if not token.startswith("temp_"):
+        logger.warning(f"Token temporal inválido: {token[:8]}...")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token temporal inválido",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    logger.info("Acceso autorizado via token temporal")
+    return True
+
+
 def get_admin_dependency():
     """
     Retorna la dependencia de autenticación para endpoints administrativos.
@@ -109,3 +156,54 @@ def get_admin_dependency():
         return verify_service_account_token
     # En desarrollo local, usar API Key
     return verify_admin_api_key
+
+
+async def verify_public_api_key(x_public_api_key: Optional[str] = Header(None)) -> bool:
+    """
+    Verifica que el Public API Key sea válido para acceso al chat.
+
+    Args:
+        x_public_api_key: Public API Key enviado en el header X-Public-API-Key
+
+    Returns:
+        bool: True si el API Key es válido
+
+    Raises:
+        HTTPException: Si el API Key es inválido o no se proporciona
+    """
+    if not x_public_api_key:
+        logger.warning("Intento de acceso sin Public API Key")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Public API Key requerido para acceso al chat",
+            headers={"WWW-Authenticate": "PublicApiKey"},
+        )
+
+    if x_public_api_key != settings.PUBLIC_API_KEY:
+        logger.warning(
+            f"Intento de acceso con Public API Key inválido: {x_public_api_key[:8]}..."
+        )
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Public API Key inválido",
+            headers={"WWW-Authenticate": "PublicApiKey"},
+        )
+
+    logger.info("Acceso al chat autorizado")
+    return True
+
+
+def get_frontend_dependency():
+    """
+    Retorna la dependencia de autenticación para frontend.
+    Usa tokens temporales generados por /exchange-token.
+    """
+    return verify_frontend_token
+
+
+def get_public_dependency():
+    """
+    Retorna la dependencia de autenticación para chat público.
+    Usa Public API Key.
+    """
+    return verify_public_api_key

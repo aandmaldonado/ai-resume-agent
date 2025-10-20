@@ -13,7 +13,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from app.api.v1.endpoints import analytics, chat
+from app.api.v1.endpoints import analytics, auth, chat
 from app.core.config import settings
 
 # Configurar logging
@@ -65,6 +65,7 @@ app.add_middleware(
 # Incluir routers
 app.include_router(chat.router, prefix=settings.API_V1_STR, tags=["chat"])
 app.include_router(analytics.router, prefix=settings.API_V1_STR, tags=["analytics"])
+app.include_router(auth.router, prefix=settings.API_V1_STR, tags=["auth"])
 
 
 @app.on_event("startup")
