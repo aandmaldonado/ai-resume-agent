@@ -379,6 +379,8 @@
         .test-btn.red { background: #dc3545; }
         .test-btn.blue { background: #17a2b8; }
         .test-btn.yellow { background: #ffc107; color: black; }
+        .test-btn.purple { background: #9c27b0; }
+        .test-btn.pink { background: #e91e63; }
     </style>
 </head>
 <body>
@@ -412,6 +414,20 @@
             <button class="close-banner" onclick="hideBanner('gdprBanner')">✕</button>
         </div>
 
+        <!-- Banner discreto para cambio de opinión (datos) -->
+        <div id="dataCaptureChangeMindBanner" class="discrete-banner" style="background: #f0f8ff; border-color: #3b82f6; color: #1e40af;">
+            <span>💭 ¿Cambiaste de opinión? Puedes compartir tus datos para recibir información personalizada </span>
+            <button onclick="showDataCaptureModal()" style="background: #3b82f6;">Compartir datos</button>
+            <button onclick="hideBanner('dataCaptureChangeMindBanner')" style="background: #6b7280; margin-left: 4px;">No, gracias</button>
+        </div>
+
+        <!-- Banner discreto para cambio de opinión (GDPR) -->
+        <div id="gdprChangeMindBanner" class="discrete-banner" style="background: #f0f8ff; border-color: #3b82f6; color: #1e40af;">
+            <span>💭 ¿Cambiaste de opinión? Puedes dar tu consentimiento GDPR para procesar datos </span>
+            <button onclick="showGDPRModal()" style="background: #3b82f6;">Dar consentimiento</button>
+            <button onclick="hideBanner('gdprChangeMindBanner')" style="background: #6b7280; margin-left: 4px;">No, gracias</button>
+        </div>
+
         <!-- Área de mensajes -->
         <div class="chat-messages" id="chatMessages"></div>
 
@@ -443,6 +459,8 @@
             <button class="test-btn red" onclick="resetFlow()">🔄 Resetear Estado</button>
             <button class="test-btn blue" onclick="showDataCaptureBanner()">📝 Mostrar Banner Captura</button>
             <button class="test-btn yellow" onclick="showGDPRBanner()">🔒 Mostrar Banner GDPR</button>
+            <button class="test-btn purple" onclick="showDataCaptureChangeMindBanner()">💭 Banner Cambio Datos</button>
+            <button class="test-btn pink" onclick="showGDPRChangeMindBanner()">💭 Banner Cambio GDPR</button>
         </div>
     </div>
 
@@ -591,10 +609,48 @@
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
 
+            // Función para detectar comandos de reactivación
+            function detectReactivationCommands(message) {
+                const lowerMessage = message.toLowerCase();
+                
+                // Comandos para reactivar captura de datos
+                if (lowerMessage.includes('compartir datos') || 
+                    lowerMessage.includes('quiero compartir') ||
+                    lowerMessage.includes('cambiar de opinión') ||
+                    lowerMessage.includes('datos de contacto')) {
+                    if (!dataCaptured && dataCaptureBannerShown) {
+                        window.showBanner('dataCaptureChangeMindBanner');
+                        return true;
+                    }
+                }
+                
+                // Comandos para reactivar GDPR
+                if (lowerMessage.includes('consentimiento') || 
+                    lowerMessage.includes('gdpr') ||
+                    lowerMessage.includes('aceptar términos') ||
+                    lowerMessage.includes('procesar datos')) {
+                    if (!gdprConsentGiven && gdprBannerShown) {
+                        window.showBanner('gdprChangeMindBanner');
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+
             // Función para enviar mensaje
             async function sendMessage() {
                 const message = messageInput.value.trim();
                 if (!message) return;
+
+                // Detectar comandos de reactivación antes de enviar
+                if (detectReactivationCommands(message)) {
+                    addMessage('user', message);
+                    messageInput.value = '';
+                    messageInput.style.height = 'auto';
+                    updateCharCount();
+                    return; // No enviar al backend, solo mostrar banner
+                }
 
                 // Mostrar mensaje del usuario
                 addMessage('user', message);
@@ -736,16 +792,26 @@
             // Funciones para rechazar captura de datos y GDPR
             window.rejectDataCapture = function() {
                 dataCaptured = false; // Marcar como rechazado
-                dataCaptureBannerShown = true; // No mostrar más el banner
+                dataCaptureBannerShown = true; // No mostrar más el banner original
                 window.hideBanner('dataCaptureBanner');
                 addMessage('bot', '✅ Entendido. Puedes continuar con la conversación sin compartir datos adicionales.');
+                
+                // Mostrar banner de "cambio de opinión" después de 30 segundos
+                setTimeout(() => {
+                    window.showBanner('dataCaptureChangeMindBanner');
+                }, 30000); // 30 segundos
             };
 
             window.rejectGDPRConsent = function() {
                 gdprConsentGiven = false; // Marcar como rechazado
-                gdprBannerShown = true; // No mostrar más el banner
+                gdprBannerShown = true; // No mostrar más el banner original
                 window.hideBanner('gdprBanner');
                 addMessage('bot', '✅ Entendido. Continuaremos sin procesar datos adicionales según GDPR.');
+                
+                // Mostrar banner de "cambio de opinión" después de 30 segundos
+                setTimeout(() => {
+                    window.showBanner('gdprChangeMindBanner');
+                }, 30000); // 30 segundos
             };
 
             // Funciones de prueba
@@ -782,6 +848,14 @@
             window.showGDPRBanner = function() {
                 window.showBanner('gdprBanner');
                 gdprBannerShown = true;
+            };
+
+            window.showDataCaptureChangeMindBanner = function() {
+                window.showBanner('dataCaptureChangeMindBanner');
+            };
+
+            window.showGDPRChangeMindBanner = function() {
+                window.showBanner('gdprChangeMindBanner');
             };
 
             window.toggleChat = function() {
