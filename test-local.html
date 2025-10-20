@@ -263,18 +263,80 @@
             margin-left: 10px;
             font-size: 12px;
         }
+
+        /* Estilos para banners discretos */
+        .discrete-banner {
+            background: #f0f8ff;
+            border: 1px solid #4a90e2;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #2c5aa0;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .discrete-banner button {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 8px;
+            font-size: 11px;
+        }
+
+        .discrete-banner .close-banner {
+            background: #ccc;
+            color: #666;
+            float: right;
+            margin-left: 8px;
+            padding: 2px 6px;
+            font-size: 10px;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-count {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🤖 Test Chatbot Local</h1>
-        <p class="subtitle">Probando RAG con Analytics, Lead Capture y GDPR</p>
+        <p class="subtitle">Flujo No Intrusivo - Analytics, Lead Capture y GDPR</p>
 
         <div class="status" id="status">
             ✅ Conectado a: http://localhost:8080
+            <span class="message-count" id="messageCount">Mensajes: 0</span>
         </div>
 
         <div class="flow-indicator" id="flowIndicator"></div>
+
+        <!-- Banner discreto para captura de datos -->
+        <div id="dataCaptureBanner" class="discrete-banner">
+            <span>💡 ¿Te gustaría recibir información personalizada? </span>
+            <button onclick="showDataCaptureModal()">Compartir datos</button>
+            <button class="close-banner" onclick="hideBanner('dataCaptureBanner')">✕</button>
+        </div>
+
+        <!-- Banner discreto para GDPR -->
+        <div id="gdprBanner" class="discrete-banner">
+            <span>🔒 Para continuar, necesitamos tu consentimiento para procesar datos según GDPR </span>
+            <button onclick="showGDPRModal()">Dar consentimiento</button>
+            <button class="close-banner" onclick="hideBanner('gdprBanner')">✕</button>
+        </div>
 
         <div class="chat-container" id="chat"></div>
 
@@ -286,6 +348,25 @@
                 onkeypress="if(event.key==='Enter') sendMessage()"
             >
             <button onclick="sendMessage()" id="sendBtn">Enviar</button>
+        </div>
+
+        <!-- Botones de prueba para el flujo -->
+        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
+            <h4 style="margin-bottom: 10px; color: #495057;">🧪 Modo Prueba - Flujo No Intrusivo</h4>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button onclick="testFlow()" style="background: #28a745; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                    🚀 Probar Flujo Completo
+                </button>
+                <button onclick="resetFlow()" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                    🔄 Resetear Estado
+                </button>
+                <button onclick="showDataCaptureBanner()" style="background: #17a2b8; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                    📝 Mostrar Banner Captura
+                </button>
+                <button onclick="showGDPRBanner()" style="background: #ffc107; color: black; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                    🔒 Mostrar Banner GDPR
+                </button>
+            </div>
         </div>
 
         <!-- Modal para captura de datos -->
@@ -377,6 +458,9 @@
             let currentSessionId = null;
             let dataCaptured = false;
             let gdprConsentGiven = false;
+            let messageCount = 0;
+            let dataCaptureBannerShown = false;
+            let gdprBannerShown = false;
 
             // Agregar mensaje inicial del bot
             addMessage('bot', '¡Hola! Soy el asistente virtual de Álvaro. Puedo responder preguntas sobre su experiencia profesional, habilidades técnicas, proyectos y más. ¿En qué puedo ayudarte?');
@@ -430,11 +514,19 @@
                         currentSessionId = data.session_id;
                     }
 
-                    // Manejar diferentes tipos de acción
-                    handleFlowAction(data);
+                    // Incrementar contador de mensajes
+                    messageCount++;
+                    
+                    // Actualizar contador visible
+                    document.getElementById('messageCount').textContent = `Mensajes: ${messageCount}`;
 
-                    // Mostrar respuesta
+                    // SIEMPRE mostrar la respuesta del RAG (flujo no intrusivo)
                     let botMessage = data.message;
+                    
+                    // Si el mensaje está vacío (modo antiguo), generar respuesta con RAG
+                    if (!botMessage || botMessage.trim() === '') {
+                        botMessage = await getRAGResponse(message);
+                    }
                     
                     // Agregar sources si existen
                     if (data.sources && data.sources.length > 0) {
@@ -445,6 +537,9 @@
                     }
 
                     addMessage('bot', botMessage, true);
+
+                    // Manejar banners discretos después de mostrar la respuesta
+                    handleDiscreteFlow(data);
 
                 } catch (error) {
                     document.getElementById('loading')?.remove();
@@ -472,7 +567,58 @@
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
-            // Manejar acciones del flujo de analytics
+            // Función para obtener respuesta RAG cuando el backend no la proporciona
+            async function getRAGResponse(message) {
+                try {
+                    const response = await fetch(`${API_URL}/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            message: message,
+                            session_id: currentSessionId,
+                            force_rag: true  // Flag para forzar respuesta RAG
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data.message || 'Lo siento, no pude generar una respuesta en este momento.';
+                    }
+                } catch (error) {
+                    console.error('Error obteniendo respuesta RAG:', error);
+                }
+                return 'Lo siento, no pude generar una respuesta en este momento.';
+            }
+
+            // Manejar flujo discreto (no intrusivo)
+            function handleDiscreteFlow(data) {
+                // Mostrar indicador de flujo solo para debug
+                if (data.action_type && data.action_type !== 'normal_response') {
+                    showFlowIndicator(data.action_type, data.next_flow_state);
+                } else {
+                    hideFlowIndicator();
+                }
+
+                // Mostrar banner de captura de datos después de 5 mensajes (timing tardío)
+                if (messageCount >= 5 && !dataCaptured && !dataCaptureBannerShown) {
+                    setTimeout(() => {
+                        showBanner('dataCaptureBanner');
+                        dataCaptureBannerShown = true;
+                    }, 2000); // 2 segundos después de la respuesta
+                }
+
+                // Mostrar banner GDPR después de capturar datos
+                if (dataCaptured && !gdprConsentGiven && !gdprBannerShown) {
+                    setTimeout(() => {
+                        showBanner('gdprBanner');
+                        gdprBannerShown = true;
+                    }, 2000);
+                }
+            }
+
+            // Manejar acciones del flujo de analytics (modo legacy - mantener para compatibilidad)
             function handleFlowAction(data) {
                 // Mostrar indicador de flujo
                 if (data.action_type && data.action_type !== 'normal_response') {
@@ -524,6 +670,34 @@
                 document.getElementById(modalId).style.display = 'none';
             }
 
+            // Mostrar banner discreto
+            function showBanner(bannerId) {
+                const banner = document.getElementById(bannerId);
+                if (banner) {
+                    banner.style.display = 'block';
+                }
+            }
+
+            // Ocultar banner discreto
+            function hideBanner(bannerId) {
+                const banner = document.getElementById(bannerId);
+                if (banner) {
+                    banner.style.display = 'none';
+                }
+            }
+
+            // Mostrar modal de captura desde banner
+            function showDataCaptureModal() {
+                hideBanner('dataCaptureBanner');
+                showModal('dataCaptureModal');
+            }
+
+            // Mostrar modal GDPR desde banner
+            function showGDPRModal() {
+                hideBanner('gdprBanner');
+                showModal('gdprModal');
+            }
+
             // Manejar envío de datos de captura
             document.getElementById('dataCaptureForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -549,6 +723,12 @@
                         dataCaptured = true;
                         closeModal('dataCaptureModal');
                         addMessage('bot', '✅ Gracias por proporcionar tu información. Ahora puedo brindarte un mejor servicio.');
+                        
+                        // Mostrar banner GDPR después de capturar datos
+                        setTimeout(() => {
+                            showBanner('gdprBanner');
+                            gdprBannerShown = true;
+                        }, 2000);
                     } else {
                         throw new Error('Error al capturar datos');
                     }
@@ -587,6 +767,9 @@
                         gdprConsentGiven = true;
                         closeModal('gdprModal');
                         addMessage('bot', '✅ Consentimiento registrado. Puedes continuar con la conversación.');
+                        
+                        // Ocultar banner GDPR si está visible
+                        hideBanner('gdprBanner');
                     } else {
                         throw new Error('Error al registrar consentimiento');
                     }
@@ -604,6 +787,45 @@
                     }
                 });
             };
+
+            // Funciones de prueba para el flujo no intrusivo
+            function testFlow() {
+                addMessage('bot', '🧪 Modo prueba activado. Simulando flujo completo...');
+                
+                // Simular 5 mensajes para activar banner de captura
+                messageCount = 5;
+                document.getElementById('messageCount').textContent = `Mensajes: ${messageCount}`;
+                
+                setTimeout(() => {
+                    showBanner('dataCaptureBanner');
+                    dataCaptureBannerShown = true;
+                }, 1000);
+            }
+
+            function resetFlow() {
+                messageCount = 0;
+                dataCaptured = false;
+                gdprConsentGiven = false;
+                dataCaptureBannerShown = false;
+                gdprBannerShown = false;
+                
+                document.getElementById('messageCount').textContent = 'Mensajes: 0';
+                hideBanner('dataCaptureBanner');
+                hideBanner('gdprBanner');
+                hideFlowIndicator();
+                
+                addMessage('bot', '🔄 Estado del flujo reseteado. Puedes empezar de nuevo.');
+            }
+
+            function showDataCaptureBanner() {
+                showBanner('dataCaptureBanner');
+                dataCaptureBannerShown = true;
+            }
+
+            function showGDPRBanner() {
+                showBanner('gdprBanner');
+                gdprBannerShown = true;
+            }
 
             // Test de conexión al iniciar
             fetch(`${API_URL}/health`)
