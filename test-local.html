@@ -482,10 +482,10 @@
             <p style="margin-bottom: 20px; color: #666;">
                 Para brindarte un mejor servicio, nos gustaría conocer un poco más sobre ti.
             </p>
-            <form id="dataCaptureForm">
+            <form id="dataCaptureForm" novalidate>
                 <div class="form-group">
                     <label for="email">Email * <span id="emailError" class="error-text"></span></label>
-                    <input type="email" id="email" required placeholder="nombre@empresa.com">
+                    <input type="text" id="email" required placeholder="nombre@empresa.com" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false">
                 </div>
                 <div class="form-group">
                     <label for="userType">Tipo de Usuario</label>
