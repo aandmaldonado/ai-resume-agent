@@ -690,7 +690,7 @@
                 // Mostrar banner de captura de datos después de 5 mensajes (timing tardío)
                 if (messageCount >= 5 && !dataCaptured && !dataCaptureBannerShown) {
                     setTimeout(() => {
-                        showBanner('dataCaptureBanner');
+                        window.showBanner('dataCaptureBanner');
                         dataCaptureBannerShown = true;
                     }, 2000); // 2 segundos después de la respuesta
                 }
@@ -698,44 +698,44 @@
                 // Mostrar banner GDPR después de capturar datos
                 if (dataCaptured && !gdprConsentGiven && !gdprBannerShown) {
                     setTimeout(() => {
-                        showBanner('gdprBanner');
+                        window.showBanner('gdprBanner');
                         gdprBannerShown = true;
                     }, 2000);
                 }
             }
 
-            // Funciones de UI
-            function showBanner(bannerId) {
+            // Funciones de UI (definir globalmente para que estén disponibles en onclick)
+            window.showBanner = function(bannerId) {
                 const banner = document.getElementById(bannerId);
                 if (banner) {
                     banner.style.display = 'block';
                 }
-            }
+            };
 
-            function hideBanner(bannerId) {
+            window.hideBanner = function(bannerId) {
                 const banner = document.getElementById(bannerId);
                 if (banner) {
                     banner.style.display = 'none';
                 }
-            }
+            };
 
-            function showModal(modalId) {
+            window.showModal = function(modalId) {
                 document.getElementById(modalId).style.display = 'block';
-            }
+            };
 
-            function closeModal(modalId) {
+            window.closeModal = function(modalId) {
                 document.getElementById(modalId).style.display = 'none';
-            }
+            };
 
-            function showDataCaptureModal() {
-                hideBanner('dataCaptureBanner');
-                showModal('dataCaptureModal');
-            }
+            window.showDataCaptureModal = function() {
+                window.hideBanner('dataCaptureBanner');
+                window.showModal('dataCaptureModal');
+            };
 
-            function showGDPRModal() {
-                hideBanner('gdprBanner');
-                showModal('gdprModal');
-            }
+            window.showGDPRModal = function() {
+                window.hideBanner('gdprBanner');
+                window.showModal('gdprModal');
+            };
 
             // Funciones de prueba
             window.testFlow = function() {
@@ -745,7 +745,7 @@
                 messageCount = 5;
                 
                 setTimeout(() => {
-                    showBanner('dataCaptureBanner');
+                    window.showBanner('dataCaptureBanner');
                     dataCaptureBannerShown = true;
                 }, 1000);
             };
@@ -757,19 +757,19 @@
                 dataCaptureBannerShown = false;
                 gdprBannerShown = false;
                 
-                hideBanner('dataCaptureBanner');
-                hideBanner('gdprBanner');
+                window.hideBanner('dataCaptureBanner');
+                window.hideBanner('gdprBanner');
                 
                 addMessage('bot', '🔄 Estado del flujo reseteado. Puedes empezar de nuevo.');
             };
 
             window.showDataCaptureBanner = function() {
-                showBanner('dataCaptureBanner');
+                window.showBanner('dataCaptureBanner');
                 dataCaptureBannerShown = true;
             };
 
             window.showGDPRBanner = function() {
-                showBanner('gdprBanner');
+                window.showBanner('gdprBanner');
                 gdprBannerShown = true;
             };
 
@@ -801,12 +801,12 @@
 
                     if (response.ok) {
                         dataCaptured = true;
-                        closeModal('dataCaptureModal');
+                        window.closeModal('dataCaptureModal');
                         addMessage('bot', '✅ Gracias por proporcionar tu información. Ahora puedo brindarte un mejor servicio.');
                         
                         // Mostrar banner GDPR después de capturar datos
                         setTimeout(() => {
-                            showBanner('gdprBanner');
+                            window.showBanner('gdprBanner');
                             gdprBannerShown = true;
                         }, 2000);
                     } else {
@@ -845,11 +845,11 @@
 
                     if (response.ok) {
                         gdprConsentGiven = true;
-                        closeModal('gdprModal');
+                        window.closeModal('gdprModal');
                         addMessage('bot', '✅ Consentimiento registrado. Puedes continuar con la conversación.');
                         
                         // Ocultar banner GDPR si está visible
-                        hideBanner('gdprBanner');
+                        window.hideBanner('gdprBanner');
                     } else {
                         throw new Error('Error al registrar consentimiento');
                     }
