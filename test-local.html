@@ -639,13 +639,7 @@
                     // El backend ahora SIEMPRE proporciona una respuesta RAG
                     // No necesitamos generar una respuesta adicional
                     
-                    // Agregar sources si existen
-                    if (data.sources && data.sources.length > 0) {
-                        const sourcesList = data.sources
-                            .map(s => `${s.type} (${s.metadata.company || s.metadata.institution || s.metadata.category || 'N/A'})`)
-                            .join(', ');
-                        botMessage += `<div class="sources">📚 Fuentes: ${sourcesList}</div>`;
-                    }
+                    // Fuentes eliminadas del frontend para mejor UX
 
                     addMessage('bot', botMessage, true);
 
