@@ -109,13 +109,27 @@ async def chat(request: Request, chat_request: ChatRequest) -> ChatResponse:
 
         # 3. Manejar diferentes tipos de acciones
         if action_type == ActionType.SHOW_WELCOME:
-            # Mostrar mensaje de bienvenida
+            # Procesar la pregunta del usuario incluso en el primer mensaje
+            result = await rag_service.generate_response(
+                question=message, session_id=session_id
+            )
+
+            # Trackear métricas del mensaje (solo si analytics está habilitado)
+            if settings.ENABLE_ANALYTICS and not settings.TESTING:
+                response_time_ms = int((time.time() - start_time) * 1000)
+                await analytics_service.track_message_metrics(
+                    session_id=session_id,
+                    message=message,
+                    response_time_ms=response_time_ms,
+                )
+
+            # Construir respuesta con RAG (sin mensaje de bienvenida redundante)
             response = ChatResponse(
-                message="¡Hola! Soy el asistente virtual de Álvaro Maldonado. Puedo ayudarte con información sobre mi experiencia profesional, habilidades técnicas y proyectos. ¿En qué puedo ayudarte?",
-                sources=[],
+                message=result["response"],
+                sources=result.get("sources", []),
                 session_id=session_id,
                 model=settings.GROQ_MODEL,
-                action_type="show_welcome",
+                action_type="normal_response",  # Cambiar a normal_response
                 next_flow_state=next_flow_state.value,
                 requires_data_capture=False,
                 requires_gdpr_consent=False,
