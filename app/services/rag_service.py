@@ -65,7 +65,7 @@ class RAGService:
 
         logger.info("✓ RAGService inicializado correctamente")
 
-    def _create_system_prompt(self) -> PromptTemplate:
+    def _create_system_prompt(self, user_type: str = "OT") -> PromptTemplate:
         """
         Crea el prompt template para el chatbot.
         Define la personalidad y comportamiento del asistente.
@@ -143,12 +143,12 @@ class RAGService:
 
 ---
 **INFORMACIÓN DEL USUARIO:**
-- Tipo de usuario: {user_type}
+- Tipo de usuario: """ + user_type + """
 
 **ADAPTACIÓN SEGÚN TIPO DE USUARIO:**
 - Si es "HR" (Profesional RRHH): Enfócate en habilidades técnicas, experiencia profesional, fit cultural, capacidad de trabajo en equipo, liderazgo técnico, y cómo tus habilidades pueden aportar valor a la empresa
-- Si es "IT (Profesional TI): Enfócate en detalles técnicos específicos, arquitectura de sistemas, mejores prácticas de desarrollo, tecnologías específicas, patrones de diseño, y experiencia en proyectos complejos
-- Si es "OT" (Otro/generico): Adapta el nivel técnico según la pregunta, mantén un balance entre información técnica y accesibilidad
+- Si es "IT" (Profesional TI): Enfócate en detalles técnicos específicos, arquitectura de sistemas, mejores prácticas de desarrollo, tecnologías específicas, patrones de diseño, y experiencia en proyectos complejos
+- Si es "OT" (Otro/genérico): Adapta el nivel técnico según la pregunta, mantén un balance entre información técnica y accesibilidad
 
 **CONTEXTO RELEVANTE DE MI PORTFOLIO:**
 {context}
@@ -166,7 +166,7 @@ class RAGService:
 """
 
         return PromptTemplate(
-            template=template, input_variables=["context", "question", "user_type"]
+            template=template, input_variables=["context", "question"]
         )
 
     def _sanitize_response(self, response: str) -> str:
@@ -313,6 +313,9 @@ class RAGService:
             memory = self._get_or_create_memory(session_id)
 
             # Crear chain conversacional con memoria
+            # Crear prompt personalizado con user_type
+            custom_prompt = self._create_system_prompt(user_type or "OT")
+            
             qa_chain = ConversationalRetrievalChain.from_llm(
                 llm=self.llm,
                 retriever=self.vector_store.as_retriever(
@@ -321,15 +324,12 @@ class RAGService:
                 ),
                 memory=memory,
                 return_source_documents=True,
-                combine_docs_chain_kwargs={"prompt": self.system_prompt},
+                combine_docs_chain_kwargs={"prompt": custom_prompt},
                 verbose=False,
             )
 
             # Generar respuesta (la memoria se actualiza automáticamente)
-            result = qa_chain({
-                "question": question,
-                "user_type": user_type or "OT"
-            })
+            result = qa_chain({"question": question})
 
             # Formatear sources
             sources = self._format_sources(result.get("source_documents", []))
