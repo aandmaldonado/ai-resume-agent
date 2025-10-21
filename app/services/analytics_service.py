@@ -131,8 +131,7 @@ class AnalyticsService:
         session_id: str,
         email: Optional[str] = None,
         user_type: Optional[str] = None,
-        company: Optional[str] = None,
-        role: Optional[str] = None,
+        linkedin: Optional[str] = None,
     ) -> ChatSession:
         """
         Trackear una sesión de chat (crear o actualizar).
@@ -141,8 +140,7 @@ class AnalyticsService:
             session_id: ID único de la sesión
             email: Email del usuario (opcional)
             user_type: Tipo de usuario (recruiter, client, curious)
-            company: Empresa del usuario (opcional)
-            role: Rol del usuario (opcional)
+            linkedin: LinkedIn del usuario (opcional)
 
         Returns:
             ChatSession: Sesión creada o actualizada
@@ -152,8 +150,7 @@ class AnalyticsService:
             session_id=session_id,
             email=email,
             user_type=user_type,
-            company=company,
-            role=role,
+            linkedin=linkedin,
         )
 
         # Incrementar contador de mensajes
@@ -183,8 +180,7 @@ class AnalyticsService:
         session_id: str,
         email: Optional[str] = None,
         user_type: Optional[str] = None,
-        company: Optional[str] = None,
-        role: Optional[str] = None,
+        linkedin: Optional[str] = None,
     ) -> ChatSession:
         """
         Obtener o crear una sesión sin incrementar el contador de mensajes.
@@ -193,8 +189,7 @@ class AnalyticsService:
             session_id: ID único de la sesión
             email: Email del usuario (opcional)
             user_type: Tipo de usuario (recruiter, client, curious)
-            company: Empresa del usuario (opcional)
-            role: Rol del usuario (opcional)
+            linkedin: LinkedIn del usuario (opcional)
 
         Returns:
             ChatSession: Sesión existente o nueva
@@ -207,8 +202,7 @@ class AnalyticsService:
                 session_id=session_id,
                 email=email,
                 user_type=user_type,
-                company=company,
-                role=role,
+                linkedin=linkedin,
                 total_messages=0,
                 engagement_score=0.0,
                 data_captured=False,
@@ -229,10 +223,8 @@ class AnalyticsService:
                         existing_session.email = email
                     if user_type:
                         existing_session.user_type = user_type
-                    if company:
-                        existing_session.company = company
-                    if role:
-                        existing_session.role = role
+                    if linkedin:
+                        existing_session.linkedin = linkedin
 
                     existing_session.last_activity = datetime.utcnow()
                     await db.commit()
@@ -247,8 +239,7 @@ class AnalyticsService:
                         session_id=session_id,
                         email=email,
                         user_type=user_type,
-                        company=company,
-                        role=role,
+                        linkedin=linkedin,
                         total_messages=0,  # Sin mensajes aún
                         engagement_score=0.0,
                     )
@@ -319,8 +310,7 @@ class AnalyticsService:
         session_id: str,
         email: str,
         user_type: str,
-        company: Optional[str] = None,
-        role: Optional[str] = None,
+        linkedin: Optional[str] = None,
     ) -> bool:
         """
         Capturar datos del usuario en una sesión existente.
@@ -329,8 +319,7 @@ class AnalyticsService:
             session_id: ID de la sesión
             email: Email del usuario
             user_type: Tipo de usuario
-            company: Empresa (opcional)
-            role: Rol (opcional)
+            linkedin: LinkedIn (opcional)
 
         Returns:
             bool: True si la captura fue exitosa
@@ -352,8 +341,7 @@ class AnalyticsService:
                 # Actualizar datos
                 session.email = email
                 session.user_type = user_type
-                session.company = company
-                session.role = role
+                session.linkedin = linkedin
                 session.data_captured = True
                 session.last_activity = datetime.utcnow()
 

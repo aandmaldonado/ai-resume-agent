@@ -14,7 +14,7 @@ class SessionCreate(BaseModel):
 
     session_id: str = Field(..., min_length=1, max_length=100)
     email: Optional[EmailStr] = None
-    user_type: Optional[str] = Field(None, pattern="^(recruiter|client|curious)$")
+    user_type: Optional[str] = Field(None, min_length=1)
     company: Optional[str] = Field(None, max_length=200)
     role: Optional[str] = Field(None, max_length=100)
 
@@ -23,7 +23,7 @@ class SessionUpdate(BaseModel):
     """Schema para actualizar una sesión existente."""
 
     email: Optional[EmailStr] = None
-    user_type: Optional[str] = Field(None, pattern="^(recruiter|client|curious)$")
+    user_type: Optional[str] = Field(None, min_length=1)
     company: Optional[str] = Field(None, max_length=200)
     role: Optional[str] = Field(None, max_length=100)
     data_captured: Optional[bool] = None
@@ -79,13 +79,12 @@ class DataCaptureRequest(BaseModel):
 
     session_id: str = Field(..., min_length=1, max_length=100)
     email: EmailStr = Field(..., description="Email del usuario")
+    linkedin: Optional[str] = Field(
+        None, max_length=200, description="Perfil de LinkedIn del usuario"
+    )
     user_type: str = Field(
-        ..., pattern="^(recruiter|client|curious)$", description="Tipo de usuario"
+        ..., min_length=1, description="Tipo de usuario (cualquier valor permitido)"
     )
-    company: Optional[str] = Field(
-        None, max_length=200, description="Empresa del usuario"
-    )
-    role: Optional[str] = Field(None, max_length=100, description="Rol del usuario")
 
     @validator("email")
     def validate_email_domain(cls, v):
@@ -93,6 +92,18 @@ class DataCaptureRequest(BaseModel):
         if "@" not in v or "." not in v.split("@")[1]:
             raise ValueError("Email debe tener un formato válido")
         return v.lower()
+
+    @validator("linkedin")
+    def validate_linkedin_url(cls, v):
+        """Validar formato de LinkedIn si se proporciona."""
+        if v is not None and v.strip():
+            v = v.strip()
+            # Validación más flexible para LinkedIn
+            import re
+            linkedin_pattern = r'^(https?://)?(www\.)?linkedin\.com/(in/)?[\w\-\.]+/?$|^[\w\-\.]+$'
+            if not re.match(linkedin_pattern, v):
+                raise ValueError("LinkedIn debe ser una URL válida o username")
+        return v
 
 
 class DataCaptureResponse(BaseModel):

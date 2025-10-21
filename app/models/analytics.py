@@ -47,10 +47,9 @@ class ChatSession(Base):
     # Datos de usuario (capturados gradualmente)
     email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     user_type: Mapped[Optional[str]] = mapped_column(
-        String(50), nullable=True, comment="Tipo de usuario: recruiter, client, curious"
+        String(50), nullable=True, comment="Tipo de usuario (cualquier valor permitido)"
     )
-    company: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
-    role: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    linkedin: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
 
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(

@@ -80,14 +80,15 @@ class ChatRequest(BaseModel):
     # Campos adicionales para analytics y captura de datos
     email: Optional[str] = Field(None, description="Email del usuario (opcional)")
     user_type: Optional[str] = Field(
-        None, description="Tipo de usuario: recruiter, client, curious"
+        None, description="Tipo de usuario (cualquier valor permitido)"
     )
     gdpr_consent: Optional[bool] = Field(False, description="Consentimiento GDPR dado")
 
     @validator("user_type")
     def validate_user_type(cls, v):
-        if v is not None and v not in ["recruiter", "client", "curious"]:
-            raise ValueError("user_type debe ser: recruiter, client, o curious")
+        # Aceptar cualquier valor no vacío
+        if v is not None and v.strip() == "":
+            raise ValueError("user_type no puede estar vacío")
         return v
 
     class Config:
@@ -96,7 +97,7 @@ class ChatRequest(BaseModel):
                 "message": "¿Cuál es tu experiencia con Python?",
                 "session_id": "user-123-session-456",
                 "email": "user@example.com",
-                "user_type": "recruiter",
+                "user_type": "Profesional RRHH",
                 "gdpr_consent": True,
             }
         }

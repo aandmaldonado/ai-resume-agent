@@ -74,8 +74,7 @@ async def capture_user_data(
             session_id=data_request.session_id,
             email=data_request.email,
             user_type=data_request.user_type,
-            company=data_request.company,
-            role=data_request.role,
+            linkedin=data_request.linkedin,
         )
 
         if success:

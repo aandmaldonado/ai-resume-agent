@@ -488,21 +488,17 @@
                     <input type="text" id="email" required placeholder="nombre@empresa.com" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false">
                 </div>
                 <div class="form-group">
+                    <label for="linkedin">LinkedIn <span id="linkedinError" class="error-text"></span></label>
+                    <input type="text" id="linkedin" placeholder="linkedin.com/in/tu-perfil o tu-username" autocomplete="url" autocapitalize="none" spellcheck="false">
+                </div>
+                <div class="form-group">
                     <label for="userType">Tipo de Usuario * <span id="userTypeError" class="error-text"></span></label>
                     <select id="userType">
                         <option value="">Seleccionar...</option>
-                        <option value="recruiter">Profesional RRHH</option>
-                        <option value="client">Profesional TI</option>
-                        <option value="curious">Otro</option>
+                        <option value="Profesional RRHH">Profesional RRHH</option>
+                        <option value="Profesional TI">Profesional TI</option>
+                        <option value="Otro">Otro</option>
                     </select>
-                </div>
-                <div class="form-group">
-                    <label for="company">Empresa * <span id="companyError" class="error-text"></span></label>
-                    <input type="text" id="company" required placeholder="Nombre de la empresa">
-                </div>
-                <div class="form-group">
-                    <label for="role">Rol/Cargo * <span id="roleError" class="error-text"></span></label>
-                    <input type="text" id="role" required placeholder="Ej: Recruiter Sr., CTO, Hiring Manager">
                 </div>
                 <div class="modal-buttons">
                     <button type="button" class="btn-secondary" onclick="closeModal('dataCaptureModal')">Cancelar</button>
@@ -682,7 +678,8 @@
                         },
                         body: JSON.stringify({ 
                             message,
-                            session_id: currentSessionId
+                            session_id: currentSessionId,
+                            user_type: 'Profesional TI'
                         })
                     });
 
@@ -731,6 +728,7 @@
                         body: JSON.stringify({ 
                             message: message,
                             session_id: currentSessionId,
+                            user_type: 'Profesional TI',
                             force_rag: true
                         })
                     });
@@ -747,8 +745,8 @@
 
             // Manejar flujo discreto (no intrusivo)
             function handleDiscreteFlow(data) {
-                // Mostrar banner de captura de datos después de 5 mensajes (timing tardío)
-                if (messageCount >= 5 && !dataCaptured && !dataCaptureBannerShown) {
+                // Mostrar banner de captura de datos después de 3 mensajes (timing tardío)
+                if (messageCount >= 3 && !dataCaptured && !dataCaptureBannerShown) {
                     setTimeout(() => {
                         window.showBanner('dataCaptureBanner');
                         dataCaptureBannerShown = true;
@@ -826,8 +824,8 @@
             window.testFlow = function() {
                 addMessage('bot', '🧪 Modo prueba activado. Simulando flujo completo...');
                 
-                // Simular 5 mensajes para activar banner de captura
-                messageCount = 5;
+                // Simular 3 mensajes para activar banner de captura
+                messageCount = 3;
                 
                 setTimeout(() => {
                     window.showBanner('dataCaptureBanner');
@@ -877,19 +875,16 @@
 
                 // Validaciones
                 const email = document.getElementById('email').value.trim();
+                const linkedin = document.getElementById('linkedin').value.trim();
                 const userType = document.getElementById('userType').value;
-                const company = document.getElementById('company').value.trim();
-                const role = document.getElementById('role').value.trim();
 
                 // Limpiar mensajes previos
                 const emailErrorEl = document.getElementById('emailError');
+                const linkedinErrorEl = document.getElementById('linkedinError');
                 const userTypeErrorEl = document.getElementById('userTypeError');
-                const companyErrorEl = document.getElementById('companyError');
-                const roleErrorEl = document.getElementById('roleError');
                 if (emailErrorEl) emailErrorEl.textContent = '';
+                if (linkedinErrorEl) linkedinErrorEl.textContent = '';
                 if (userTypeErrorEl) userTypeErrorEl.textContent = '';
-                if (companyErrorEl) companyErrorEl.textContent = '';
-                if (roleErrorEl) roleErrorEl.textContent = '';
 
                 // Email obligatorio y con formato válido
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -902,19 +897,19 @@
                     return;
                 }
 
+                // LinkedIn opcional pero con formato válido si se proporciona
+                if (linkedin) {
+                    // Validación más flexible para LinkedIn
+                    const linkedinRegex = /^(https?:\/\/)?(www\.)?linkedin\.com\/(in\/)?[\w\-\.]+\/?$|^[\w\-\.]+$/;
+                    if (!linkedinRegex.test(linkedin)) {
+                        if (linkedinErrorEl) linkedinErrorEl.textContent = 'formato de LinkedIn incorrecto';
+                        return;
+                    }
+                }
+
                 // Tipo de usuario obligatorio
                 if (!userType) {
                     if (userTypeErrorEl) userTypeErrorEl.textContent = 'obligatorio';
-                    return;
-                }
-
-                // Empresa y Rol/Cargo obligatorios
-                if (!company) {
-                    if (companyErrorEl) companyErrorEl.textContent = 'obligatorio';
-                    return;
-                }
-                if (!role) {
-                    if (roleErrorEl) roleErrorEl.textContent = 'obligatorio';
                     return;
                 }
 
@@ -923,9 +918,8 @@
                 const formData = {
                     session_id: currentSessionId,
                     email,
-                    user_type: userType,
-                    company,
-                    role
+                    linkedin: linkedin || null,
+                    user_type: userType
                 };
 
                 try {

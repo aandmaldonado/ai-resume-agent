@@ -209,8 +209,7 @@ class FlowController:
         session_id: str,
         email: str,
         user_type: str,
-        company: Optional[str] = None,
-        role: Optional[str] = None,
+        linkedin: Optional[str] = None,
     ) -> Tuple[bool, FlowState, Dict[str, Any]]:
         """
         Procesar datos capturados del usuario.
@@ -219,8 +218,7 @@ class FlowController:
             session_id: ID de la sesión
             email: Email del usuario
             user_type: Tipo de usuario
-            company: Empresa (opcional)
-            role: Rol (opcional)
+            linkedin: LinkedIn (opcional)
 
         Returns:
             Tuple[bool, FlowState, Dict]: (éxito, estado_siguiente, datos)
@@ -231,8 +229,7 @@ class FlowController:
                 session_id=session_id,
                 email=email,
                 user_type=user_type,
-                company=company,
-                role=role,
+                linkedin=linkedin,
             )
 
             if success:
@@ -246,8 +243,7 @@ class FlowController:
                         "data_captured": True,
                         "email": email,
                         "user_type": user_type,
-                        "company": company,
-                        "role": role,
+                        "linkedin": linkedin,
                     },
                 )
             else:
@@ -434,8 +430,7 @@ class FlowController:
                         session_id=session_id,
                         email=additional_data.get("email", ""),
                         user_type=additional_data.get("user_type", ""),
-                        company=additional_data.get("company"),
-                        role=additional_data.get("role"),
+                        linkedin=additional_data.get("linkedin"),
                     )
                     return {
                         "success": success,
