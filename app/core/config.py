@@ -80,11 +80,6 @@ class Settings(BaseSettings):
     )
     MAX_GDPR_CONSENT_ATTEMPTS: int = 3  # Máximo número de intentos para GDPR
 
-    # API Key única para todos los endpoints
-    API_KEY: str = Field(
-        default="api-key-change-in-production",
-        description="API Key única requerida para acceder a TODOS los endpoints",
-    )
 
     # GDPR Compliance
     DATA_RETENTION_DAYS: int = 365  # Retención máxima de datos

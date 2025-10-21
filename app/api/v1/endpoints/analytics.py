@@ -11,7 +11,6 @@ from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from app.core.auth_real import get_frontend_dependency
 from app.core.config import settings
 from app.schemas.analytics import (
     AnalyticsConfigResponse,
@@ -54,7 +53,6 @@ limiter = Limiter(key_func=get_remote_address)
 async def capture_user_data(
     request: Request,
     data_request: DataCaptureRequest,
-    _: bool = Depends(get_frontend_dependency()),
 ) -> DataCaptureResponse:
     """
     Capturar datos del usuario (email, tipo de usuario, empresa, rol).
@@ -119,7 +117,6 @@ async def capture_user_data(
 async def record_gdpr_consent(
     request: Request,
     consent_request: GDPRConsentRequest,
-    _: bool = Depends(get_frontend_dependency()),
 ) -> GDPRConsentResponse:
     """
     Registrar consentimiento GDPR del usuario.
@@ -182,7 +179,7 @@ async def record_gdpr_consent(
 )
 @limiter.limit("5/minute")
 async def get_user_data(
-    request: Request, session_id: str, _: bool = Depends(get_frontend_dependency())
+    request: Request, session_id: str
 ) -> GDPRDataResponse:
     """
     Obtener todos los datos del usuario (derecho de acceso GDPR).
@@ -231,7 +228,7 @@ async def get_user_data(
 )
 @limiter.limit("3/minute")  # Límite muy estricto para eliminación
 async def delete_user_data(
-    request: Request, session_id: str, _: bool = Depends(get_frontend_dependency())
+    request: Request, session_id: str
 ) -> SuccessResponse:
     """
     Eliminar todos los datos del usuario (derecho al olvido GDPR).
@@ -273,7 +270,7 @@ async def delete_user_data(
 )
 @limiter.limit("3/minute")  # Límite muy estricto para exportación
 async def export_user_data(
-    request: Request, session_id: str, _: bool = Depends(get_frontend_dependency())
+    request: Request, session_id: str
 ) -> GDPRExportResponse:
     """
     Exportar datos del usuario en formato JSON (derecho de portabilidad GDPR).
@@ -454,7 +451,7 @@ async def get_flow_configuration(request: Request) -> AnalyticsConfigResponse:
 @router.get("/metrics", response_model=AnalyticsMetrics, status_code=status.HTTP_200_OK)
 @limiter.limit("10/minute")
 async def get_overall_metrics(
-    request: Request, _: bool = Depends(get_frontend_dependency())
+    request: Request
 ) -> AnalyticsMetrics:
     """
     Obtener métricas generales del sistema (endpoint admin).
@@ -488,7 +485,7 @@ async def get_overall_metrics(
 )
 @limiter.limit("10/minute")
 async def get_daily_metrics(
-    request: Request, days: int = 30, _: bool = Depends(get_frontend_dependency())
+    request: Request, days: int = 30
 ) -> List[DailyAnalyticsResponse]:
     """
     Obtener métricas diarias de los últimos N días (endpoint admin).

@@ -17,3 +17,16 @@ line_length = 88
 
 [tool.safety]
 # Usar requirements.txt en lugar de pyproject.toml para dependencias
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--cov=app",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-fail-under=85",
+    "-v"
+]
