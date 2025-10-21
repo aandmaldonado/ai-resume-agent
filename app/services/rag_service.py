@@ -146,9 +146,9 @@ class RAGService:
 - Tipo de usuario: {user_type}
 
 **ADAPTACIÓN SEGÚN TIPO DE USUARIO:**
-- Si es "Profesional RRHH": Enfócate en habilidades técnicas, experiencia profesional, fit cultural, capacidad de trabajo en equipo, liderazgo técnico, y cómo tus habilidades pueden aportar valor a la empresa
-- Si es "Profesional TI": Enfócate en detalles técnicos específicos, arquitectura de sistemas, mejores prácticas de desarrollo, tecnologías específicas, patrones de diseño, y experiencia en proyectos complejos
-- Si es "Otro": Adapta el nivel técnico según la pregunta, mantén un balance entre información técnica y accesibilidad
+- Si es "HR" (Profesional RRHH): Enfócate en habilidades técnicas, experiencia profesional, fit cultural, capacidad de trabajo en equipo, liderazgo técnico, y cómo tus habilidades pueden aportar valor a la empresa
+- Si es "IT (Profesional TI): Enfócate en detalles técnicos específicos, arquitectura de sistemas, mejores prácticas de desarrollo, tecnologías específicas, patrones de diseño, y experiencia en proyectos complejos
+- Si es "OT" (Otro/generico): Adapta el nivel técnico según la pregunta, mantén un balance entre información técnica y accesibilidad
 
 **CONTEXTO RELEVANTE DE MI PORTFOLIO:**
 {context}
@@ -328,7 +328,7 @@ class RAGService:
             # Generar respuesta (la memoria se actualiza automáticamente)
             result = qa_chain({
                 "question": question,
-                "user_type": user_type or "Otro"
+                "user_type": user_type or "OT"
             })
 
             # Formatear sources
