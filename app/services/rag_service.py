@@ -142,6 +142,14 @@ class RAGService:
 - **SUGIERE CONTACTO DIRECTO SOLO PARA TEMAS LOGÍSTICOS O MUY PERSONALES.**
 
 ---
+**INFORMACIÓN DEL USUARIO:**
+- Tipo de usuario: {user_type}
+
+**ADAPTACIÓN SEGÚN TIPO DE USUARIO:**
+- Si es "Profesional RRHH": Enfócate en habilidades técnicas, experiencia profesional, fit cultural, capacidad de trabajo en equipo, liderazgo técnico, y cómo tus habilidades pueden aportar valor a la empresa
+- Si es "Profesional TI": Enfócate en detalles técnicos específicos, arquitectura de sistemas, mejores prácticas de desarrollo, tecnologías específicas, patrones de diseño, y experiencia en proyectos complejos
+- Si es "Otro": Adapta el nivel técnico según la pregunta, mantén un balance entre información técnica y accesibilidad
+
 **CONTEXTO RELEVANTE DE MI PORTFOLIO:**
 {context}
 
@@ -158,7 +166,7 @@ class RAGService:
 """
 
         return PromptTemplate(
-            template=template, input_variables=["context", "question"]
+            template=template, input_variables=["context", "question", "user_type"]
         )
 
     def _sanitize_response(self, response: str) -> str:
@@ -274,7 +282,7 @@ class RAGService:
             logger.info(f"✓ Limpiadas {len(sessions_to_remove)} sesiones inactivas")
 
     async def generate_response(
-        self, question: str, session_id: Optional[str] = None
+        self, question: str, session_id: Optional[str] = None, user_type: Optional[str] = None
     ) -> Dict:
         """
         Genera una respuesta usando RAG con memoria conversacional.
@@ -282,6 +290,7 @@ class RAGService:
         Args:
             question: Pregunta del usuario
             session_id: ID de sesión para mantener historial de conversación
+            user_type: Tipo de usuario para adaptar la respuesta
 
         Returns:
             Dict con la respuesta y metadatos
@@ -317,7 +326,10 @@ class RAGService:
             )
 
             # Generar respuesta (la memoria se actualiza automáticamente)
-            result = qa_chain({"question": question})
+            result = qa_chain({
+                "question": question,
+                "user_type": user_type or "Otro"
+            })
 
             # Formatear sources
             sources = self._format_sources(result.get("source_documents", []))

@@ -114,7 +114,7 @@ async def chat(
         if action_type == ActionType.SHOW_WELCOME:
             # Procesar la pregunta del usuario incluso en el primer mensaje
             result = await rag_service.generate_response(
-                question=message, session_id=session_id
+                question=message, session_id=session_id, user_type=chat_request.user_type
             )
 
             # Trackear métricas del mensaje (solo si analytics está habilitado)
@@ -175,7 +175,7 @@ async def chat(
         elif action_type == ActionType.REQUEST_DATA_CAPTURE:
             # 4. Procesar mensaje con RAG PRIMERO, luego solicitar captura
             result = await rag_service.generate_response(
-                question=message, session_id=session_id
+                question=message, session_id=session_id, user_type=chat_request.user_type
             )
 
             # 5. Trackear métricas del mensaje (solo si analytics está habilitado)
@@ -236,7 +236,7 @@ async def chat(
         elif action_type == ActionType.REQUEST_GDPR_CONSENT:
             # 4. Procesar mensaje con RAG PRIMERO, luego solicitar GDPR
             result = await rag_service.generate_response(
-                question=message, session_id=session_id
+                question=message, session_id=session_id, user_type=chat_request.user_type
             )
 
             # 5. Trackear métricas del mensaje (solo si analytics está habilitado)
@@ -297,7 +297,7 @@ async def chat(
         else:
             # 4. Procesar mensaje normal con RAG
             result = await rag_service.generate_response(
-                question=message, session_id=session_id
+                question=message, session_id=session_id, user_type=chat_request.user_type
             )
 
             # 5. Trackear métricas del mensaje (solo si analytics está habilitado)
