@@ -24,7 +24,8 @@ class Settings(BaseSettings):
     # Groq API (LLM gratis)
     GROQ_API_KEY: str
     GROQ_MODEL: str = "llama-3.3-70b-versatile"  # Modelo actualizado
-    GROQ_TEMPERATURE: float = 0.7
+    GROQ_TEMPERATURE: float = 0.1
+    GROQ_TOP_P: float = 0.3  # Nucleus sampling para reducir alucinación
     GROQ_MAX_TOKENS: int = 1024
     GROQ_TIMEOUT: int = 30  # Timeout en segundos (protección anti-DoS)
 
