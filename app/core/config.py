@@ -23,10 +23,10 @@ class Settings(BaseSettings):
 
     # Groq API (LLM gratis)
     GROQ_API_KEY: str
-    GROQ_MODEL: str = "llama-3.3-70b-versatile"  # Modelo actualizado
+    GROQ_MODEL: str = "llama-3.1-8b-instant"  # Modelo más pequeño, menos límites
     GROQ_TEMPERATURE: float = 0.1
     GROQ_TOP_P: float = 0.3  # Nucleus sampling para reducir alucinación
-    GROQ_MAX_TOKENS: int = 1024
+    GROQ_MAX_TOKENS: int = 512  # Reducir tokens para evitar límites
     GROQ_TIMEOUT: int = 30  # Timeout en segundos (protección anti-DoS)
 
     # Vertex AI (Embeddings gratis)
