@@ -245,6 +245,37 @@ RESPUESTA:"""
             template=template, input_variables=["context", "question"]
         )
 
+    def _expand_query_for_complex_questions(self, question: str) -> str:
+        """
+        Expande consultas complejas en términos más específicos para mejorar el matching semántico.
+        """
+        # Mapeo de términos complejos a términos más específicos
+        expansion_mapping = {
+            # Términos de AcuaMattic
+            "CTO en Neurogenesis": "AcuaMattic proyecto IA",
+            "construir el dataset": "dataset imágenes",
+            "desafíos técnicos": "aspectos técnicos",
+            "superaste": "resolviste",
+            
+            # Términos de comunicación/negocio
+            "bridge between": "puente negocio tecnología",
+            "technical team": "equipo desarrollo",
+            "non-technical stakeholders": "stakeholders negocio",
+            "challenge and outcome": "desafío resultado",
+            
+            # Términos generales de IA
+            "Artificial Intelligence": "IA proyectos",
+            "practical projects": "proyectos prácticos",
+            "led": "lideré",
+        }
+        
+        expanded_query = question
+        for complex_term, specific_term in expansion_mapping.items():
+            if complex_term.lower() in expanded_query.lower():
+                expanded_query = expanded_query.replace(complex_term, f"{complex_term} {specific_term}")
+        
+        return expanded_query
+
     def _sanitize_question_for_gemini(self, question: str) -> str:
         """
         Sanitiza la pregunta para evitar filtros de seguridad de Gemini.
@@ -259,6 +290,11 @@ RESPUESTA:"""
             "Neural Networks": "neural nets",
             "Deep Learning": "deep learning",
             
+            # MEJORA: Términos de IA para mejor matching semántico
+            "AI": "Artificial Intelligence",  # Expandir AI para mejor matching
+            "artificial intelligence": "Artificial Intelligence",  # Normalizar
+            "Inteligencia Artificial": "Artificial Intelligence",  # Unificar idiomas
+            
             # Términos relacionados con desafíos/logros que pueden activar filtros
             "desafíos técnicos": "aspectos técnicos",
             "desafíos": "aspectos complejos",
@@ -268,9 +304,13 @@ RESPUESTA:"""
             "challenges": "complex aspects",
             "overcame": "resolved",
             
+            # MEJORA: Términos de comunicación/negocio para mejor matching
+            "bridge between": "connection between",  # Mejorar matching semántico
+            "non-technical stakeholders": "business stakeholders",  # Simplificar
+            "technical team": "development team",  # Normalizar
+            
             # Mantener términos que funcionan bien
             # "microservicios" - NO sanitizar (funciona en contexto)
-            # "Artificial Intelligence" - NO sanitizar (funciona bien)
             # "Product Engineer" - NO sanitizar (funciona en contexto)
         }
         
@@ -413,12 +453,17 @@ RESPUESTA:"""
             # Obtener o crear memoria para esta sesión
             memory = self._get_or_create_memory(session_id)
 
+            # Expandir consulta para preguntas complejas (DESHABILITADO TEMPORALMENTE)
+            # expanded_question = self._expand_query_for_complex_questions(question)
+            # logger.info(f"🔍 Consulta expandida: '{expanded_question[:100]}...'")
+            expanded_question = question  # Usar pregunta original
+
             # Obtener contexto relevante del vector store
             retriever = self.vector_store.as_retriever(
                 search_type="similarity",
                 search_kwargs={"k": settings.VECTOR_SEARCH_K},
             )
-            docs = retriever.get_relevant_documents(question)
+            docs = retriever.get_relevant_documents(expanded_question)
             
             # Formatear contexto
             context = "\n\n".join([doc.page_content for doc in docs])

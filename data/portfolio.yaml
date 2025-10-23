@@ -1,0 +1,383 @@
+# Professional Portfolio - Estructura Optimizada para RAG (v2.1)
+# Enfoque: Desafío-Solución para preguntas STAR
+
+personal_info:
+  name: "Álvaro Andrés Maldonado Pinto"
+  nationality: "Chilena"
+  marital_status: "Información disponible bajo petición en fases avanzadas del proceso."
+  children: "Información disponible bajo petición en fases avanzadas del proceso."
+  age: "Nacido en 1988"
+  title: "Senior Software Engineer | Product Engineer & AI Specialist"
+  email: "alvaro@almapi.dev"
+  location: "Gandía, Valencia, España"
+  website: "https://almapi.dev"
+  linkedin: "https://linkedin.com/in/almapidev"
+  github: "https://github.com/aandmaldonado"
+
+professional_summary:
+  short: "Senior Software Engineer experto en IA y Product Engineering. +15 años de experiencia construyendo soluciones de negocio escalables."
+  detailed: |
+    Soy un Ingeniero de Software Senior y Product Engineer con 15 años de experiencia construyendo puentes entre desafíos de negocio complejos y soluciones tecnológicas de alto impacto. Mi misión es simple: utilizar la tecnología para resolver problemas reales.
+    Mi carrera me ha llevado desde roles de desarrollo backend hasta posiciones de liderazgo como Líder Técnico y CTO. Esta trayectoria me enseñó que la mejor tecnología es la que sirve a un propósito claro, lo que me llevó a adoptar una mentalidad de 'Product Engineer': mi prioridad es entender a fondo el 'porqué' del negocio antes de diseñar el 'cómo' técnico.
+    Hoy, mi pasión se centra en la Inteligencia Artificial como un acelerador estratégico para automatizar lo complejo y potenciar la autonomía y productividad de los equipos.
+    Busco aplicar esta visión en un rol estratégico 100% remoto en España, donde pueda liderar iniciativas de IA y arquitectura.
+
+# --- FUENTE ÚNICA DE VERDAD PARA PROYECTOS (Optimizada para RAG/STAR) ---
+projects:
+  proj_andes:
+    id: "proj_andes"
+    name: "Andes Online"
+    company_ref: "comp_inadvance"
+    role: "Ingeniero de Software Senior / Especialista Integración"
+    description: "Modernización del backend para plataforma de procesamiento de tarjetas de crédito (migración de Nexus a Minsait/Nuek), enfocada en arquitectura de microservicios."
+    technologies: ["Docker", "Kubernetes", "Arquitectura Hexagonal", "Java", "Spring Boot", "Microservicios", "DevOps", "Agile", "CI/CD", "Testing", "Clean Code", "Jenkins", "SonarQube", "Veracode", "Shift-Left Testing", "Github Actions", "Github", "Spock", "Karate Framework", "Github Copilot", "Dynatrace", "Jira", "Confluence", "Gradle", "API REST", "Postman"]
+    hardware: []
+    achievements:
+      - "Resolución de desafío de modernización: Diseñé e implementé una solución de microservicios resiliente con APIs seguras para reemplazar el sistema core."
+      - "Desafío de calidad (Shift-Left): Afronté el desafío de la calidad del software aplicando una estrategia 'shift-left testing', asegurando la seguridad y robustez desde fases iniciales (SonarQube, Veracode)."
+      - "Actuación como puente Negocio-Tecnología: En una situación de alta complejidad de negocio, actué como el puente clave entre las áreas de Negocio y Tecnología, traduciendo requerimientos financieros complejos para el equipo de desarrollo."
+    business_impact: "Facilitar la transición a una arquitectura moderna y escalable para el procesamiento core de tarjetas."
+    tags: ["java", "springboot", "microservices", "devops", "banking", "integration", "minsait_api"]
+
+  proj_facultades:
+    id: "proj_facultades"
+    name: "Motor de Facultades"
+    company_ref: "comp_imagemaker"
+    role: "Ingeniero de Software Senior"
+    description: "Prueba de Concepto (PoC) con IA para automatizar el análisis de documentos legales (PDFs) usando NLP y Visión por Computador para optimizar oferta de servicios a PYMEs."
+    technologies: ["Docker", "Kubernetes", "API REST", "Agile", "Oracle Database", "SQL", "IA/ML", "NLP", "Visión por Computador/OCR", "Java", "Spring Boot", "Elasticsearch", "Splunk", "Dynatrace", "Bitbucket", "Bamboo", "Jira", "Confluence", "JPA/Hibernate", "Maven", "Veracode", "SonarQube", "Postman"]
+    hardware: []
+    achievements:
+      - "Liderazgo de un desafío de innovación (PoC de IA): Lideré el desafío técnico y estratégico de una Prueba de Concepto (PoC) con IA, definiendo la arquitectura para automatizar el análisis de documentos legales (NLP/OCR)."
+      - "Desafío de calidad y seguridad: Aseguré la robustez de la solución implementando microservicios (Java/Spring Boot) que cumplían con altos estándares de calidad y seguridad bancaria (Veracode, SonarQube)."
+      - "Resolución de problemas de estabilidad: Implementé un monitoreo proactivo (Splunk, Dynatrace) para reducir el downtime y mejorar la fiabilidad del servicio."
+    business_impact: "Demostrar la viabilidad de la automatización IA para redefinir servicios a clientes PYME."
+    tags: ["ai_ml", "nlp", "computer_vision", "java", "springboot", "banking", "poc", "ocr"]
+
+  proj_taa:
+    id: "proj_taa"
+    name: "Time & Attendance (T&A)"
+    company_ref: "comp_falabella"
+    role: "Líder Técnico"
+    description: "Sistema corporativo de gestión de asistencia digital multi-país para +50.000 empleados."
+    technologies: ["Arquitectura Hexagonal", "Arquitectura Event-Driven", "DDD", "Microservicios", "GCP", "Agile", "SaaS Integration", "Pub/Sub", "Kafka", "Oracle Database", "SQL", "PL/SQL", "Gitlab", "Jira", "Confluence", "Swagger", "OpenAPI", "Postman", "API First", "API REST"]
+    hardware: []
+    achievements:
+      - "Liderazgo del desafío de modernización (Legacy): Lideré el desafío técnico de desacoplar un sistema legacy complejo, migrando la lógica a microservicios y aplicando DDD y arquitectura basada en eventos (EDA)."
+      - "Desafío de integración SaaS: Dirigí la estrategia de integración con el proveedor SaaS (Time & Attendance), actuando como nexo técnico clave para asegurar una transición fluida a nivel multi-país."
+      - "Liderazgo técnico y mejora de eficiencia: Mi liderazgo en la entrega del proyecto optimizó la eficiencia operacional regional para la gestión de más de 50.000 empleados."
+    business_impact: "Mejora de la gestión y experiencia laboral para miles de usuarios a nivel corporativo."
+    tags: ["microservices", "ddd", "event_driven", "aws", "hr_tech", "leadership", "retail"]
+
+  proj_acuamattic:
+    id: "proj_acuamattic"
+    name: "AcuaMattic IA"
+    company_ref: "comp_neurogenesis"
+    role: "CTO & Co-Fundador | Ingeniero de IA"
+    description: "Creación de un asistente inteligente para el cuidado de acuarios, desde la idea hasta el prototipo funcional."
+    technologies: ["Python", "TensorFlow", "PyTorch", "Visión por Computador", "AWS", "CNN", "Deep Learning", "Robótica", "MicroPython"]
+    hardware: ["Raspberry Pi Pico", "Cámaras", "Sensores", "Impresión 3D"]
+    achievements:
+      - "Liderazgo y visión (CTO): Como Co-fundador y CTO, definí la visión y estrategia tecnológica de la startup."
+      - "Resolución de un desafío técnico (Dataset): Afronté el desafío técnico de la creación de nuestro propio dataset desde cero, recopilando y etiquetando más de 10.000 imágenes para el entrenamiento."
+      - "Logro en el entrenamiento del modelo: Superé el desafío de precisión del modelo, entrenando una CNN (TensorFlow/PyTorch) que alcanzó un 92% de precisión en la clasificación de especies."
+      - "Desafío de infraestructura (Migración Cloud): Lideré la migración completa de la infraestructura on-premise a AWS (proyecto on-premise2cloud), resolviendo los problemas de escalabilidad."
+      - "Desafío de integración (Hardware/Software): Participé activamente en la resolución de los desafíos de integración Hardware/Software, trabajando con Raspberry Pi Pico y MicroPython."
+    business_impact: "Validación de producto mínimo viable y base tecnológica para la startup."
+    tags: ["ai_ml", "computer_vision", "python", "aws", "robotics", "hardware_raspberry_pi", "startup", "leadership", "cnn"]
+
+  proj_juezsw:
+    id: "proj_juezsw"
+    name: "JuezSW"
+    company_ref: "comp_neurogenesis"
+    role: "Ingeniero de IA (Conceptualización)"
+    description: "Participación en la fase de concepción y diseño de un sistema de IA para automatizar la creación de planes de liquidación de activos, analizando legislación concursal con NLP."
+    technologies: ["Python", "NLP", "Análisis de Documentos"]
+    hardware: []
+    achievements: 
+      - "Desafío de conceptualización (Legal-Tech): Participé en el desafío de conceptualización y análisis de viabilidad de un sistema de IA para Legal-Tech, definiendo el enfoque técnico inicial para el análisis de legislación concursal con NLP."
+    business_impact: "Exploración de un nuevo nicho de mercado para la aplicación de IA."
+    tags: ["ai_ml", "nlp", "python", "legal_tech", "conceptualization"]
+
+  proj_onpremise2cloud:
+      id: "proj_onpremise2cloud"
+      name: "on-premise2cloud"
+      company_ref: "comp_neurogenesis"
+      role: "CTO"
+      description: "Migración de infraestructura on-premise a AWS para escalar y modernizar operaciones de IA."
+      technologies: ["AWS", "Cloud", "DevOps", "EC2", "S3", "RDS", "Sagemaker"]
+      hardware: []
+      achievements: 
+        - "Liderazgo del desafío de migración a Cloud: Lideré la orquestación completa de la migración de infraestructura on-premise a AWS, estableciendo las bases para el despliegue escalable de modelos de ML."
+      business_impact: "Mejora de escalabilidad, disponibilidad y reducción de costes operativos de infraestructura."
+      tags: ["aws", "cloud", "devops", "migration", "leadership"]
+
+  proj_migracion_tbk:
+    id: "proj_migracion_tbk"
+    name: "Migración Transbank"
+    company_ref: "comp_ntt_data"
+    role: "Ingeniero de Software Senior"
+    description: "Modernización de sistemas backoffice core bancarios para mejorar rendimiento, mantenibilidad y seguridad."
+    technologies: ["Java", "Spring Boot", "Spring Security", "Spring Batch", "JWT", "Oracle Database", "SQL", "WebLogic", "OWASP", "PCI", "Microservicios", "JPA/Hibernate", "Maven", "SonarQube", "Gitlab", "Jira", "Confluence", "Kiuwan", "Fortify", "API REST", "Postman"]
+    hardware: []
+    achievements:
+      - "Resolución de desafío de Alto Rendimiento (HA): Resolví el desafío de alto rendimiento diseñando e implementando soluciones backoffice (Java/Spring Boot) capaces de gestionar más de 1 millón de transacciones diarias."
+      - "Desafío de Seguridad Financiera (PCI/OWASP): Aseguré el cumplimiento de estrictos estándares de seguridad financiera (OWASP, PCI) como parte de la modernización del sistema core bancario."
+      - "Liderazgo en la reducción de deuda técnica: Lideré la iniciativa de reducción de deuda técnica, estableciendo y aplicando estándares de calidad de código (Kiuwan, Fortify) para mejorar la mantenibilidad."
+    business_impact: "Mejora drástica de rendimiento y seguridad de plataforma core bancaria."
+    tags: ["java", "springboot", "microservices", "banking", "security", "owasp", "pci", "high_availability"]
+
+  proj_spr:
+    id: "proj_spr"
+    name: "SPR (Sistema de Personal & Remuneraciones)"
+    company_ref: "comp_falabella"
+    role: "Analista TI Senior"
+    description: "Sistema corporativo de RRHH para la gestión integral (+50.000 empleados) del Grupo Falabella."
+    technologies: ["Java", "MVC", "Servicios Web", "Oracle database", "SQL", "PL/SQL", "Gestión de Proyectos", "Integración", "SVN"]
+    hardware: []
+    achievements:
+      - "Liderazgo de desarrollo de plataforma corporativa: Lideré el desarrollo de la plataforma corporativa clave de RRHH (SPR) para más de 50.000 empleados."
+      - "Actuación como puente con stakeholders: En este rol, mi principal desafío fue actuar como punto de contacto con stakeholders no técnicos, traduciendo las necesidades del negocio en soluciones de software funcionales."
+    business_impact: "Unificación y mejora de la gestión de RRHH a nivel corporativo."
+    tags: ["java", "web_services", "hr_tech", "integration", "project_management"]
+
+  proj_supervisor:
+    id: "proj_supervisor"
+    name: "Electronic Supervisor"
+    company_ref: "comp_freelance"
+    role: "Consultor TI Senior"
+    description: "Solución de supervisión electrónica para optimizar el proceso de compra en punto de venta (POS)."
+    technologies: ["Java", "MVC", "Web Services", "PostgreSQL"]
+    hardware: []
+    achievements: 
+      - "Desafío de optimización (Retail POS): Como consultor, desarrollé funcionalidades clave para resolver los desafíos de optimización en el proceso de compra en punto de venta (POS)."
+    business_impact: "Mejora de la eficiencia en el punto de venta."
+    tags: ["java", "retail", "pos", "postgresql", "web_services"]
+
+  proj_movistar:
+    id: "proj_movistar"
+    name: "Movistar Canal Online"
+    company_ref: "comp_ntt_data"
+    role: "Analista de Soluciones"
+    description: "Migración del portal de clientes de Movistar Chile sobre IBM WebSphere."
+    technologies: ["Java", "IBM WebSphere", "JSP", "SOAP", "HTML", "CSS", "JavaScript", "Portlet Factory", "DAO"]
+    hardware: []
+    achievements:
+      - "Resolución de desafío de Experiencia de Usuario (UX): Contribuí a la modernización del canal online, resolviendo problemas de experiencia de usuario y mejorando la autonomía del cliente mediante la migración del portal sobre IBM WebSphere."
+    business_impact: "Modernización del principal canal de autogestión para clientes."
+    tags: ["java", "websphere", "telecom", "frontend", "backend"]
+
+  proj_sbox:
+    id: "proj_sbox"
+    name: "S-Box (Proyecto de Tesis)"
+    company_ref: "comp_usach" # Referencia a la universidad
+    role: "Estudiante Investigador"
+    description: "Primer proyecto con IA. Entorno de computación afectiva usando Visión por Computador (OpenCV) para analizar videos y detectar sonrisas genuinas para investigación."
+    technologies: ["Java", "OpenCV", "Visión por Computador", "Github", "Oracle Database", "SQL"]
+    hardware: []
+    achievements: 
+      - "Desafío de investigación (Computación Afectiva): Como proyecto de tesis, desarrollé un prototipo funcional de IA (OpenCV) para la computación afectiva, superando el desafío de detectar sonrisas genuinas en video para investigación."
+    business_impact: "Exploración académica en computación afectiva."
+    tags: ["ai_ml", "computer_vision", "java", "opencv", "academic"]
+
+# --- DEFINICIÓN DE COMPAÑÍAS ---
+companies:
+  comp_inadvance:
+    id: "comp_inadvance"
+    name: "InAdvance Consulting Group"
+    positions:
+      - role: "Ingeniero de Software Senior" # Para Banco BCI
+        duration: "2024 - Presente"
+        location: "Santiago, Chile (Remoto)"
+        projects_worked_on: ["proj_andes"]
+
+  comp_imagemaker:
+    id: "comp_imagemaker"
+    name: "Imagemaker"
+    positions:
+      - role: "Ingeniero de Software Senior" # Para Banco de Chile
+        duration: "2023 - 2024"
+        location: "Santiago, Chile (Remoto)"
+        projects_worked_on: ["proj_facultades"]
+
+  comp_falabella:
+    id: "comp_falabella"
+    name: "Falabella"
+    positions:
+      - role: "Líder Técnico"
+        duration: "2022 - 2023"
+        location: "Santiago, Chile (Remoto)"
+        projects_worked_on: ["proj_taa"]
+      - role: "Analista TI Senior"
+        duration: "2015 - 2019"
+        location: "Santiago, Chile"
+        projects_worked_on: ["proj_spr"]
+
+  comp_neurogenesis:
+    id: "comp_neurogenesis"
+    name: "Neurogenesis IA Technologies"
+    positions:
+      - role: "CTO & Co-Fundador | Ingeniero de IA"
+        duration: "2021 - 2022"
+        location: "Barcelona, España (Remoto)"
+        projects_worked_on: ["proj_acuamattic", "proj_juezsw", "proj_onpremise2cloud"]
+
+  comp_ntt_data:
+    id: "comp_ntt_data"
+    name: "NTT DATA Europe & LATAM"
+    positions:
+      - role: "Ingeniero de Software Senior" # Para Transbank
+        duration: "2019 - 2021"
+        location: "Santiago, Chile"
+        projects_worked_on: ["proj_migracion_tbk"]
+      - role: "Analista de Soluciones" # Para Movistar
+        duration: "2010 - 2014"
+        location: "Santiago, Chile"
+        projects_worked_on: ["proj_movistar"]
+
+  comp_usach: # Añadido para proyecto de tesis
+      id: "comp_usach"
+      name: "Universidad de Santiago de Chile"
+      positions:
+        - role: "Estudiante Investigador (Tesis)"
+          duration: "2017" # Aproximado
+          location: "Santiago, Chile"
+          projects_worked_on: ["proj_sbox"]
+  
+  comp_freelance:
+    id: "comp_freelance"
+    name: "Freelance"
+    positions:
+      - role: "Consultor TI Senior" # Para Walmart
+        duration: "2017"
+        location: "Santiago, Chile"
+        projects_worked_on: ["proj_supervisor"]
+
+# --- SHOWCASE DE HABILIDADES CON REFERENCIAS ---
+skills_showcase:
+  ai_ml:
+    description: "Mi especialización principal. Experiencia práctica liderando proyectos de IA de extremo a extremo (AcuaMattic), desarrollando PoCs (Motor Facultades) y conceptualizando soluciones (JuezSW)."
+    projects: ["proj_acuamattic", "proj_juezsw", "proj_facultades", "proj_sbox"]
+    key_technologies: ["Python", "TensorFlow", "PyTorch", "OpenCV", "Visión por Computador", "NLP", "CNN", "LangChain"]
+
+  microservices:
+    description: "Amplia experiencia diseñando, implementando y modernizando sistemas con arquitecturas de microservicios en entornos de alta demanda (banca, retail)."
+    projects: ["proj_andes", "proj_facultades", "proj_taa", "proj_migracion_tbk"]
+    key_technologies: ["Java", "Spring Boot", "FastAPI", "DDD", "Event-Driven", "API First"]
+
+  java_backend:
+    description: "Más de 15 años de experiencia en el ecosistema Java, construyendo aplicaciones backend robustas, seguras y escalables para grandes empresas."
+    projects: ["proj_andes", "proj_facultades", "proj_migracion_tbk", "proj_spr", "proj_supervisor", "proj_movistar"]
+    key_technologies: ["Java (8, 11, 17+)", "Spring Boot", "JPA/Hibernate", "Maven/Gradle", "JUnit/Mockito/Spock/Karate Framework"]
+
+  cloud_aws:
+    description: "Experiencia diseñando y gestionando infraestructuras en AWS, incluyendo migraciones y despliegue de aplicaciones y modelos de ML."
+    projects: ["proj_acuamattic", "proj_onpremise2cloud"]
+    key_technologies: ["AWS", "EC2", "S3", "RDS", "Lambda", "Sagemaker", "Rekognition"]
+
+  technical_leadership:
+    description: "Experiencia demostrada liderando equipos técnicos (Falabella), definiendo estrategia tecnológica (CTO en Neurogenesis) y actuando como referente técnico (NTT Data)."
+    projects: ["proj_taa", "proj_acuamattic", "proj_migracion_tbk"]
+    key_skills: ["Liderazgo", "Mentoría", "Arquitectura de Software", "Gestión de Proyectos", "Comunicación"]
+
+  hardware_integration:
+      description: "Experiencia práctica integrando software de IA con hardware físico en prototipos, utilizando microcontroladores y sensores."
+      projects: ["proj_acuamattic"]
+      key_technologies: ["Raspberry Pi Pico", "MicroPython", "Sensores", "Impresión 3D"]
+
+education:
+  - degree: "AI4DEVS"
+    institution: "LIDR.co"
+    period: "2025 - Presente"
+    knowledge_acquired:
+      - "Aplicación estratégica de IA en todas las etapas del ciclo de vida del software."
+      - "Dominio avanzado de herramientas de desarrollo asistido por IA (Copilot, ChatGPT, Cursor)."
+  
+  - degree: "Bootcamp en Desarrollo de IA"
+    institution: "Hackio by thePower"
+    period: "2025"
+    knowledge_acquired:
+      - "Programación avanzada en Python para Inteligencia Artificial y Machine Learning."
+      - "Desarrollo de modelos generativos y NLP con Hugging Face y OpenAI."
+
+  - degree: "Bootcamp en Ciberseguridad"
+    institution: "thePower"
+    period: "2025"
+    knowledge_acquired:
+      - "Comprensión de fundamentos de amenazas y vectores de ataque."
+      - "Prácticas de seguridad ofensiva y desarrollo seguro (DevSecOps)."
+
+  - degree: "Máster en Inteligencia Artificial"
+    institution: "Universitat Politècnica de Catalunya"
+    period: "2020 - 2021"
+    details: "Mi proyecto final, 'AcuaMattic', fue reconocido como el 'Mejor Proyecto de la Promoción'."
+    knowledge_acquired:
+      - "Dominio de los fundamentos teóricos y prácticos de la IA."
+      - "Desarrollo y aplicación de modelos de Machine Learning y Redes Neuronales."
+
+  - degree: "Ingeniería Civil en Informática"
+    institution: "Universidad de Santiago de Chile"
+    period: "2012 - 2017"
+    details: "Recibí el reconocimiento como 'Mejor Alumno de la Promoción'."
+    knowledge_acquired:
+      - "Sólida formación en ciencias de la computación, arquitectura de software y gestión de proyectos."
+
+  - degree: "Licenciatura en Ciencias de la Ingeniería"
+    institution: "Universidad de Santiago de Chile"
+    period: "2012 - 2015"
+    knowledge_acquired:
+      - "Formación integral con base en Ciencias Básicas, núcleo en Ciencias de la Ingeniería y complemento en Humanidades/Ciencias Sociales."
+
+  - degree: "Ingeniería en Informática"
+    institution: "INACAP"
+    period: "2006 - 2010"
+    knowledge_acquired:
+      - "Desarrollo de software integral, administración de recursos, liderazgo de proyectos tecnológicos y aplicación de tecnologías emergentes para la transformación digital."
+
+skills: # Lista categorizada general
+  - category: "Lenguajes y Frameworks Principales"
+    items: ["Java", "Spring Boot", "Python", "FastAPI", "JavaScript", "React"]
+  - category: "IA / ML"
+    items: ["TensorFlow", "PyTorch", "LangChain", "HuggingFace", "OpenAI API", "LLMs", "RAG", "Visión por Computador", "NLP", "OpenCV"]
+  - category: "Infraestructura Cloud y DevOps"
+    items: ["AWS", "GCP", "Docker", "Kubernetes", "Jenkins", "GitHub Actions", "Elasticsearch"]
+  - category: "Bases de Datos y Almacenamiento"
+    items: ["SQL", "Oracle", "PostgreSQL", "MongoDB", "JPA", "Hibernate"]
+  - category: "Pruebas y Calidad de Código"
+    items: ["JUnit", "Mockito", "Spock/Groovy", "SonarQube", "Veracode", "Fortify", "Kiuwan", "TDD", "Shift-Left Testing", "Karate Framework", "Pruebas unitarias", "Pruebas de funcionales", "Pruebas de carga/performance"]
+  - category: "Metodologías y Gestión Ágil"
+    items: ["Agile", "Scrum", "Jira", "Confluence"]
+  - category: "Herramientas de Desarrollo"
+    items: ["Git", "Maven", "Gradle", "OpenAPI/Swagger", "IBM WebSphere"]
+  - category: "Hardware y Robótica (Básico)"
+    items: ["Raspberry Pi Pico", "MicroPython", "Impresión 3D"]
+
+languages:
+  - name: "Español"
+    level: "Nativo"
+  - name: "Inglés"
+    level: "Competencia Profesional (B2). Actualmente, tengo clases particulares 3 veces por semana. Mi nivel de inglés debería mejorar significativamente en el corto plazo."
+
+professional_conditions:
+  availability:
+    status: "Buscando activamente una oportunidad a largo plazo en España"
+    notice_period: "15 días (negociable si el proyecto requiere urgencia)."
+    remote_work: "Busco exclusivamente posiciones 100% remotas. Excepcionalmente, podría considerar híbrido si la ubicación es muy cercana y la presencialidad mínima."
+  work_permit:
+    status: "Actualmente no tengo permiso de trabajo para España. Mi objetivo es encontrar una empresa que pueda patrocinar un visado para Profesionales Altamente Cualificados (PAC)."
+    target_country: "España"
+  salary_expectations:
+    notes: "Mi rango es flexible y prefiero discutirlo en una entrevista formal, considerando el paquete total de compensación y los detalles específicos del rol y proyecto."
+
+philosophy_and_interests:
+  - title: "Filosofía de Trabajo ('Product Engineer')"
+    description: "Mi filosofía se centra en la mentalidad de 'Product Engineer'. Creo que la mejor tecnología nace de un entendimiento profundo del problema de negocio. Mi objetivo no es solo construir software, sino construir la solución correcta que aporte un valor medible y real."
+
+  - title: "Pasión por el Aprendizaje Continuo"
+    description: "Soy un profesional autodidacta por naturaleza. Dedico gran parte de mi tiempo libre al aprendizaje continuo sobre las últimas tendencias en Inteligencia Artificial, investigando nuevas arquitecturas de software y leyendo blogs técnicos para mantenerme siempre a la vanguardia."
+
+  - title: "Resolución de Problemas Complejos"
+    description: "Lo que más me motiva es enfrentarme a problemas que no tienen una solución obvia. Disfruto del proceso de análisis, la colaboración con el equipo y la aplicación de la tecnología para encontrar soluciones creativas a desafíos complejos."
+    
+  - title: "Intereses Personales"
+    description: "Fuera del mundo del código, mi mayor prioridad es mi familia. Disfruto mucho de las actividades al aire libre, ya sea viajando para descubrir nuevos paisajes o simplemente conectando con la naturaleza en una ruta de senderismo. Este balance me permite recargar energías y volver a los desafíos tecnológicos con una perspectiva fresca y renovada."
