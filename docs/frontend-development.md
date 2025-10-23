@@ -16,8 +16,8 @@ Guía técnica completa para implementar el componente chatbot en el portfolio R
 - **Testing:** Jest + React Testing Library
 
 ### **Integración con Backend:**
-- **Backend Integration:** FastAPI + Vertex AI + Cache Inteligente
-- **Arquitectura Híbrida:** Dialogflow ES (Free Tier) + Vertex AI
+- **Backend Integration:** FastAPI + HuggingFace + Cache Inteligente
+- **Arquitectura Híbrida:** Dialogflow ES (Free Tier) + HuggingFace
 - **API Communication:** Axios + React Query
 - **Real-time Updates:** WebSocket (opcional)
 - **Cost Optimization:** Monitoreo de costos en tiempo real
@@ -36,11 +36,11 @@ Guía técnica completa para implementar el componente chatbot en el portfolio R
 - **Bundle Analysis:** Bundle Analyzer
 - **Performance:** Lighthouse CI
 
-## 🔄 Integración con Arquitectura Híbrida Dialogflow + Vertex AI
+## 🔄 Integración con Arquitectura Híbrida Dialogflow + HuggingFace
 
 ### **🎯 Beneficios de la Integración con Arquitectura Híbrida**
 
-El frontend se beneficia de la **arquitectura híbrida inteligente** que combina **Dialogflow ES (Free Tier)** para intents simples y **Vertex AI** para casos complejos.
+El frontend se beneficia de la **arquitectura híbrida inteligente** que combina **Dialogflow ES (Free Tier)** para intents simples y **HuggingFace** para casos complejos.
 
 ```typescript
 // Beneficios de la arquitectura híbrida
@@ -109,7 +109,7 @@ export class HybridChatbotService {
         };
       }
 
-      // 3. Si no, usar Vertex AI con contexto optimizado
+      // 3. Si no, usar HuggingFace con contexto optimizado
       const vertexAiResponse = await this.apiService.sendMessage(message, sessionId);
       
       await this.costTracker.recordVertexAiUsage(
@@ -131,7 +131,7 @@ export class HybridChatbotService {
     } catch (error) {
       console.error('Error en servicio híbrido:', error);
       
-      // Fallback a Vertex AI
+      // Fallback a HuggingFace
       const fallbackResponse = await this.apiService.sendMessage(message, sessionId);
       
       return {
@@ -239,7 +239,7 @@ export class HybridChatbotService {
 
     const costEfficiency = Math.min(costs.costSavingsPercentage || 0, 100);
 
-    // Ponderación: Dialogflow 40%, Vertex AI 30%, Costos 30%
+    // Ponderación: Dialogflow 40%, HuggingFace 30%, Costos 30%
     return (
       dialogflowEfficiency * 0.4 +
       vertexAiEfficiency * 0.3 +
@@ -530,7 +530,7 @@ export const HybridMetrics: React.FC<HybridMetricsProps> = ({
           <div className="flex items-center">
             <ChartBarIcon className="h-8 w-8 text-green-600" />
             <div className="ml-3">
-              <p className="text-sm font-medium text-green-600">Vertex AI</p>
+              <p className="text-sm font-medium text-green-600">HuggingFace</p>
               <p className="text-2xl font-bold text-green-900">
                 {metrics.vertexAi.totalRequests.toLocaleString()}
               </p>
@@ -575,7 +575,7 @@ export const HybridMetrics: React.FC<HybridMetricsProps> = ({
             <p className="text-2xl font-bold text-green-600">
               {metrics.hybridEfficiency.vertexAiUsagePercentage}%
             </p>
-            <p className="text-sm text-gray-600">Vertex AI</p>
+            <p className="text-sm text-gray-600">HuggingFace</p>
           </div>
           
           <div className="text-center">
@@ -691,42 +691,42 @@ export const HybridMetrics: React.FC<HybridMetricsProps> = ({
 const hybridArchitectureSuccessCriteria = {
   apiCoverage: {
     dialogflowEndpoints: "100% de endpoints de Dialogflow implementados",
-    vertexAiEndpoints: "100% de endpoints de Vertex AI implementados",
+    vertexAiEndpoints: "100% de endpoints de HuggingFace implementados",
     hybridRouting: "Routing inteligente entre servicios funcionando",
     fallbackMechanism: "Fallback automático implementado y probado"
   },
   
   errorHandling: {
     dialogflowErrors: "Manejo de errores de Dialogflow implementado",
-    vertexAiErrors: "Manejo de errores de Vertex AI implementado",
+    vertexAiErrors: "Manejo de errores de HuggingFace implementado",
     fallbackErrors: "Manejo de errores en fallback implementado",
     userFeedback: "Feedback de errores claro para el usuario"
   },
   
   validation: {
     dialogflowResponses: "Validación de respuestas de Dialogflow con Zod",
-    vertexAiResponses: "Validación de respuestas de Vertex AI con Zod",
+    vertexAiResponses: "Validación de respuestas de HuggingFace con Zod",
     hybridResponses: "Validación de respuestas híbridas implementada",
     dataIntegrity: "Integridad de datos mantenida en toda la cadena"
   },
   
   retryLogic: {
     dialogflowRetries: "Lógica de reintentos para Dialogflow implementada",
-    vertexAiRetries: "Lógica de reintentos para Vertex AI implementada",
+    vertexAiRetries: "Lógica de reintentos para HuggingFace implementada",
     exponentialBackoff: "Backoff exponencial implementado",
     maxRetries: "Límite máximo de reintentos configurado"
   },
   
   swaggerOpenAPI: {
     dialogflowDocs: "Documentación Swagger para endpoints de Dialogflow",
-    vertexAiDocs: "Documentación Swagger para endpoints de Vertex AI",
+    vertexAiDocs: "Documentación Swagger para endpoints de HuggingFace",
     hybridDocs: "Documentación Swagger para endpoints híbridos",
     apiContract: "Contrato de API completo y actualizado"
   },
   
   typeSafety: {
     dialogflowTypes: "Tipos TypeScript para Dialogflow completos",
-    vertexAiTypes: "Tipos TypeScript para Vertex AI completos",
+    vertexAiTypes: "Tipos TypeScript para HuggingFace completos",
     hybridTypes: "Tipos TypeScript para arquitectura híbrida",
     apiTypes: "Tipos de API consistentes y validados"
   }
@@ -740,14 +740,14 @@ const costOptimizationSuccessCriteria = {
   costReduction: {
     targetSavings: "70-85% reducción en costos totales",
     dialogflowFreeTier: "100% de uso de capa gratuita de Dialogflow",
-    vertexAiOptimization: "40-60% reducción en tokens de Vertex AI",
+    vertexAiOptimization: "40-60% reducción en tokens de HuggingFace",
     monthlyBudget: "Presupuesto mensual dentro de $25-50 objetivo"
   },
   
   performanceMetrics: {
     responseTime: "Tiempo de respuesta total <2s",
     dialogflowLatency: "Dialogflow <200ms para intents simples",
-    vertexAiLatency: "Vertex AI <2s para casos complejos",
+    vertexAiLatency: "HuggingFace <2s para casos complejos",
     cacheEfficiency: "Cache hit rate >70%"
   },
   
@@ -2789,7 +2789,7 @@ export const analyticsService = AnalyticsService.getInstance();
 - ✅ **Manejo de Errores**: Gestión robusta de errores y excepciones
 
 ### **Integración con Backend Optimizado**
-- ✅ **Vertex AI Integration**: Respuestas generadas por modelos de Vertex AI
+- ✅ **HuggingFace Integration**: Respuestas generadas por modelos de HuggingFace
 - ✅ **Cache Inteligente**: Sistema multinivel funcionando correctamente
 - ✅ **Optimización de Costos**: Monitoreo en tiempo real de costos y ahorros
 - ✅ **Smart Context Filtering**: Reducción de tokens y optimización de contexto

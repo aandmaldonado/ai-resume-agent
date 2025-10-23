@@ -1,334 +1,550 @@
+#!/usr/bin/env python3
 """
-Script para procesar portfolio.yaml en documentos semánticos para RAG.
-Convierte el YAML en chunks optimizados para embeddings y retrieval.
+Script para preparar la base de conocimiento desde portfolio.yaml
+Compatible con la nueva estructura YAML v2.0
+Mantiene funcionalidad de Cloud Storage y Cloud SQL
 """
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.docstore.document import Document
+
+import os
+import sys
 import yaml
-from pathlib import Path
-from typing import List
+import logging
+from typing import List, Dict, Any
+from langchain.docstore.document import Document
+from google.cloud import storage
+
+# Configurar logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def load_yaml_from_gcs(bucket_name: str, blob_name: str) -> Dict[str, Any]:
+    """Carga el archivo YAML desde archivo local (v2.0)"""
+    logger.info("Cargando portfolio.yaml desde archivo local...")
+    with open("data/portfolio.yaml", "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
 
 
-def process_portfolio_to_chunks(portfolio_path: str) -> List[Document]:
-    """
-    Procesa el archivo portfolio.yaml y lo convierte en chunks semánticos.
+def create_personal_info_chunks(personal_info: Dict[str, Any]) -> List[Document]:
+    """Crea chunks enriquecidos para información personal"""
+    chunks = []
     
-    Args:
-        portfolio_path: Ruta al archivo portfolio.yaml
-        
-    Returns:
-        Lista de documentos LangChain listos para embeddings
-    """
-    # Leer YAML
-    with open(portfolio_path, 'r', encoding='utf-8') as f:
-        data = yaml.safe_load(f)
-    
-    documents = []
-    
-    # 1. Información Personal
-    personal = data.get('personal_info', {})
-    if personal:
-        content = f"""
-Información Personal:
-Nombre: {personal.get('name', 'N/A')}
-Título: {personal.get('title', 'N/A')}
-Email: {personal.get('email', 'N/A')}
-Ubicación: {personal.get('location', 'N/A')}
-LinkedIn: {personal.get('linkedin', 'N/A')}
-GitHub: {personal.get('github', 'N/A')}
-Sitio Web: {personal.get('website', 'N/A')}
+    # Chunk enriquecido con prosa semánticamente rica
+    personal_prose = f"""
+Información personal y de contacto de Álvaro Maldonado.
+Mi nombre es {personal_info['name']}.
+Mi ubicación actual, ciudad de residencia, es: {personal_info['location']}.
+Nacionalidad: {personal_info['nationality']}.
+Información de contacto: mi email es {personal_info['email']} y mi web es {personal_info['website']}.
+LinkedIn: {personal_info['linkedin']}
+GitHub: {personal_info['github']}
 """
-        documents.append(Document(
-            page_content=content.strip(),
-            metadata={
-                "type": "personal_info",
-                "source": "portfolio.yaml"
-            }
-        ))
     
-    # 2. Resumen Profesional
-    prof_summary = data.get('professional_summary', {})
-    if prof_summary:
-        short_summary = prof_summary.get('short', '')
-        detailed_summary = prof_summary.get('detailed', '')
-        
-        content = f"""
-Resumen Profesional:
+    chunks.append(Document(
+        page_content=personal_prose.strip(),
+        metadata={
+            "type": "personal_info",
+            "name": personal_info['name'],
+            "title": personal_info['title'],
+            "email": personal_info['email'],
+            "location": personal_info['location'],
+            "nationality": personal_info['nationality'],
+            "website": personal_info['website'],
+            "linkedin": personal_info['linkedin'],
+            "github": personal_info['github'],
+            "source": "portfolio.yaml"
+        }
+    ))
+    
+    return chunks
 
-{short_summary}
+def create_professional_summary_chunks(professional_summary: Dict[str, Any]) -> List[Document]:
+    """Crea chunks para resumen profesional"""
+    chunks = []
+    
+    summary_content = f"""
+RESUMEN PROFESIONAL CORTO: {professional_summary['short']}
 
-{detailed_summary}
+RESUMEN PROFESIONAL DETALLADO:
+{professional_summary['detailed']}
 """
-        documents.append(Document(
-            page_content=content.strip(),
-            metadata={
-                "type": "professional_summary",
-                "source": "portfolio.yaml"
-            }
-        ))
     
-    # 3. Experiencia Laboral (cada empresa es un documento)
-    for exp in data.get('experience', []):
-        company = exp.get('company', 'N/A')
-        position = exp.get('position', 'N/A')
-        duration = exp.get('duration', 'N/A')
-        location = exp.get('location', 'N/A')
-        description = exp.get('description', 'N/A')
-        technologies = ', '.join(exp.get('technologies', []))
-        projects = ', '.join(exp.get('related_projects', []))
-        
-        content = f"""
-Experiencia Laboral:
-
-Empresa: {company}
-Posición: {position}
-Duración: {duration}
-Ubicación: {location}
-
-Descripción:
-{description}
-
-Tecnologías utilizadas: {technologies}
-
-Proyectos relacionados: {projects}
-"""
-        documents.append(Document(
-            page_content=content.strip(),
-            metadata={
-                "type": "experience",
-                "company": company,
-                "position": position,
-                "duration": duration,
-                "source": "portfolio.yaml"
-            }
-        ))
-    
-    # 4. Educación (cada título es un documento)
-    for edu in data.get('education', []):
-        institution = edu.get('institution', 'N/A')
-        degree = edu.get('degree', 'N/A')
-        period = edu.get('period', 'N/A')
-        details = edu.get('details', '')
-        knowledge = edu.get('knowledge_acquired', [])
-        
-        knowledge_list = '\n'.join([f"- {k}" for k in knowledge])
-        
-        content = f"""
-Educación:
-
-Institución: {institution}
-Título: {degree}
-Periodo: {period}
-
-{details}
-
-Conocimientos adquiridos:
-{knowledge_list}
-"""
-        documents.append(Document(
-            page_content=content.strip(),
-            metadata={
-                "type": "education",
-                "institution": institution,
-                "degree": degree,
-                "period": period,
-                "source": "portfolio.yaml"
-            }
-        ))
-    
-    # 5. Skills por categoría
-    for skill_cat in data.get('skills', []):
-        category = skill_cat.get('category', 'N/A')
-        items = ', '.join(skill_cat.get('items', []))
-        
-        content = f"""
-Habilidades Técnicas:
-
-Categoría: {category}
-
-Habilidades: {items}
-"""
-        documents.append(Document(
-            page_content=content.strip(),
-            metadata={
-                "type": "skills",
-                "category": category,
-                "source": "portfolio.yaml"
-            }
-        ))
-    
-    # 6. Proyectos Destacados
-    for project in data.get('projects', []):
-        name = project.get('name', 'N/A')
-        company = project.get('company', 'N/A')
-        description = project.get('description', 'N/A')
-        technologies = ', '.join(project.get('technologies', []))
-        
-        content = f"""
-Proyecto Destacado:
-
-Nombre: {name}
-Empresa: {company}
-
-Descripción:
-{description}
-
-Tecnologías utilizadas: {technologies}
-"""
-        documents.append(Document(
-            page_content=content.strip(),
-            metadata={
-                "type": "project",
-                "name": name,
-                "company": company,
-                "source": "portfolio.yaml"
-            }
-        ))
-    
-    # 7. Idiomas
-    for lang in data.get('languages', []):
-        name = lang.get('name', 'N/A')
-        level = lang.get('level', 'N/A')
-        
-        content = f"""
-Idioma: {name}
-Nivel: {level}
-"""
-        documents.append(Document(
-            page_content=content.strip(),
-            metadata={
-                "type": "language",
-                "language": name,
-                "level": level,
-                "source": "portfolio.yaml"
-            }
-        ))
-    
-    # 8. Disponibilidad
-    availability = data.get('availability', {})
-    if availability:
-        status = availability.get('status', 'N/A')
-        notice_period = availability.get('notice_period', 'N/A')
-        remote_work = availability.get('remote_work', 'N/A')
-        
-        content = f"""
-Disponibilidad:
-
-Estado: {status}
-Periodo de aviso: {notice_period}
-Trabajo remoto: {remote_work}
-"""
-        documents.append(Document(
-            page_content=content.strip(),
-            metadata={
-                "type": "availability",
-                "source": "portfolio.yaml"
-            }
-        ))
-    
-    # 9. Filosofía e Intereses
-    for interest in data.get('philosophy_and_interests', []):
-        title = interest.get('title', 'N/A')
-        description = interest.get('description', 'N/A')
-        
-        content = f"""
-Filosofía e Intereses:
-
-{title}:
-{description}
-"""
-        documents.append(Document(
-            page_content=content.strip(),
-            metadata={
-                "type": "philosophy",
-                "title": title,
-                "source": "portfolio.yaml"
-            }
-        ))
-    
-    # 10. Contexto del chatbot (personalidad)
-    chatbot_context = data.get('chatbot_context', {})
-    if chatbot_context:
-        personality = chatbot_context.get('personality', 'N/A')
-        tone = chatbot_context.get('tone', 'N/A')
-        expertise_areas = ', '.join(chatbot_context.get('expertise_areas', []))
-        
-        content = f"""
-Personalidad del Profesional:
-
-Personalidad: {personality}
-Tono de comunicación: {tone}
-Áreas de expertise: {expertise_areas}
-"""
-        documents.append(Document(
-            page_content=content.strip(),
-            metadata={
-                "type": "personality",
-                "source": "portfolio.yaml"
-            }
-        ))
-    
-    # Crear chunks semánticos con overlap para mejor retrieval
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,  # Tamaño óptimo para embeddings
-        chunk_overlap=50,  # Overlap para mantener contexto
-        length_function=len,
-        separators=["\n\n", "\n", ". ", " ", ""]
-    )
-    
-    chunks = text_splitter.split_documents(documents)
+    chunks.append(Document(
+        page_content=summary_content.strip(),
+        metadata={
+            "type": "professional_summary",
+            "short": professional_summary['short'],
+            "detailed": professional_summary['detailed'],
+            "source": "portfolio.yaml"
+        }
+    ))
     
     return chunks
 
 
-def save_chunks_summary(chunks: List[Document], output_path: str = "data/chunks_summary.txt"):
-    """
-    Guarda un resumen de los chunks generados para inspección.
+def create_chatbot_context_chunks(chatbot_context: Dict[str, Any]) -> List[Document]:
+    """Crea chunks para contexto del chatbot"""
+    chunks = []
     
-    Args:
-        chunks: Lista de documentos chunk
-        output_path: Ruta donde guardar el resumen
-    """
-    output_file = Path(output_path)
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(f"Total de chunks generados: {len(chunks)}\n\n")
-        f.write("=" * 80 + "\n\n")
-        
-        for i, chunk in enumerate(chunks, 1):
-            f.write(f"CHUNK #{i}\n")
-            f.write(f"Metadata: {chunk.metadata}\n")
-            f.write(f"Content:\n{chunk.page_content}\n")
-            f.write("=" * 80 + "\n\n")
-    
-    print(f"✓ Resumen guardado en: {output_path}")
+    # Chunk principal del contexto
+    context_content = f"""
+PERSONALIDAD DEL CHATBOT: {chatbot_context['personality']}
+TONO: {chatbot_context['tone']}
+ÁREAS DE EXPERTISE: {', '.join(chatbot_context['expertise_areas'])}
 
+GUÍAS DE RESPUESTA:
+{chr(10).join(f"- {guideline}" for guideline in chatbot_context.get('response_guidelines', []))}
+"""
+    
+    chunks.append(Document(
+        page_content=context_content.strip(),
+                metadata={
+            "type": "chatbot_context",
+            "personality": chatbot_context['personality'],
+            "tone": chatbot_context['tone'],
+            "expertise_areas": chatbot_context['expertise_areas'],
+            "response_guidelines": chatbot_context.get('response_guidelines', []),
+            "source": "portfolio.yaml"
+        }
+    ))
+    
+    # Chunks para respuestas comunes
+    common_answers = chatbot_context.get('common_questions_answers', {})
+    for question_type, answer in common_answers.items():
+        answer_content = f"""
+TIPO DE PREGUNTA: {question_type}
+RESPUESTA PREPARADA: {answer}
+"""
+        chunks.append(Document(
+            page_content=answer_content.strip(),
+            metadata={
+                "type": "common_answer",
+                "question_type": question_type,
+                "answer": answer,
+                "source": "portfolio.yaml"
+            }
+        ))
+    
+    return chunks
+
+
+def create_personal_details_chunks(personal_details: Dict[str, Any]) -> List[Document]:
+    """Crea chunks para detalles personales"""
+    chunks = []
+    
+    # Verificar que las claves existen
+    nationality = personal_details.get('nationality', 'No especificado')
+    work_permit = personal_details.get('work_permit', 'No especificado')
+    remote_work = personal_details.get('remote_work', 'No especificado')
+    notice_period = personal_details.get('notice_period', 'No especificado')
+    
+    details_content = f"""
+NACIONALIDAD: {nationality}
+PERMISO DE TRABAJO: {work_permit}
+TRABAJO REMOTO: {remote_work}
+PERÍODO DE NOTIFICACIÓN: {notice_period}
+
+EXPECTATIVAS SALARIALES:
+{chr(10).join(f"- {role['role']}: {role['range_euros_gross_annual']}" for role in personal_details.get('salary_expectations', []))}
+"""
+    
+    chunks.append(Document(
+        page_content=details_content.strip(),
+                metadata={
+            "type": "personal_details",
+            "nationality": nationality,
+            "work_permit": work_permit,
+            "remote_work": remote_work,
+            "notice_period": notice_period,
+            "salary_expectations": personal_details.get('salary_expectations', []),
+            "source": "portfolio.yaml"
+        }
+    ))
+    
+    return chunks
+
+def create_skills_chunks(skills: List[Dict[str, Any]]) -> List[Document]:
+    """Crea chunks para skills con estructura v2.0 (lista)"""
+    chunks = []
+    
+    for skill_cat in skills:
+        category = skill_cat.get('category', 'N/A')
+        items = ", ".join(skill_cat.get('items', []))
+
+        skills_content = f"""
+CATEGORÍA: {category}
+SKILLS: {items}
+"""
+        chunks.append(Document(
+            page_content=skills_content.strip(),
+            metadata={
+                "type": "skills_category",
+                "category": category,
+                "skills": skill_cat.get('items', []),
+                "source": "portfolio.yaml"
+            }
+        ))
+    
+    return chunks
+
+
+
+def create_projects_chunks(projects: Dict[str, Any]) -> List[Document]:
+    """
+    Crea chunks semánticamente ricos para cada proyecto, incluyendo "pistas" de FAQ
+    para mejorar la recuperación de preguntas STAR.
+    """
+    print("Creando chunks de proyectos con Hyper-Enrichment v2...")
+    chunks = []
+    
+    if not projects:
+        print("Advertencia: No se encontraron proyectos en el YAML.")
+        return []
+
+    for project_id, project in projects.items():
+        try:
+            # Prosa base
+            project_prose = f"Proyecto: {project['name']}. Mi rol fue: {project['role']}.\n"
+            project_prose += f"Descripción del proyecto: {project['description']}.\n"
+            
+            # --- INICIO DE HYPER-ENRICHMENT V2 (FAQ) ---
+            # Añadimos una sección explícita de "Preguntas Frecuentes"
+            # Esto le da al RAG un "anzuelo" semántico perfecto.
+            faq_prose = "\n--- Preguntas Frecuentes Relevantes ---\n"
+            has_faq = False
+
+            # Pista para Pregunta 3 (AcuaMattic)
+            if project_id == 'proj_acuamattic':
+                faq_prose += "¿Cuáles fueron los mayores desafíos técnicos al construir el dataset para AcuaMattic y cómo los superaste?\n"
+                faq_prose += "¿Dame un ejemplo de un desafío técnico en un proyecto de IA?\n"
+                has_faq = True
+
+            # Pista para Pregunta 4 (Bridge/Puente)
+            if project_id == 'proj_andes' or project_id == 'proj_spr':
+                faq_prose += "¿Describe una situación donde actuaste como puente entre un equipo técnico y stakeholders no técnicos?\n"
+                faq_prose += "¿Cómo manejaste la comunicación con stakeholders no técnicos?\n"
+                has_faq = True
+                
+            # Pista para la pregunta de ejemplo (Falabella)
+            if project_id == 'proj_taa':
+                faq_prose += "¿Cuáles fueron los desafíos técnicos al migrar el sistema de tiempo y asistencia en Falabella?\n"
+                faq_prose += "¿Dame un ejemplo de modernización de un sistema legacy?\n"
+                has_faq = True
+
+            # Solo añadimos la sección FAQ si es relevante
+            if has_faq:
+                project_prose += faq_prose
+            # --- FIN DE HYPER-ENRICHMENT V2 ---
+
+            # Añadimos los logros
+            project_prose += "\n--- Logros Clave ---\n"
+            achievements = project.get('achievements', [])
+            if achievements:
+                for achievement in achievements:
+                    project_prose += f"- {achievement}\n"
+            else:
+                project_prose += "- Logros no detallados.\n"
+                
+            # Añadimos las tecnologías
+            project_prose += "\n--- Tecnologías Usadas ---\n"
+            technologies = project.get('technologies', [])
+            if technologies:
+                project_prose += f"({', '.join(technologies)})\n"
+            else:
+                project_prose += "- Tecnologías no detalladas.\n"
+
+            # Creamos el Documento LangChain
+            chunks.append(
+                Document(
+                    page_content=project_prose,
+                    metadata={
+                        "type": "project",
+                        "project_id": project_id,
+                        "project_name": project['name'],
+                        "company_ref": project['company_ref'],
+                        "role": project['role'],
+                        "technologies": project.get('technologies', []),
+                        "hardware": project.get('hardware', []),
+                        "achievements": project.get('achievements', []),
+                        "business_impact": project.get('business_impact', ''),
+                        "source": "portfolio.yaml"
+                    }
+                )
+            )
+        
+        except Exception as e:
+            print(f"Error procesando el proyecto {project_id}: {e}")
+            # Continuar con el siguiente proyecto
+            pass
+
+    print(f"Se crearon {len(chunks)} chunks de proyectos.")
+    return chunks
+
+def create_companies_chunks(companies: Dict[str, Any]) -> List[Document]:
+    """Crea chunks para empresas con nueva estructura v2.0"""
+    chunks = []
+    
+    for company_id, company in companies.items():
+        for position in company.get('positions', []):
+            company_content = f"""
+EMPRESA: {company['name']}
+ID: {company_id}
+POSICIÓN: {position['role']}
+DURACIÓN: {position['duration']}
+UBICACIÓN: {position['location']}
+PROYECTOS TRABAJADOS: {', '.join(position.get('projects_worked_on', []))}
+"""
+            
+            chunks.append(Document(
+                page_content=company_content.strip(),
+                metadata={
+                    "type": "company",
+                    "company_id": company_id,
+                    "company_name": company['name'],
+                    "position": position['role'],
+                    "duration": position['duration'],
+                    "location": position['location'],
+                    "projects": position.get('projects_worked_on', []),
+                    "source": "portfolio.yaml"
+                }
+            ))
+    
+    return chunks
+
+def create_skills_showcase_chunks(skills_showcase: Dict[str, Any]) -> List[Document]:
+    """Crea chunks para skills showcase con nueva estructura v2.0"""
+    chunks = []
+    
+    for skill_name, skill_data in skills_showcase.items():
+        skill_content = f"""
+SKILL: {skill_name}
+DESCRIPCIÓN: {skill_data.get('description', 'No especificado')}
+PROYECTOS DONDE SE USÓ: {', '.join(skill_data.get('projects', []))}
+TECNOLOGÍAS CLAVE: {', '.join(skill_data.get('key_technologies', []))}
+"""
+        
+        chunks.append(Document(
+            page_content=skill_content.strip(),
+            metadata={
+                "type": "skill_showcase",
+                "skill_name": skill_name,
+                "description": skill_data.get('description', ''),
+                "projects": skill_data.get('projects', []),
+                "key_technologies": skill_data.get('key_technologies', []),
+                "source": "portfolio.yaml"
+            }
+        ))
+    
+    return chunks
+
+def create_education_chunks(education: List[Dict[str, Any]]) -> List[Document]:
+    """Crea chunks para educación con nueva estructura v2.0"""
+    chunks = []
+    
+    for edu in education:
+        edu_content = f"""
+EDUCACIÓN: {edu.get('degree', 'N/A')}
+INSTITUCIÓN: {edu.get('institution', 'N/A')}
+PERÍODO: {edu.get('period', 'N/A')}
+DETALLES: {edu.get('details', 'No especificado')}
+
+CONOCIMIENTOS ADQUIRIDOS:
+{chr(10).join(f"- {knowledge}" for knowledge in edu.get('knowledge_acquired', []))}
+"""
+        
+        chunks.append(Document(
+            page_content=edu_content.strip(),
+                metadata={
+                "type": "education",
+                "degree": edu.get('degree', 'N/A'),
+                "institution": edu.get('institution', 'N/A'),
+                "period": edu.get('period', 'N/A'),
+                "details": edu.get('details', ''),
+                "knowledge_acquired": edu.get('knowledge_acquired', []),
+                "source": "portfolio.yaml"
+            }
+        ))
+    
+    return chunks
+
+def create_languages_chunks(languages: List[Dict[str, Any]]) -> List[Document]:
+    """Crea chunks para idiomas con nueva estructura v2.0"""
+    chunks = []
+    
+    for lang in languages:
+        lang_content = f"""
+IDIOMA: {lang.get('name', 'N/A')}
+NIVEL: {lang.get('level', 'N/A')}
+"""
+        
+        chunks.append(Document(
+            page_content=lang_content.strip(),
+            metadata={
+                "type": "language",
+                "language": lang.get('name', 'N/A'),
+                "level": lang.get('level', 'N/A'),
+                "source": "portfolio.yaml"
+            }
+        ))
+
+    return chunks
+
+def create_professional_conditions_chunks(professional_conditions: Dict[str, Any]) -> List[Document]:
+    """Crea chunks enriquecidos para condiciones profesionales"""
+    chunks = []
+    
+    # Chunk enriquecido con prosa semánticamente rica
+    conditions_prose = f"""
+Condiciones profesionales y laborales de Álvaro Maldonado.
+Mi disponibilidad actual es: {professional_conditions.get('availability', {}).get('status', 'N/A')}.
+Mi período de pre-aviso es: {professional_conditions.get('availability', {}).get('notice_period', 'N/A')}.
+Trabajo remoto: {professional_conditions.get('availability', {}).get('remote_work', 'N/A')}.
+
+Mi situación de permiso de trabajo es: {professional_conditions.get('work_permit', {}).get('status', 'N/A')}.
+Mi país objetivo es: {professional_conditions.get('work_permit', {}).get('target_country', 'N/A')}.
+
+Mis expectativas salariales: {professional_conditions.get('salary_expectations', {}).get('notes', 'N/A')}
+"""
+    
+    chunks.append(Document(
+        page_content=conditions_prose.strip(),
+        metadata={
+            "type": "professional_conditions",
+            "availability": professional_conditions.get('availability', {}),
+            "work_permit": professional_conditions.get('work_permit', {}),
+            "salary_expectations": professional_conditions.get('salary_expectations', {}),
+            "source": "portfolio.yaml"
+        }
+    ))
+
+    return chunks
+
+def create_philosophy_chunks(philosophy_and_interests: List[Dict[str, Any]]) -> List[Document]:
+    """Crea chunks enriquecidos para filosofía e intereses"""
+    chunks = []
+    
+    # Chunk específico para motivación (pregunta frecuente)
+    motivation_chunk = f"""
+Mi motivación para aceptar un nuevo reto profesional.
+Lo que más me motiva es enfrentarme a problemas que no tienen una solución obvia.
+Disfruto del proceso de análisis, la colaboración y la aplicación de la tecnología para encontrar soluciones creativas a desafíos complejos.
+Mi filosofía se centra en la mentalidad de 'Product Engineer': entender el 'porqué' del negocio antes de diseñar el 'cómo' técnico.
+Soy un profesional autodidacta por naturaleza y dedico tiempo al aprendizaje continuo sobre IA.
+Mi objetivo es utilizar la tecnología para resolver problemas reales y aportar valor medible.
+"""
+    
+    chunks.append(Document(
+        page_content=motivation_chunk.strip(),
+        metadata={
+            "type": "philosophy",
+            "title": "Motivación Profesional",
+            "description": "Motivación para nuevos retos profesionales",
+            "source": "portfolio.yaml"
+        }
+    ))
+    
+    # Chunk general de filosofía
+    philosophy_prose = "Filosofía de trabajo, intereses y motivación profesional de Álvaro Maldonado.\n"
+    for item in philosophy_and_interests:
+        philosophy_prose += f"Título: {item.get('title')}. Descripción: {item.get('description')}\n"
+    
+    chunks.append(Document(
+        page_content=philosophy_prose.strip(),
+        metadata={
+            "type": "philosophy",
+            "title": "Filosofía General",
+            "description": "Filosofía general de trabajo e intereses",
+            "source": "portfolio.yaml"
+        }
+    ))
+
+    return chunks
+
+def prepare_knowledge_base_from_yaml(yaml_data: Dict[str, Any]) -> List[Document]:
+    """Prepara la base de conocimiento desde los datos YAML v2.0"""
+    all_chunks = []
+    
+    logger.info(f"Estructura YAML cargada: {list(yaml_data.keys())}")
+    logger.info("Procesando estructura YAML v2.0")
+    
+    # Procesar cada sección del YAML v2.0
+    if 'personal_info' in yaml_data:
+        logger.info("Procesando personal_info...")
+        all_chunks.extend(create_personal_info_chunks(yaml_data['personal_info']))
+    
+    if 'professional_summary' in yaml_data:
+        logger.info("Procesando professional_summary...")
+        all_chunks.extend(create_professional_summary_chunks(yaml_data['professional_summary']))
+    
+    if 'projects' in yaml_data:
+        logger.info("Procesando projects...")
+        all_chunks.extend(create_projects_chunks(yaml_data['projects']))
+    
+    if 'companies' in yaml_data:
+        logger.info("Procesando companies...")
+        all_chunks.extend(create_companies_chunks(yaml_data['companies']))
+    
+    if 'skills_showcase' in yaml_data:
+        logger.info("Procesando skills_showcase...")
+        all_chunks.extend(create_skills_showcase_chunks(yaml_data['skills_showcase']))
+    
+    if 'education' in yaml_data:
+        logger.info("Procesando education...")
+        all_chunks.extend(create_education_chunks(yaml_data['education']))
+    
+    if 'languages' in yaml_data:
+        logger.info("Procesando languages...")
+        all_chunks.extend(create_languages_chunks(yaml_data['languages']))
+    
+    if 'professional_conditions' in yaml_data:
+        logger.info("Procesando professional_conditions...")
+        all_chunks.extend(create_professional_conditions_chunks(yaml_data['professional_conditions']))
+    
+    if 'philosophy_and_interests' in yaml_data:
+        logger.info("Procesando philosophy_and_interests...")
+        all_chunks.extend(create_philosophy_chunks(yaml_data['philosophy_and_interests']))
+    
+    if 'skills' in yaml_data:
+        logger.info("Procesando skills...")
+        all_chunks.extend(create_skills_chunks(yaml_data['skills']))
+    
+    if 'chatbot_context' in yaml_data:
+        logger.info("Procesando chatbot_context...")
+        all_chunks.extend(create_chatbot_context_chunks(yaml_data['chatbot_context']))
+    
+    logger.info(f"Total de chunks creados: {len(all_chunks)}")
+    return all_chunks
+
+def main():
+    """Función principal"""
+    try:
+        # Configuración
+        bucket_name = "almapi-portfolio-data"
+        blob_name = "portfolio.yaml"
+        
+        logger.info("Cargando portfolio.yaml desde Google Cloud Storage...")
+        yaml_data = load_yaml_from_gcs(bucket_name, blob_name)
+        
+        logger.info("Preparando base de conocimiento...")
+        chunks = prepare_knowledge_base_from_yaml(yaml_data)
+        
+        logger.info(f"Base de conocimiento preparada con {len(chunks)} chunks")
+
+        # Mostrar estadísticas
+        type_counts = {}
+        for chunk in chunks:
+            chunk_type = chunk.metadata.get('type', 'unknown')
+            type_counts[chunk_type] = type_counts.get(chunk_type, 0) + 1
+        
+        logger.info("Estadísticas por tipo de chunk:")
+        for chunk_type, count in type_counts.items():
+            logger.info(f"  {chunk_type}: {count}")
+        
+        return chunks
+        
+    except Exception as e:
+        logger.error(f"Error preparando base de conocimiento: {e}")
+        raise
 
 if __name__ == "__main__":
-    # Test del script
-    portfolio_path = "data/portfolio.yaml"
-    
-    if not Path(portfolio_path).exists():
-        print(f"❌ Error: No se encontró {portfolio_path}")
-        exit(1)
-    
-    print(f"📄 Procesando {portfolio_path}...")
-    chunks = process_portfolio_to_chunks(portfolio_path)
-    
-    print(f"✓ {len(chunks)} chunks generados")
-    
-    # Mostrar estadísticas
-    types = {}
-    for chunk in chunks:
-        chunk_type = chunk.metadata.get('type', 'unknown')
-        types[chunk_type] = types.get(chunk_type, 0) + 1
-    
-    print("\n📊 Distribución por tipo:")
-    for chunk_type, count in sorted(types.items()):
-        print(f"  - {chunk_type}: {count} chunks")
-    
-    # Guardar resumen
-    save_chunks_summary(chunks)
-    print("\n✅ Preparación de datos completada")
-
+    chunks = main()
+    print(f"✅ Base de conocimiento preparada con {len(chunks)} chunks")

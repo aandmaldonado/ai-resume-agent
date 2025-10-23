@@ -28,7 +28,7 @@ Transformar la experiencia de revisión de portfolios profesionales mediante un 
 
 #### **Entregables**
 - [x] Arquitectura del sistema definida
-- [x] Integración Dialogflow ES + Vertex AI
+- [x] Integración Dialogflow ES + HuggingFace
 - [x] API REST básica (FastAPI)
 - [x] Base de datos PostgreSQL
 - [x] Frontend React básico
@@ -218,28 +218,28 @@ MVP:
   - Backend: Python/FastAPI
   - Frontend: React básico
   - Base de datos: PostgreSQL
-  - IA: Dialogflow ES + Vertex AI
+  - IA: Dialogflow ES + HuggingFace
   - Deploy: Google Cloud Run
 
 V1.0:
   - Backend: FastAPI + Redis
   - Frontend: React + TypeScript
   - Base de datos: PostgreSQL + particionado
-  - IA: Dialogflow ES + Vertex AI + ICL
+  - IA: Dialogflow ES + HuggingFace + ICL
   - Deploy: GCP + Load Balancer
 
 V2.0:
   - Backend: FastAPI + Redis + Celery
   - Frontend: React + PWA
   - Base de datos: PostgreSQL + Data Warehouse
-  - IA: Vertex AI + ICL + Smart Context Filtering
+  - IA: HuggingFace + ICL + Smart Context Filtering
   - Deploy: GKE + Auto-scaling
 
 V3.0:
   - Backend: Microservicios + Event-driven
   - Frontend: React + Mobile apps
   - Base de datos: Multi-tenant + Sharding
-  - IA: Vertex AI + Custom models
+  - IA: HuggingFace + Custom models
   - Deploy: Multi-region + CDN
 ```
 
@@ -305,7 +305,7 @@ Mitigación:
   - Preparar migración a microservicios
   - Monitoreo continuo de performance
 
-Riesgo: "Costos de Vertex AI"
+Riesgo: "Costos de HuggingFace"
 Probabilidad: Alta
 Impacto: Medio
 Mitigación:

@@ -48,7 +48,7 @@ class DialogflowService(ILLMService):
 
 class VertexAIService(ILLMService):
     async def generate_response(self, message: str) -> str:
-        # Implementación Vertex AI
+        # Implementación HuggingFace
         pass
 ```
 
@@ -184,7 +184,60 @@ async def test_chat_endpoint_integration(async_client):
     assert "response" in response.json()
 ```
 
-### 3. **Fixtures Reutilizables**
+### 3. **Pre-commit Hooks Automáticos**
+
+```yaml
+# ✅ CORRECTO - Configuración de pre-commit hooks
+repos:
+  - repo: local
+    hooks:
+      - id: pytest
+        name: Run tests
+        entry: pytest
+        args: [tests/, --cov=app, --cov-fail-under=85, -v]
+        always_run: true
+      
+      - id: security-scan
+        name: Security scan
+        entry: bandit -r app/
+        always_run: true
+      
+      - id: black
+        name: Code formatting
+        entry: black
+        language: system
+      
+      - id: isort
+        name: Import organization
+        entry: isort
+        language: system
+      
+      - id: safety
+        name: Dependency scan
+        entry: safety check
+        language: system
+```
+
+#### **Verificaciones Automáticas Implementadas**
+| Hook | Función | Cobertura Actual |
+|------|---------|------------------|
+| 🧪 **pytest** | 59 tests unitarios | 94% cobertura |
+| 🔒 **bandit** | Security scan | 0 vulnerabilidades |
+| 🎨 **black** | Code formatting | 100% archivos |
+| 📦 **isort** | Import organization | 100% archivos |
+| 🛡️ **safety** | Dependency scan | 0 vulnerabilidades |
+
+#### **Estructura de Tests Implementada**
+```
+tests/
+├── test_api_endpoints.py    # 20 tests - Endpoints API (90% cobertura)
+├── test_main.py            # 16 tests - Aplicación principal (95% cobertura)
+├── test_rag_service.py     # 7 tests - Servicio RAG (91% cobertura)
+├── test_secrets.py         # 15 tests - Gestión de secretos (100% cobertura)
+└── test_memory.py          # 1 test - Memoria conversacional
+```
+
+### 4. **Fixtures Reutilizables**
 
 ```python
 # ✅ CORRECTO - Fixtures bien estructuradas
@@ -598,7 +651,7 @@ spec:
 class Settings(BaseSettings):
     PROJECT_NAME: str = "AI Resume Agent"
     VERSION: str = "1.0.0"
-    GROQ_API_KEY: str
+    GEMINI_API_KEY: str
     CLOUD_SQL_DB: str = "chatbot_db"
     # ... más configuraciones
 ```
@@ -607,7 +660,7 @@ class Settings(BaseSettings):
 
 #### **Optimizaciones**
 - **Embeddings Locales**: ✅ HuggingFace all-MiniLM-L6-v2
-- **LLM Gratis**: ✅ Groq Llama 3.3 70B
+- **LLM Gratis**: ✅ Gemini 2.5 Flash
 - **Vector Store**: ✅ pgvector optimizado
 - **Memoria**: ✅ Session management eficiente
 

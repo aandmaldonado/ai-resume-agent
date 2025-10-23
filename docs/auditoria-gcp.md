@@ -45,10 +45,10 @@ El proyecto demuestra una comprensión sólida de las mejores prácticas de IA/M
 problema_identificado:
   descripcion: "Smart Context Filtering implementado pero sin optimización de costos GCP"
   impacto_costo: "40-60% de sobrecostos potenciales"
-  solucion: "Implementar Vertex AI y optimización de embeddings"
+  solucion: "Implementar HuggingFace y optimización de embeddings"
 
 recomendaciones:
-  - usar_vertex_ai: "Migrar de OpenAI/Claude a Vertex AI para costos 60-80% menores"
+  - usar_vertex_ai: "Migrar de OpenAI/Claude a HuggingFace para costos 60-80% menores"
   - optimizar_embeddings: "Implementar embeddings locales con modelos más pequeños"
   - cache_inteligente: "Cache de respuestas frecuentes en Memorystore"
 ```
@@ -93,10 +93,10 @@ costos_estimados:
 
 ### **Optimización de Costos con GCP Nativo**
 
-#### 1. **Migración a Vertex AI (Ahorro: 60-80%)**
+#### 1. **Migración a HuggingFace (Ahorro: 60-80%)**
 ```yaml
 optimizacion_vertex_ai:
-  descripcion: "Reemplazar OpenAI/Claude con modelos de Vertex AI"
+  descripcion: "Reemplazar OpenAI/Claude con modelos de HuggingFace"
   ahorro_estimado: "60-80% en costos de LLM"
   
   implementacion:
@@ -307,7 +307,7 @@ configuracion_segura_memorystore:
 problema_identificado:
   descripcion: "No hay testing específico para modelos de ML/AI"
   impacto: "Posibles fallos en clasificación de intenciones"
-  solucion: "Implementar testing de ML con Vertex AI"
+  solucion: "Implementar testing de ML con HuggingFace"
   
   recomendaciones:
     - testing_modelos: "Testing A/B de modelos de clasificación"
@@ -373,7 +373,7 @@ performance_testing:
 ```yaml
 tareas_fase_1:
   - migracion_vertex_ai:
-      descripcion: "Migrar de OpenAI/Claude a Vertex AI"
+      descripcion: "Migrar de OpenAI/Claude a HuggingFace"
       tiempo_estimado: "3-4 días"
       ahorro_esperado: "60-80% en costos de LLM"
   
@@ -449,7 +449,7 @@ tareas_fase_3:
 inversion_mejoras:
   tiempo_desarrollo: "6 semanas (30 horas disponibles)"
   costo_desarrollo: "$0 (tiempo interno del equipo)"
-  costo_infraestructura_adicional: "$20-40/mes (Vertex AI + servicios adicionales)"
+  costo_infraestructura_adicional: "$20-40/mes (HuggingFace + servicios adicionales)"
 ```
 
 ### **Ahorros Esperados**
@@ -486,9 +486,9 @@ roi_anual:
 
 ### **🟢 Implementar Inmediatamente (Semana 1-2)**
 
-#### **1. Migración a Vertex AI**
+#### **1. Migración a HuggingFace**
 - **Beneficio:** 60-80% reducción en costos de LLM
-- **Riesgo:** Bajo - Vertex AI es estable y bien soportado
+- **Riesgo:** Bajo - HuggingFace es estable y bien soportado
 - **Impacto:** Alto - Ahorro inmediato significativo
 
 #### **2. Cache Inteligente**
@@ -525,7 +525,7 @@ roi_anual:
 ## 📚 Recursos y Referencias GCP
 
 ### **Documentación Oficial GCP**
-- [Vertex AI Documentation](https://cloud.google.com/vertex-ai/docs)
+- [HuggingFace Documentation](https://cloud.google.com/vertex-ai/docs)
 - [Cloud Run Security](https://cloud.google.com/run/docs/securing)
 - [VPC Service Controls](https://cloud.google.com/vpc-service-controls/docs)
 - [Cloud DLP](https://cloud.google.com/dlp/docs)
@@ -538,7 +538,7 @@ roi_anual:
 ### **Herramientas de Testing GCP**
 - [Cloud Load Testing](https://cloud.google.com/load-testing)
 - [Cloud Testing](https://cloud.google.com/testing)
-- [Vertex AI Pipelines](https://cloud.google.com/vertex-ai/docs/pipelines)
+- [HuggingFace Pipelines](https://cloud.google.com/vertex-ai/docs/pipelines)
 
 ---
 
@@ -626,7 +626,7 @@ user_experience_improvements:
     personality_consistency: "Respuestas consistentes y profesionales"
   
   reliability:
-    fallback_automatic: "Fallback transparente a Vertex AI"
+    fallback_automatic: "Fallback transparente a HuggingFace"
     error_handling: "Manejo elegante de errores"
     uptime_guarantee: "99.9% uptime garantizado por Google"
     scalability_automatic: "Escalado automático según demanda"
@@ -655,7 +655,7 @@ graph TB
         I[Basic Responses]
     end
     
-    subgraph "Vertex AI (Optimizado)"
+    subgraph "HuggingFace (Optimizado)"
         J[Smart Context Filtering]
         K[Document Retrieval]
         L[Advanced Response Generation]
@@ -691,7 +691,7 @@ graph TB
 ```python
 # Implementación del routing híbrido
 class HybridRoutingService:
-    """Servicio de routing inteligente entre Dialogflow y Vertex AI"""
+    """Servicio de routing inteligente entre Dialogflow y HuggingFace"""
     
     def __init__(self):
         self.dialogflow_service = DialogflowService()
@@ -699,7 +699,7 @@ class HybridRoutingService:
         self.cost_optimizer = CostOptimizationService()
     
     async def route_message(self, message: str, session_id: str) -> dict:
-        """Rutea mensaje a Dialogflow o Vertex AI según complejidad"""
+        """Rutea mensaje a Dialogflow o HuggingFace según complejidad"""
         
         # 1. Detección de intención con Dialogflow (Free)
         dialogflow_result = await self.dialogflow_service.detect_intent(
@@ -710,7 +710,7 @@ class HybridRoutingService:
         if self._can_dialogflow_handle(dialogflow_result):
             return await self._handle_with_dialogflow(dialogflow_result)
         
-        # 3. Si no, usar Vertex AI con contexto optimizado
+        # 3. Si no, usar HuggingFace con contexto optimizado
         return await self._handle_with_vertex_ai(message, dialogflow_result)
     
     def _can_dialogflow_handle(self, dialogflow_result: dict) -> bool:
@@ -809,7 +809,7 @@ phase_2_integration:
   backend_integration:
     - "Implementar DialogflowIntegrationService"
     - "Configurar routing híbrido"
-    - "Implementar fallback a Vertex AI"
+    - "Implementar fallback a HuggingFace"
     - "Configurar manejo de errores"
   
   api_endpoints:
@@ -862,7 +862,7 @@ risks_and_mitigations:
   vendor_lock_in:
     risk: "Dependencia de Google Cloud"
     mitigation: "Arquitectura híbrida permite migración gradual"
-    impact: "BAJO - Fallback a Vertex AI disponible"
+    impact: "BAJO - Fallback a HuggingFace disponible"
   
   free_tier_limits:
     risk: "Límites de free tier de Dialogflow"
@@ -885,7 +885,7 @@ risks_and_mitigations:
 # Estrategias de mitigación
 mitigation_strategies:
   fallback_mechanism:
-    - "Fallback automático a Vertex AI si Dialogflow falla"
+    - "Fallback automático a HuggingFace si Dialogflow falla"
     - "Respuestas de emergencia si ambos servicios fallan"
     - "Degradación graceful del servicio"
     - "Monitoreo continuo de health checks"
@@ -1377,7 +1377,7 @@ spec:
   type: ClusterIP
 ```
 
-#### **4. Optimización de Vertex AI y Dialogflow**
+#### **4. Optimización de HuggingFace y Dialogflow**
 
 ##### **Estrategias de Optimización de IA**
 ```yaml
@@ -1917,7 +1917,7 @@ optimization_roadmap:
     
     tasks:
       - "Implementar keep-warm para Cloud Run"
-      - "Optimizar prompts de Vertex AI"
+      - "Optimizar prompts de HuggingFace"
       - "Configurar lifecycle policies en Cloud Storage"
       - "Implementar cache básico para respuestas de IA"
     

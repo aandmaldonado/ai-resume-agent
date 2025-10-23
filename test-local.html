@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Chatbot Local - Diseño Productivo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 100%;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header del chatbot (replicando chatbot-section.tsx) */
+        .chatbot-header {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: #f3f4f6;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .profile-image {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 2px;
+        }
+
+        .status {
+            font-size: 14px;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .minimize-btn {
+            color: #6b7280;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: color 0.2s;
+        }
+
+        .minimize-btn:hover {
+            color: #374151;
+        }
+
+        /* Área de mensajes */
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: white;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            background: #3b82f6;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message.bot {
+            background: #e5e7eb;
+            color: #111827;
+            margin-right: auto;
+        }
+
+        .message.bot.dark {
+            background: #374151;
+            color: white;
+        }
+
+        .sources {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .loading {
+            color: #6b7280;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        /* Input area */
+        .input-area {
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: white;
+            color: #111827;
+            font-size: 14px;
+            resize: none;
+            min-height: 40px;
+            max-height: 120px;
+            font-family: inherit;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .message-input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .send-btn {
+            padding: 8px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            background: #2563eb;
+        }
+
+        .send-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .char-count {
+            font-size: 12px;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .char-count.green { color: #10b981; }
+        .char-count.yellow { color: #f59e0b; }
+        .char-count.red { color: #ef4444; }
+
+        /* Mensajes de error de validación inline */
+        .error-text {
+            color: #ef4444;
+            font-size: 12px;
+            margin-left: 8px;
+            font-weight: 500;
+        }
+
+        /* Banners discretos para analytics */
+        .discrete-banner {
+            background: #f0f8ff;
+            border: 1px solid #3b82f6;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 8px 16px;
+            font-size: 12px;
+            color: #1e40af;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .discrete-banner button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 8px;
+            font-size: 11px;
+        }
+
+        .discrete-banner .close-banner {
+            background: #9ca3af;
+            color: white;
+            float: right;
+            margin-left: 8px;
+            padding: 2px 6px;
+            font-size: 10px;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Modales */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            color: #3b82f6;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #3b82f6;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Botones de prueba */
+        .test-controls {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .test-controls h4 {
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .test-btn {
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            color: white;
+        }
+
+        .test-btn.green { background: #28a745; }
+        .test-btn.red { background: #dc3545; }
+        .test-btn.blue { background: #17a2b8; }
+        .test-btn.yellow { background: #ffc107; color: black; }
+        .test-btn.purple { background: #9c27b0; }
+        .test-btn.pink { background: #e91e63; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header del chatbot (replicando chatbot-section.tsx) -->
+        <div class="chatbot-header">
+            <div class="profile-image">AM</div>
+            <div class="profile-info">
+                <div class="profile-name">Álvaro Maldonado</div>
+                <div class="status">
+                    <div class="status-dot"></div>
+                    <span id="statusText">En línea</span>
+                </div>
+            </div>
+            <div class="minimize-btn" onclick="toggleChat()">−</div>
+        </div>
+
+        <!-- Banner discreto para captura de datos -->
+        <div id="dataCaptureBanner" class="discrete-banner">
+            <span>💡 ¿Te gustaría que Álvaro te envíe información adicional sobre proyectos específicos? </span>
+            <button onclick="showDataCaptureModal()">Compartir datos</button>
+            <button onclick="rejectDataCapture()" style="background: #6b7280; margin-left: 4px;">No, gracias</button>
+            <button class="close-banner" onclick="hideBanner('dataCaptureBanner')">✕</button>
+        </div>
+
+        <!-- Banner discreto para GDPR -->
+        <div id="gdprBanner" class="discrete-banner">
+            <span>🔒 Para enviarte información personalizada, necesito tu consentimiento para procesar datos según GDPR </span>
+            <button onclick="showGDPRModal()">Dar consentimiento</button>
+            <button onclick="rejectGDPRConsent()" style="background: #6b7280; margin-left: 4px;">No, gracias</button>
+            <button class="close-banner" onclick="hideBanner('gdprBanner')">✕</button>
+        </div>
+
+        <!-- Banner discreto para cambio de opinión (datos) -->
+        <div id="dataCaptureChangeMindBanner" class="discrete-banner" style="background: #f0f8ff; border-color: #3b82f6; color: #1e40af;">
+            <span>💭 ¿Cambiaste de opinión? Puedes compartir tus datos para recibir información personalizada </span>
+            <button onclick="showDataCaptureModal()" style="background: #3b82f6;">Compartir datos</button>
+            <button onclick="hideBanner('dataCaptureChangeMindBanner')" style="background: #6b7280; margin-left: 4px;">No, gracias</button>
+        </div>
+
+        <!-- Banner discreto para cambio de opinión (GDPR) -->
+        <div id="gdprChangeMindBanner" class="discrete-banner" style="background: #f0f8ff; border-color: #3b82f6; color: #1e40af;">
+            <span>💭 ¿Cambiaste de opinión? Puedes dar tu consentimiento GDPR para procesar datos </span>
+            <button onclick="showGDPRModal()" style="background: #3b82f6;">Dar consentimiento</button>
+            <button onclick="hideBanner('gdprChangeMindBanner')" style="background: #6b7280; margin-left: 4px;">No, gracias</button>
+        </div>
+
+        <!-- Área de mensajes -->
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <!-- Input area -->
+        <div class="input-area">
+            <div class="input-container">
+                <textarea 
+                    id="messageInput" 
+                    class="message-input"
+                    placeholder="Escribe tu mensaje..."
+                    maxlength="600"
+                    rows="1"
+                ></textarea>
+                <button id="sendBtn" class="send-btn" onclick="sendMessage()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="charCount" class="char-count green">0/600</div>
+        </div>
+    </div>
+
+    <!-- Botones de prueba -->
+    <div class="test-controls">
+        <h4>🧪 Modo Prueba - Flujo No Intrusivo</h4>
+        <div class="test-buttons">
+            <button class="test-btn green" onclick="testFlow()">🚀 Probar Flujo Completo</button>
+            <button class="test-btn red" onclick="resetFlow()">🔄 Resetear Estado</button>
+            <button class="test-btn blue" onclick="showDataCaptureBanner()">📝 Mostrar Banner Captura</button>
+            <button class="test-btn yellow" onclick="showGDPRBanner()">🔒 Mostrar Banner GDPR</button>
+            <button class="test-btn purple" onclick="showDataCaptureChangeMindBanner()">💭 Banner Cambio Datos</button>
+            <button class="test-btn pink" onclick="showGDPRChangeMindBanner()">💭 Banner Cambio GDPR</button>
+        </div>
+    </div>
+
+    <!-- Modal para captura de datos -->
+    <div id="dataCaptureModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📝 Información de Contacto</h3>
+                <span class="close" onclick="closeModal('dataCaptureModal')">&times;</span>
+            </div>
+            <p style="margin-bottom: 20px; color: #666;">
+                Para brindarte un mejor servicio, nos gustaría conocer un poco más sobre ti.
+            </p>
+            <form id="dataCaptureForm" novalidate>
+                <div class="form-group">
+                    <label for="email">Email * <span id="emailError" class="error-text"></span></label>
+                    <input type="text" id="email" required placeholder="nombre@empresa.com" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false">
+                </div>
+                <div class="form-group">
+                    <label for="linkedin">LinkedIn <span id="linkedinError" class="error-text"></span></label>
+                    <input type="text" id="linkedin" placeholder="linkedin.com/in/tu-perfil o tu-username" autocomplete="url" autocapitalize="none" spellcheck="false">
+                </div>
+                <div class="form-group">
+                    <label for="userType">Tipo de Usuario * <span id="userTypeError" class="error-text"></span></label>
+                    <select id="userType">
+                        <option value="">Seleccionar...</option>
+                        <option value="HR">Profesional RRHH</option>
+                        <option value="IT">Profesional TI</option>
+                        <option value="OT">Otro</option>
+                    </select>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" onclick="closeModal('dataCaptureModal')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Enviar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para consentimiento GDPR -->
+    <div id="gdprModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">🔒 Consentimiento GDPR</h3>
+                <span class="close" onclick="closeModal('gdprModal')">&times;</span>
+            </div>
+            <p style="margin-bottom: 20px; color: #666;">
+                Para continuar, necesitamos tu consentimiento para procesar tus datos de acuerdo con el GDPR.
+            </p>
+            <form id="gdprForm">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="analyticsConsent" required>
+                        Consentimiento para Analytics
+                    </label>
+                    <small style="display: block; color: #666; margin-top: 5px;">
+                        Permite el análisis de interacciones para mejorar el servicio
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="dataProcessingConsent" required>
+                        Consentimiento para Procesamiento de Datos
+                    </label>
+                    <small style="display: block; color: #666; margin-top: 5px;">
+                        Permite el almacenamiento y procesamiento de tus datos de contacto
+                    </small>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" onclick="closeModal('gdprModal')">Cancelar</button>
+                    <button type="submit" class="btn-primary">Aceptar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Esperar a que el DOM esté completamente cargado
+        document.addEventListener('DOMContentLoaded', function() {
+            const API_URL = 'http://localhost:8080/api/v1';
+            const chatMessages = document.getElementById('chatMessages');
+            const messageInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const statusText = document.getElementById('statusText');
+            const charCount = document.getElementById('charCount');
+
+            // Variables de estado
+            let currentSessionId = null;
+            let dataCaptured = false;
+            let gdprConsentGiven = false;
+            let messageCount = 0;
+            let dataCaptureBannerShown = false;
+            let gdprBannerShown = false;
+
+            // Generar session_id único
+            currentSessionId = `user-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+            // Agregar mensaje de bienvenida
+            addMessage('bot', '¡Hola! 👋 Soy Álvaro. Estoy aquí para responder tus preguntas sobre mi experiencia profesional, educación y otros temas laborales. ¡Pregúntame lo que necesites! 😊');
+
+            // Auto-resize textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+                updateCharCount();
+            });
+
+            // Manejar Enter para enviar
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Función para actualizar contador de caracteres
+            function updateCharCount() {
+                const count = messageInput.value.length;
+                charCount.textContent = `${count}/600`;
+                
+                if (count === 600) {
+                    charCount.className = 'char-count red';
+                } else if (count > 500) {
+                    charCount.className = 'char-count yellow';
+                } else {
+                    charCount.className = 'char-count green';
+                }
+            }
+
+            // Función para agregar mensajes
+            function addMessage(type, content, isHTML = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+                
+                if (isHTML) {
+                    messageDiv.innerHTML = content;
+                } else {
+                    messageDiv.textContent = content;
+                }
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // Función para detectar comandos de reactivación
+            function detectReactivationCommands(message) {
+                const lowerMessage = message.toLowerCase();
+                
+                // Comandos para reactivar captura de datos
+                if (lowerMessage.includes('compartir datos') || 
+                    lowerMessage.includes('quiero compartir') ||
+                    lowerMessage.includes('cambiar de opinión') ||
+                    lowerMessage.includes('datos de contacto')) {
+                    if (!dataCaptured && dataCaptureBannerShown) {
+                        window.showBanner('dataCaptureChangeMindBanner');
+                        return true;
+                    }
+                }
+                
+                // Comandos para reactivar GDPR
+                if (lowerMessage.includes('consentimiento') || 
+                    lowerMessage.includes('gdpr') ||
+                    lowerMessage.includes('aceptar términos') ||
+                    lowerMessage.includes('procesar datos')) {
+                    if (!gdprConsentGiven && gdprBannerShown) {
+                        window.showBanner('gdprChangeMindBanner');
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+
+            // Función para enviar mensaje
+            async function sendMessage() {
+                const message = messageInput.value.trim();
+                if (!message) return;
+
+                // Detectar comandos de reactivación antes de enviar
+                if (detectReactivationCommands(message)) {
+                    addMessage('user', message);
+                    messageInput.value = '';
+                    messageInput.style.height = 'auto';
+                    updateCharCount();
+                    return; // No enviar al backend, solo mostrar banner
+                }
+
+                // Mostrar mensaje del usuario
+                addMessage('user', message);
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                updateCharCount();
+
+                // Mostrar loading
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'loading';
+                loadingDiv.id = 'loading';
+                loadingDiv.textContent = '✍🏼 Escribiendo...';
+                chatMessages.appendChild(loadingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                try {
+                    const response = await fetch(`${API_URL}/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            message,
+                            session_id: currentSessionId,
+                            user_type: 'IT'
+                        })
+                    });
+
+                    // Remover loading
+                    document.getElementById('loading')?.remove();
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.detail || 'Error en la respuesta');
+                    }
+
+                    const data = await response.json();
+                    
+                    // Incrementar contador de mensajes
+                    messageCount++;
+
+                    // SIEMPRE mostrar la respuesta del RAG (flujo no intrusivo)
+                    let botMessage = data.message;
+                    
+                    // El backend ahora SIEMPRE proporciona una respuesta RAG
+                    // No necesitamos generar una respuesta adicional
+                    
+                    // Fuentes eliminadas del frontend para mejor UX
+
+                    addMessage('bot', botMessage, true);
+
+                    // Manejar banners discretos después de mostrar la respuesta
+                    handleDiscreteFlow(data);
+
+                } catch (error) {
+                    document.getElementById('loading')?.remove();
+                    statusText.textContent = '❌ Error de conexión';
+                    statusText.style.color = '#ef4444';
+                    addMessage('bot', 'Lo siento, hubo un error al procesar tu pregunta. Por favor, intenta de nuevo.');
+                }
+            }
+
+            // Función para obtener respuesta RAG cuando el backend no la proporciona
+            async function getRAGResponse(message) {
+                try {
+                    const response = await fetch(`${API_URL}/chat`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            message: message,
+                            session_id: currentSessionId,
+                            user_type: 'IT',
+                            force_rag: true
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data.message || 'Lo siento, no pude generar una respuesta en este momento.';
+                    }
+                } catch (error) {
+                    console.error('Error obteniendo respuesta RAG:', error);
+                }
+                return 'Lo siento, no pude generar una respuesta en este momento.';
+            }
+
+            // Manejar flujo discreto (no intrusivo)
+            function handleDiscreteFlow(data) {
+                // Mostrar banner de captura de datos después de 3 mensajes (timing tardío)
+                if (messageCount >= 3 && !dataCaptured && !dataCaptureBannerShown) {
+                    setTimeout(() => {
+                        window.showBanner('dataCaptureBanner');
+                        dataCaptureBannerShown = true;
+                    }, 2000); // 2 segundos después de la respuesta
+                }
+
+                // Mostrar banner GDPR después de capturar datos
+                if (dataCaptured && !gdprConsentGiven && !gdprBannerShown) {
+                    setTimeout(() => {
+                        window.showBanner('gdprBanner');
+                        gdprBannerShown = true;
+                    }, 2000);
+                }
+            }
+
+            // Funciones de UI (definir globalmente para que estén disponibles en onclick)
+            window.showBanner = function(bannerId) {
+                const banner = document.getElementById(bannerId);
+                if (banner) {
+                    banner.style.display = 'block';
+                }
+            };
+
+            window.hideBanner = function(bannerId) {
+                const banner = document.getElementById(bannerId);
+                if (banner) {
+                    banner.style.display = 'none';
+                }
+            };
+
+            window.showModal = function(modalId) {
+                document.getElementById(modalId).style.display = 'block';
+            };
+
+            window.closeModal = function(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            };
+
+            window.showDataCaptureModal = function() {
+                window.hideBanner('dataCaptureBanner');
+                window.showModal('dataCaptureModal');
+            };
+
+            window.showGDPRModal = function() {
+                window.hideBanner('gdprBanner');
+                window.showModal('gdprModal');
+            };
+
+            // Funciones para rechazar captura de datos y GDPR
+            window.rejectDataCapture = function() {
+                dataCaptured = false; // Marcar como rechazado
+                dataCaptureBannerShown = true; // No mostrar más el banner original
+                window.hideBanner('dataCaptureBanner');
+                addMessage('bot', '✅ Entendido. Puedes continuar con la conversación sin compartir datos adicionales.');
+                
+                // Mostrar banner de "cambio de opinión" después de 30 segundos
+                setTimeout(() => {
+                    window.showBanner('dataCaptureChangeMindBanner');
+                }, 30000); // 30 segundos
+            };
+
+            window.rejectGDPRConsent = function() {
+                gdprConsentGiven = false; // Marcar como rechazado
+                gdprBannerShown = true; // No mostrar más el banner original
+                window.hideBanner('gdprBanner');
+                addMessage('bot', '✅ Entendido. Continuaremos sin procesar datos adicionales según GDPR.');
+                
+                // Mostrar banner de "cambio de opinión" después de 30 segundos
+                setTimeout(() => {
+                    window.showBanner('gdprChangeMindBanner');
+                }, 30000); // 30 segundos
+            };
+
+            // Funciones de prueba
+            window.testFlow = function() {
+                addMessage('bot', '🧪 Modo prueba activado. Simulando flujo completo...');
+                
+                // Simular 3 mensajes para activar banner de captura
+                messageCount = 3;
+                
+                setTimeout(() => {
+                    window.showBanner('dataCaptureBanner');
+                    dataCaptureBannerShown = true;
+                }, 1000);
+            };
+
+            window.resetFlow = function() {
+                messageCount = 0;
+                dataCaptured = false;
+                gdprConsentGiven = false;
+                dataCaptureBannerShown = false;
+                gdprBannerShown = false;
+                
+                window.hideBanner('dataCaptureBanner');
+                window.hideBanner('gdprBanner');
+                
+                addMessage('bot', '🔄 Estado del flujo reseteado. Puedes empezar de nuevo.');
+            };
+
+            window.showDataCaptureBanner = function() {
+                window.showBanner('dataCaptureBanner');
+                dataCaptureBannerShown = true;
+            };
+
+            window.showGDPRBanner = function() {
+                window.showBanner('gdprBanner');
+                gdprBannerShown = true;
+            };
+
+            window.showDataCaptureChangeMindBanner = function() {
+                window.showBanner('dataCaptureChangeMindBanner');
+            };
+
+            window.showGDPRChangeMindBanner = function() {
+                window.showBanner('gdprChangeMindBanner');
+            };
+
+            window.toggleChat = function() {
+                // Función para minimizar/expandir (placeholder)
+                console.log('Toggle chat');
+            };
+
+            // Manejar envío de datos de captura
+            document.getElementById('dataCaptureForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Validaciones
+                const email = document.getElementById('email').value.trim();
+                const linkedin = document.getElementById('linkedin').value.trim();
+                const userType = document.getElementById('userType').value;
+
+                // Limpiar mensajes previos
+                const emailErrorEl = document.getElementById('emailError');
+                const linkedinErrorEl = document.getElementById('linkedinError');
+                const userTypeErrorEl = document.getElementById('userTypeError');
+                if (emailErrorEl) emailErrorEl.textContent = '';
+                if (linkedinErrorEl) linkedinErrorEl.textContent = '';
+                if (userTypeErrorEl) userTypeErrorEl.textContent = '';
+
+                // Email obligatorio y con formato válido
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!email) {
+                    if (emailErrorEl) emailErrorEl.textContent = 'email obligatorio';
+                    return;
+                }
+                if (!emailRegex.test(email)) {
+                    if (emailErrorEl) emailErrorEl.textContent = 'formato de email incorrecto';
+                    return;
+                }
+
+                // LinkedIn opcional pero con formato válido si se proporciona
+                if (linkedin) {
+                    // Validación más flexible para LinkedIn
+                    const linkedinRegex = /^(https?:\/\/)?(www\.)?linkedin\.com\/(in\/)?[\w\-\.]+\/?$|^[\w\-\.]+$/;
+                    if (!linkedinRegex.test(linkedin)) {
+                        if (linkedinErrorEl) linkedinErrorEl.textContent = 'formato de LinkedIn incorrecto';
+                        return;
+                    }
+                }
+
+                // Tipo de usuario obligatorio
+                if (!userType) {
+                    if (userTypeErrorEl) userTypeErrorEl.textContent = 'obligatorio';
+                    return;
+                }
+
+                // (sin alerts, mensajes inline ya aplicados)
+
+                const formData = {
+                    session_id: currentSessionId,
+                    email,
+                    linkedin: linkedin || null,
+                    user_type: userType
+                };
+
+                try {
+                    const response = await fetch(`${API_URL}/capture-data`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (response.ok) {
+                        dataCaptured = true;
+                        window.closeModal('dataCaptureModal');
+                        addMessage('bot', '✅ Gracias por proporcionar tu información. Ahora puedo brindarte un mejor servicio.');
+                        
+                        // Mostrar banner GDPR después de capturar datos
+                        setTimeout(() => {
+                            window.showBanner('gdprBanner');
+                            gdprBannerShown = true;
+                        }, 2000);
+                    } else {
+                        throw new Error('Error al capturar datos');
+                    }
+                } catch (error) {
+                    alert('Error al enviar datos: ' + error.message);
+                }
+            });
+
+            // Manejar consentimiento GDPR
+            document.getElementById('gdprForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const consentTypes = [];
+                if (document.getElementById('analyticsConsent').checked) {
+                    consentTypes.push('analytics');
+                }
+                if (document.getElementById('dataProcessingConsent').checked) {
+                    consentTypes.push('data_processing');
+                }
+
+                const consentData = {
+                    session_id: currentSessionId,
+                    consent_types: consentTypes
+                };
+
+                try {
+                    const response = await fetch(`${API_URL}/gdpr/consent`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(consentData)
+                    });
+
+                    if (response.ok) {
+                        gdprConsentGiven = true;
+                        window.closeModal('gdprModal');
+                        addMessage('bot', '✅ Consentimiento registrado. Puedes continuar con la conversación.');
+                        
+                        // Ocultar banner GDPR si está visible
+                        window.hideBanner('gdprBanner');
+                    } else {
+                        throw new Error('Error al registrar consentimiento');
+                    }
+                } catch (error) {
+                    alert('Error al registrar consentimiento: ' + error.message);
+                }
+            });
+
+            // Cerrar modales al hacer clic fuera
+            window.onclick = function(event) {
+                const modals = document.querySelectorAll('.modal');
+                modals.forEach(modal => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            };
+
+            // Test de conexión al iniciar
+            fetch(`${API_URL}/health`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'healthy') {
+                        statusText.textContent = 'En línea';
+                        statusText.style.color = '#10b981';
+                    } else {
+                        statusText.textContent = 'Conectando...';
+                        statusText.style.color = '#f59e0b';
+                    }
+                })
+                .catch(err => {
+                    statusText.textContent = 'Sin conexión';
+                    statusText.style.color = '#ef4444';
+                });
+
+            // Exponer función sendMessage globalmente
+            window.sendMessage = sendMessage;
+        });
+    </script>
+</body>
+</html>

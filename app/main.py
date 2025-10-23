@@ -2,22 +2,24 @@
 FastAPI application principal.
 Configuración de la app, middlewares, CORS y routers.
 """
+
 import logging
-from fastapi import FastAPI, Request
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
+from app.api.v1.endpoints import analytics, chat
 from app.core.config import settings
-from app.api.v1.endpoints import chat
 
 # Configurar logging
 logging.basicConfig(
     level=getattr(logging, settings.LOG_LEVEL),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -28,14 +30,13 @@ limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="Chatbot RAG para portfolio profesional usando Groq, Vertex AI y pgvector",
+    description="Chatbot RAG para portfolio profesional usando Gemini, HuggingFace y pgvector",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
 )
 
 # Registrar Rate Limiter en la app
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # CORS Middleware
 app.add_middleware(
@@ -49,25 +50,32 @@ app.add_middleware(
 # Trusted Host Middleware (seguridad)
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["*"]  # En producción, especificar hosts permitidos
+    allowed_hosts=[
+        "localhost",
+        "127.0.0.1",
+        "testserver",  # Para tests
+        "almapi.dev",
+        "*.almapi.dev",
+        "*.run.app",  # Cloud Run
+        "*.googleusercontent.com",  # Cloud Run internal
+    ],
 )
 
 # Incluir routers
-app.include_router(
-    chat.router,
-    prefix=settings.API_V1_STR,
-    tags=["chat"]
-)
+app.include_router(chat.router, prefix=settings.API_V1_STR, tags=["chat"])
+app.include_router(analytics.router, prefix=settings.API_V1_STR, tags=["analytics"])
 
 
 @app.on_event("startup")
 async def startup_event():
     """Ejecutar al iniciar la aplicación"""
     logger.info(f"🚀 Iniciando {settings.PROJECT_NAME} v{settings.VERSION}")
-    logger.info(f"   Entorno: {'Production' if settings.CLOUD_SQL_CONNECTION_NAME else 'Development'}")
+    logger.info(
+        f"   Entorno: {'Production' if settings.CLOUD_SQL_CONNECTION_NAME else 'Development'}"
+    )
     logger.info(f"   GCP Project: {settings.GCP_PROJECT_ID}")
-    logger.info(f"   LLM: {settings.GROQ_MODEL}")
-    logger.info(f"   Embeddings: {settings.VERTEX_AI_EMBEDDING_MODEL}")
+    logger.info(f"   LLM: {settings.GEMINI_MODEL}")
+    logger.info(f"   Embeddings: HuggingFace (local)")
     logger.info(f"   Vector Collection: {settings.VECTOR_COLLECTION_NAME}")
 
 
@@ -88,7 +96,7 @@ async def root():
         "version": settings.VERSION,
         "status": "running",
         "docs": "/docs",
-        "api_v1": settings.API_V1_STR
+        "api_v1": settings.API_V1_STR,
     }
 
 
@@ -102,19 +110,20 @@ async def global_exception_handler(request, exc):
         status_code=500,
         content={
             "detail": "Internal server error",
-            "message": str(exc) if settings.LOG_LEVEL == "DEBUG" else "An error occurred"
-        }
+            "message": (
+                str(exc) if settings.LOG_LEVEL == "DEBUG" else "An error occurred"
+            ),
+        },
     )
 
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     uvicorn.run(
         "app.main:app",
         host="0.0.0.0",
         port=8080,
         reload=True,
-        log_level=settings.LOG_LEVEL.lower()
+        log_level=settings.LOG_LEVEL.lower(),
     )
-

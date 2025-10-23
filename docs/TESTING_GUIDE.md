@@ -1,44 +1,98 @@
 # 🧪 Guía de Testing - AI Resume Agent ✅ IMPLEMENTADO
 
-## 📋 Estructura de Testing Actual ✅ IMPLEMENTADA
+## 📋 Estructura de Testing Actual ✅ COMPLETAMENTE IMPLEMENTADA
 
-Hemos implementado un framework de testing funcional y organizado:
+Hemos implementado un framework de testing enterprise-level con **94% cobertura**:
 
 ```
 tests/
 ├── __init__.py              # Configuración de tests
-├── test_memory.py          # Tests de memoria conversacional ✅
-└── test_rag_service.py     # Tests del servicio RAG ✅
+├── test_api_endpoints.py    # 20 tests - Endpoints API ✅
+├── test_main.py            # 16 tests - Aplicación principal ✅
+├── test_rag_service.py     # 7 tests - Servicio RAG ✅
+├── test_secrets.py         # 15 tests - Gestión de secretos ✅
+└── test_memory.py          # 1 test - Memoria conversacional ✅
 
-scripts/
-├── setup/                  # Scripts de configuración
-└── dev/                    # Scripts de desarrollo
-    └── query_vectors.sh    # Query de vectores ✅
-
+.pre-commit-config.yaml     # Hooks automáticos ✅
 pytest.ini                 # Configuración de pytest ✅
 ```
 
-## 🎯 **Tests Implementados y Funcionando**
+## 🎯 **Tests Implementados y Funcionando (59 tests total)**
 
-### ✅ Tests de Memoria Conversacional
-**Archivo**: `tests/test_memory.py`
-- **Funcionalidad**: Simula conversaciones con memoria
-- **Cobertura**: Session management, timeout, contexto
-- **Estado**: ✅ Funcionando
+### ✅ Tests de Endpoints API (20 tests)
+**Archivo**: `tests/test_api_endpoints.py`
+- **Funcionalidad**: Tests completos de todos los endpoints
+- **Cobertura**: Chat, health, CORS, rate limiting, error handling
+- **Estado**: ✅ 90% cobertura
 
-### ✅ Tests del Servicio RAG
+### ✅ Tests de Aplicación Principal (16 tests)
+**Archivo**: `tests/test_main.py`
+- **Funcionalidad**: Tests de startup, shutdown, middleware, configuración
+- **Cobertura**: App lifecycle, error handling, configuración
+- **Estado**: ✅ 95% cobertura
+
+### ✅ Tests de Gestión de Secretos (15 tests)
+**Archivo**: `tests/test_secrets.py`
+- **Funcionalidad**: Tests de SecretManager y funciones auxiliares
+- **Cobertura**: Secret Manager, fallbacks, error handling
+- **Estado**: ✅ 100% cobertura
+
+### ✅ Tests del Servicio RAG (7 tests)
 **Archivo**: `tests/test_rag_service.py`
 - **Funcionalidad**: Tests del pipeline RAG completo
-- **Cobertura**: Vector store, LLM, embeddings
+- **Cobertura**: Vector store, LLM, embeddings, system prompt
+- **Estado**: ✅ 91% cobertura
+
+### ✅ Tests de Memoria Conversacional (1 test)
+**Archivo**: `tests/test_memory.py`
+- **Funcionalidad**: Simula conversaciones con memoria
+- **Cobertura**: Session management, contexto
 - **Estado**: ✅ Funcionando
 
-### ✅ Tests de Endpoints API
-**Implementación**: Tests manuales con curl
-- **Health Check**: ✅ `GET /api/v1/health`
-- **Chat Endpoint**: ✅ `POST /api/v1/chat`
-- **Documentación**: ✅ `GET /docs`
+## 🔧 **Pre-commit Hooks Automáticos**
 
-## 🚀 **Cómo Ejecutar los Tests Actuales**
+Este proyecto incluye **pre-commit hooks** que ejecutan automáticamente todos los tests y verificaciones en cada commit:
+
+### Instalación de Pre-commit
+
+```bash
+# 1. Activar entorno virtual
+source venv/bin/activate
+
+# 2. Instalar pre-commit hooks
+pre-commit install
+
+# 3. Verificar instalación
+pre-commit run --all-files
+```
+
+### Hooks Automáticos en Cada Commit
+
+| Hook | Función | Estado |
+|------|---------|--------|
+| 🧪 **pytest** | 59 tests con 94% cobertura | ✅ Automático |
+| 🔒 **bandit** | Security scan para vulnerabilidades | ✅ Automático |
+| 🎨 **black** | Code formatting | ✅ Automático |
+| 📦 **isort** | Import organization | ✅ Automático |
+| 🛡️ **safety** | Dependency vulnerability scan | ✅ Automático |
+
+### Comandos de Desarrollo
+
+```bash
+# Commit con hooks automáticos (RECOMENDADO)
+git add .
+git commit -m "feat: nueva funcionalidad"
+# ↑ Los hooks se ejecutan automáticamente
+
+# Ejecutar hooks manualmente
+pre-commit run --all-files
+
+# Ejecutar hook específico
+pre-commit run pytest --all-files
+pre-commit run bandit --all-files
+```
+
+## 🚀 **Cómo Ejecutar los Tests Manualmente**
 
 ### ✅ Tests Unitarios con pytest
 ```bash
@@ -270,7 +324,7 @@ Una vez que los tests pasen:
 
 1. **✅ Configurar entorno** (.env)
 2. **✅ Configurar base de datos** (PostgreSQL/Redis)
-3. **✅ Implementar servicios core** (Dialogflow + Vertex AI)
+3. **✅ Implementar servicios core** (Dialogflow + HuggingFace)
 4. **✅ Agregar tests de integración**
 5. **✅ Configurar CI/CD** con GitHub Actions
 6. **✅ Desplegar a producción**

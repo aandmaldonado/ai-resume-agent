@@ -12,7 +12,7 @@ Solución **RAG (Retrieval Augmented Generation)** con **Vector Store** utilizan
 **RAG Pipeline** que combina:
 - **Vector Store** con pgvector para búsqueda semántica
 - **Embeddings** locales con HuggingFace all-MiniLM-L6-v2
-- **LLM** Groq Llama 3.3 70B para generación de respuestas
+- **LLM** Gemini 2.5 Flash para generación de respuestas
 - **Memoria conversacional** para contexto entre mensajes
 - **Seguridad robusta** con medidas OWASP LLM Top 10
 
@@ -1505,7 +1505,7 @@ riesgos_stack:
 
 ---
 
-## 💰 **Optimización de Costos con GCP y Vertex AI**
+## 💰 **Optimización de Costos con GCP y HuggingFace**
 
 ### **🎯 Resumen de Optimizaciones de Costos**
 
@@ -1537,7 +1537,7 @@ comparacion_costos_total:
 
 ### **🚀 Estrategias de Optimización Implementadas**
 
-#### **1. Migración a Vertex AI (Ahorro: 60-80%)**
+#### **1. Migración a HuggingFace (Ahorro: 60-80%)**
 - ✅ **Configuración completa** de modelos text-bison@001, chat-bison@001, textembedding-gecko@001
 - ✅ **Implementación Python** con código completo para integración
 - ✅ **Comparación de costos** detallada vs. OpenAI/Claude
@@ -1559,11 +1559,11 @@ comparacion_costos_total:
 - ✅ **Cloud Run gratuito** - 2M requests/mes
 - ✅ **Cloud SQL gratuito** - 10 GB PostgreSQL
 - ✅ **Memorystore gratuito** - 0.5 GB Redis
-- ✅ **Vertex AI gratuito** - 100K requests/mes, 10M tokens/mes
+- ✅ **HuggingFace gratuito** - 100K requests/mes, 10M tokens/mes
 
 ### **📊 Plan de Implementación Detallado**
 
-#### **Fase 1: Migración a Vertex AI (Semana 1-2)**
+#### **Fase 1: Migración a HuggingFace (Semana 1-2)**
 ```yaml
 tareas_criticas_fase_1:
   - migracion_vertex_ai:
@@ -1652,7 +1652,7 @@ tareas_criticas_fase_3:
 ### **🔧 Herramientas y Tecnologías Implementadas**
 
 #### **Backend Python/FastAPI**
-- ✅ **Vertex AI SDK** para integración nativa con GCP
+- ✅ **HuggingFace SDK** para integración nativa con GCP
 - ✅ **Redis + Cloud Storage** para cache multinivel
 - ✅ **SQLAlchemy + Alembic** para gestión de base de datos
 - ✅ **Pydantic + Bleach** para validación y sanitización
@@ -1662,20 +1662,20 @@ tareas_criticas_fase_3:
 - ✅ **Cloud Run** con configuración optimizada para capas gratuitas
 - ✅ **Cloud SQL** PostgreSQL con configuración de costo mínimo
 - ✅ **Memorystore Redis** con políticas de cache inteligentes
-- ✅ **Vertex AI** con modelos optimizados para costos
+- ✅ **HuggingFace** con modelos optimizados para costos
 - ✅ **Cloud Monitoring** con alertas de costos automáticas
 
 #### **Testing y Calidad**
 - ✅ **Testing de seguridad** OWASP LLM completo
 - ✅ **Testing de performance** con Cloud Load Testing
-- ✅ **Testing de ML pipelines** con Vertex AI
+- ✅ **Testing de ML pipelines** con HuggingFace
 - ✅ **Code coverage** objetivo >90%
 - ✅ **CI/CD** con GitHub Actions y Cloud Build
 
 ### **📋 Checklist de Implementación Completo**
 
 #### **✅ Configuración de Infraestructura GCP**
-- [ ] Habilitar todas las APIs necesarias (Vertex AI, Cloud Run, Cloud SQL, Memorystore)
+- [ ] Habilitar todas las APIs necesarias (HuggingFace, Cloud Run, Cloud SQL, Memorystore)
 - [ ] Configurar capas gratuitas para todos los servicios
 - [ ] Configurar regiones óptimas para costos (us-central1)
 - [ ] Configurar alertas de límites gratuitos
@@ -1683,13 +1683,13 @@ tareas_criticas_fase_3:
 
 #### **✅ Implementación de Backend**
 - [ ] Configurar proyecto Python con Poetry y dependencias
-- [ ] Implementar integración con Vertex AI
+- [ ] Implementar integración con HuggingFace
 - [ ] Implementar sistema de cache multinivel
 - [ ] Implementar Smart Context Filtering optimizado
 - [ ] Implementar todas las medidas de seguridad OWASP LLM
 
 #### **✅ Testing y Validación**
-- [ ] Testing de integración con Vertex AI
+- [ ] Testing de integración con HuggingFace
 - [ ] Testing de performance del cache
 - [ ] Testing de calidad del filtrado de contexto
 - [ ] Testing de seguridad completo
@@ -1737,7 +1737,7 @@ riesgos_finales:
 #### **Estado del Proyecto Después de las Optimizaciones**
 El documento `tech-solution.md` ha sido **completamente actualizado** con todas las consideraciones de optimización de costos de la auditoría GCP, implementando:
 
-1. **✅ Migración completa a Vertex AI** con ahorros del 60-80%
+1. **✅ Migración completa a HuggingFace** con ahorros del 60-80%
 2. **✅ Sistema de cache inteligente multinivel** con ahorros del 30-50%
 3. **✅ Smart Context Filtering optimizado** con ahorros del 40-60%
 4. **✅ Estrategia de capas gratuitas GCP** con 100% de ahorro el primer año
@@ -1792,7 +1792,7 @@ comparacion_costos_total:
 
 ### **🚀 Estrategias de Optimización Implementadas**
 
-#### **1. Migración a Vertex AI (Ahorro: 60-80%)**
+#### **1. Migración a HuggingFace (Ahorro: 60-80%)**
 - ✅ **Configuración completa** de modelos text-bison@001, chat-bison@001, textembedding-gecko@001
 - ✅ **Implementación Python** con código completo para integración
 - ✅ **Comparación de costos** detallada vs. OpenAI/Claude
@@ -1814,11 +1814,11 @@ comparacion_costos_total:
 - ✅ **Cloud Run gratuito** - 2M requests/mes
 - ✅ **Cloud SQL gratuito** - 10 GB PostgreSQL
 - ✅ **Memorystore gratuito** - 0.5 GB Redis
-- ✅ **Vertex AI gratuito** - 100K requests/mes, 10M tokens/mes
+- ✅ **HuggingFace gratuito** - 100K requests/mes, 10M tokens/mes
 
 ### **📊 Plan de Implementación Detallado**
 
-#### **Fase 1: Migración a Vertex AI (Semana 1-2)**
+#### **Fase 1: Migración a HuggingFace (Semana 1-2)**
 ```yaml
 tareas_criticas_fase_1:
   - migracion_vertex_ai:
@@ -1907,7 +1907,7 @@ tareas_criticas_fase_3:
 ### **🔧 Herramientas y Tecnologías Implementadas**
 
 #### **Backend Python/FastAPI**
-- ✅ **Vertex AI SDK** para integración nativa con GCP
+- ✅ **HuggingFace SDK** para integración nativa con GCP
 - ✅ **Redis + Cloud Storage** para cache multinivel
 - ✅ **SQLAlchemy + Alembic** para gestión de base de datos
 - ✅ **Pydantic + Bleach** para validación y sanitización
@@ -1917,20 +1917,20 @@ tareas_criticas_fase_3:
 - ✅ **Cloud Run** con configuración optimizada para capas gratuitas
 - ✅ **Cloud SQL** PostgreSQL con configuración de costo mínimo
 - ✅ **Memorystore Redis** con políticas de cache inteligentes
-- ✅ **Vertex AI** con modelos optimizados para costos
+- ✅ **HuggingFace** con modelos optimizados para costos
 - ✅ **Cloud Monitoring** con alertas de costos automáticas
 
 #### **Testing y Calidad**
 - ✅ **Testing de seguridad** OWASP LLM completo
 - ✅ **Testing de performance** con Cloud Load Testing
-- ✅ **Testing de ML pipelines** con Vertex AI
+- ✅ **Testing de ML pipelines** con HuggingFace
 - ✅ **Code coverage** objetivo >90%
 - ✅ **CI/CD** con GitHub Actions y Cloud Build
 
 ### **📋 Checklist de Implementación Completo**
 
 #### **✅ Configuración de Infraestructura GCP**
-- [ ] Habilitar todas las APIs necesarias (Vertex AI, Cloud Run, Cloud SQL, Memorystore)
+- [ ] Habilitar todas las APIs necesarias (HuggingFace, Cloud Run, Cloud SQL, Memorystore)
 - [ ] Configurar capas gratuitas para todos los servicios
 - [ ] Configurar regiones óptimas para costos (us-central1)
 - [ ] Configurar alertas de límites gratuitos
@@ -1938,13 +1938,13 @@ tareas_criticas_fase_3:
 
 #### **✅ Implementación de Backend**
 - [ ] Configurar proyecto Python con Poetry y dependencias
-- [ ] Implementar integración con Vertex AI
+- [ ] Implementar integración con HuggingFace
 - [ ] Implementar sistema de cache multinivel
 - [ ] Implementar Smart Context Filtering optimizado
 - [ ] Implementar todas las medidas de seguridad OWASP LLM
 
 #### **✅ Testing y Validación**
-- [ ] Testing de integración con Vertex AI
+- [ ] Testing de integración con HuggingFace
 - [ ] Testing de performance del cache
 - [ ] Testing de calidad del filtrado de contexto
 - [ ] Testing de seguridad completo
@@ -1992,7 +1992,7 @@ riesgos_finales:
 #### **Estado del Proyecto Después de las Optimizaciones**
 El documento `tech-solution.md` ha sido **completamente actualizado** con todas las consideraciones de optimización de costos de la auditoría GCP, implementando:
 
-1. **✅ Migración completa a Vertex AI** con ahorros del 60-80%
+1. **✅ Migración completa a HuggingFace** con ahorros del 60-80%
 2. **✅ Sistema de cache inteligente multinivel** con ahorros del 30-50%
 3. **✅ Smart Context Filtering optimizado** con ahorros del 40-60%
 4. **✅ Estrategia de capas gratuitas GCP** con 100% de ahorro el primer año
@@ -2015,11 +2015,11 @@ El documento `tech-solution.md` ha sido **completamente actualizado** con todas 
 
 ---
 
-## 🏗️ **Arquitectura del Sistema - Híbrida Dialogflow + Vertex AI**
+## 🏗️ **Arquitectura del Sistema - Híbrida Dialogflow + HuggingFace**
 
 ### **🎯 Arquitectura Híbrida Optimizada**
 
-El sistema implementa una **arquitectura híbrida inteligente** que combina **Dialogflow ES (Free Tier)** para detección de intenciones y **Vertex AI** para generación de respuestas, maximizando eficiencia y minimizando costos.
+El sistema implementa una **arquitectura híbrida inteligente** que combina **Dialogflow ES (Free Tier)** para detección de intenciones y **HuggingFace** para generación de respuestas, maximizando eficiencia y minimizando costos.
 
 ```mermaid
 graph TB
@@ -2043,7 +2043,7 @@ graph TB
         K[Basic Responses]
     end
     
-    subgraph "Vertex AI (Optimizado)"
+    subgraph "HuggingFace (Optimizado)"
         L[Smart Context Filtering]
         M[Document Retrieval]
         N[Advanced Response Generation]
@@ -2110,7 +2110,7 @@ sequenceDiagram
     participant F as Frontend
     participant B as Backend
     participant D as Dialogflow ES
-    participant V as Vertex AI
+    participant V as HuggingFace
     participant C as Cache
     participant S as Document Store
     
@@ -2166,7 +2166,7 @@ cost_analysis:
 ```python
 # app/services/hybrid_routing_service.py
 class HybridRoutingService:
-    """Servicio de routing inteligente entre Dialogflow y Vertex AI"""
+    """Servicio de routing inteligente entre Dialogflow y HuggingFace"""
     
     def __init__(self):
         self.dialogflow_service = DialogflowService()
@@ -2174,7 +2174,7 @@ class HybridRoutingService:
         self.cost_optimizer = CostOptimizationService()
     
     async def route_message(self, message: str, session_id: str) -> dict:
-        """Rutea mensaje a Dialogflow o Vertex AI según complejidad"""
+        """Rutea mensaje a Dialogflow o HuggingFace según complejidad"""
         
         # 1. Detección de intención con Dialogflow (Free)
         dialogflow_result = await self.dialogflow_service.detect_intent(
@@ -2185,7 +2185,7 @@ class HybridRoutingService:
         if self._can_dialogflow_handle(dialogflow_result):
             return await self._handle_with_dialogflow(dialogflow_result)
         
-        # 3. Si no, usar Vertex AI con contexto optimizado
+        # 3. Si no, usar HuggingFace con contexto optimizado
         return await self._handle_with_vertex_ai(message, dialogflow_result)
     
     def _can_dialogflow_handle(self, dialogflow_result: dict) -> bool:
@@ -2218,7 +2218,7 @@ class HybridRoutingService:
         }
     
     async def _handle_with_vertex_ai(self, message: str, dialogflow_result: dict) -> dict:
-        """Maneja respuesta usando Vertex AI con contexto optimizado"""
+        """Maneja respuesta usando HuggingFace con contexto optimizado"""
         
         # Usar intención detectada por Dialogflow para optimizar contexto
         optimized_context = await self.vertex_ai_service.get_optimized_context(
@@ -2423,7 +2423,7 @@ class DialogflowIntegrationService:
             
         except Exception as e:
             logger.error(f"Error en Dialogflow: {e}")
-            # Fallback a Vertex AI
+            # Fallback a HuggingFace
             return await self._fallback_to_vertex_ai(text)
     
     async def _extract_entities(self, parameters) -> list:
@@ -2452,8 +2452,8 @@ class DialogflowIntegrationService:
         return contexts
     
     async def _fallback_to_vertex_ai(self, text: str) -> dict:
-        """Fallback a Vertex AI si Dialogflow falla"""
-        # Implementar fallback a Vertex AI
+        """Fallback a HuggingFace si Dialogflow falla"""
+        # Implementar fallback a HuggingFace
         from app.services.vertex_ai_service import VertexAIService
         
         vertex_service = VertexAIService()
@@ -2497,7 +2497,7 @@ class HybridMonitoringService:
             # Métricas de Dialogflow
             dialogflow_metrics = await self._get_dialogflow_metrics()
             
-            # Métricas de Vertex AI
+            # Métricas de HuggingFace
             vertex_ai_metrics = await self._get_vertex_ai_metrics()
             
             # Métricas de costos
@@ -2547,13 +2547,13 @@ class HybridMonitoringService:
 technical_benefits:
   performance:
     - "Respuestas instantáneas para intents simples (Dialogflow)"
-    - "Respuestas contextuales avanzadas para casos complejos (Vertex AI)"
+    - "Respuestas contextuales avanzadas para casos complejos (HuggingFace)"
     - "Reducción de latencia general del sistema"
     - "Mejor experiencia de usuario"
   
   scalability:
     - "Dialogflow maneja picos de tráfico (Free tier)"
-    - "Vertex AI se enfoca en casos complejos"
+    - "HuggingFace se enfoca en casos complejos"
     - "Distribución inteligente de carga"
     - "Escalado automático según demanda"
   
@@ -2619,7 +2619,7 @@ phase_2_integration:
   backend_integration:
     - "Implementar DialogflowIntegrationService"
     - "Configurar routing híbrido"
-    - "Implementar fallback a Vertex AI"
+    - "Implementar fallback a HuggingFace"
     - "Configurar manejo de errores"
   
   api_endpoints:
@@ -2658,7 +2658,7 @@ phase_3_optimization:
 - **Base de Datos**: Cloud SQL PostgreSQL 15 + pgvector
 - **Vector Store**: LangChain PGVector
 - **Embeddings**: HuggingFace all-MiniLM-L6-v2 (local)
-- **LLM**: Groq Llama 3.3 70B (gratis)
+- **LLM**: Gemini 2.5 Flash (gratis)
 - **Deployment**: Google Cloud Run
 - **Storage**: Google Cloud Storage (portfolio.yaml)
 

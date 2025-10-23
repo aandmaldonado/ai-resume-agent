@@ -586,7 +586,7 @@ class SecurityAuditor:
 - **Código**: `app/services/rag_service.py` - Retorno de fuentes
 
 #### 10. Model Theft ✅ MITIGADO
-- **Implementación**: Uso de Groq API (no modelo local)
+- **Implementación**: Uso de Gemini API (no modelo local)
 - **Protección**: No exposición de pesos del modelo
 - **Código**: `app/services/rag_service.py` - Groq LLM
 
