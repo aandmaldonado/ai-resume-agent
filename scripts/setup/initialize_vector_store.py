@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from dotenv import load_dotenv
 from langchain_community.vectorstores import PGVector
 from langchain_huggingface import HuggingFaceEmbeddings
-from prepare_knowledge_base import main as prepare_knowledge_base
+from build_knowledge_base import load_and_prepare_chunks
 
 
 def get_connection_string() -> str:
@@ -59,7 +59,11 @@ def initialize_vector_store():
 
     # 2. Procesar portfolio en chunks
     try:
-        chunks = prepare_knowledge_base()
+        # Usar el nuevo script con Hyper-Enrichment v2
+        yaml_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'portfolio.yaml')
+        chunks = load_and_prepare_chunks(yaml_path)
+        if not chunks:
+            raise Exception("No se pudieron generar chunks")
         print(f"✓ {len(chunks)} chunks generados\n")
     except Exception as e:
         print(f"❌ Error procesando portfolio: {e}")

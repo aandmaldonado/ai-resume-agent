@@ -189,87 +189,94 @@ SKILLS: {items}
 
 
 def create_projects_chunks(projects: Dict[str, Any]) -> List[Document]:
-    """Crea chunks para proyectos con nueva estructura v2.0"""
+    """
+    Crea chunks semánticamente ricos para cada proyecto, incluyendo "pistas" de FAQ
+    para mejorar la recuperación de preguntas STAR.
+    """
+    print("Creando chunks de proyectos con Hyper-Enrichment v2...")
     chunks = []
     
+    if not projects:
+        print("Advertencia: No se encontraron proyectos en el YAML.")
+        return []
+
     for project_id, project in projects.items():
-        # Chunk principal del proyecto
-        project_content = f"""
-PROYECTO: {project['name']}
-ID: {project_id}
-EMPRESA: {project['company_ref']}
-ROL: {project['role']}
-DESCRIPCIÓN: {project['description']}
+        try:
+            # Prosa base
+            project_prose = f"Proyecto: {project['name']}. Mi rol fue: {project['role']}.\n"
+            project_prose += f"Descripción del proyecto: {project['description']}.\n"
+            
+            # --- INICIO DE HYPER-ENRICHMENT V2 (FAQ) ---
+            # Añadimos una sección explícita de "Preguntas Frecuentes"
+            # Esto le da al RAG un "anzuelo" semántico perfecto.
+            faq_prose = "\n--- Preguntas Frecuentes Relevantes ---\n"
+            has_faq = False
 
-TECNOLOGÍAS: {', '.join(project.get('technologies', []))}
-HARDWARE: {', '.join(project.get('hardware', []))}
+            # Pista para Pregunta 3 (AcuaMattic)
+            if project_id == 'proj_acuamattic':
+                faq_prose += "¿Cuáles fueron los mayores desafíos técnicos al construir el dataset para AcuaMattic y cómo los superaste?\n"
+                faq_prose += "¿Dame un ejemplo de un desafío técnico en un proyecto de IA?\n"
+                has_faq = True
 
-LOGROS:
-{chr(10).join(f"- {achievement}" for achievement in project.get('achievements', []))}
+            # Pista para Pregunta 4 (Bridge/Puente)
+            if project_id == 'proj_andes' or project_id == 'proj_spr':
+                faq_prose += "¿Describe una situación donde actuaste como puente entre un equipo técnico y stakeholders no técnicos?\n"
+                faq_prose += "¿Cómo manejaste la comunicación con stakeholders no técnicos?\n"
+                has_faq = True
+                
+            # Pista para la pregunta de ejemplo (Falabella)
+            if project_id == 'proj_taa':
+                faq_prose += "¿Cuáles fueron los desafíos técnicos al migrar el sistema de tiempo y asistencia en Falabella?\n"
+                faq_prose += "¿Dame un ejemplo de modernización de un sistema legacy?\n"
+                has_faq = True
 
-IMPACTO DE NEGOCIO: {project.get('business_impact', 'No especificado')}
-"""
+            # Solo añadimos la sección FAQ si es relevante
+            if has_faq:
+                project_prose += faq_prose
+            # --- FIN DE HYPER-ENRICHMENT V2 ---
+
+            # Añadimos los logros
+            project_prose += "\n--- Logros Clave ---\n"
+            achievements = project.get('achievements', [])
+            if achievements:
+                for achievement in achievements:
+                    project_prose += f"- {achievement}\n"
+            else:
+                project_prose += "- Logros no detallados.\n"
+                
+            # Añadimos las tecnologías
+            project_prose += "\n--- Tecnologías Usadas ---\n"
+            technologies = project.get('technologies', [])
+            if technologies:
+                project_prose += f"({', '.join(technologies)})\n"
+            else:
+                project_prose += "- Tecnologías no detalladas.\n"
+
+            # Creamos el Documento LangChain
+            chunks.append(
+                Document(
+                    page_content=project_prose,
+                    metadata={
+                        "type": "project",
+                        "project_id": project_id,
+                        "project_name": project['name'],
+                        "company_ref": project['company_ref'],
+                        "role": project['role'],
+                        "technologies": project.get('technologies', []),
+                        "hardware": project.get('hardware', []),
+                        "achievements": project.get('achievements', []),
+                        "business_impact": project.get('business_impact', ''),
+                        "source": "portfolio.yaml"
+                    }
+                )
+            )
         
-        chunks.append(Document(
-            page_content=project_content.strip(),
-            metadata={
-                "type": "project",
-                "project_id": project_id,
-                "project_name": project['name'],
-                "company_ref": project['company_ref'],
-                "role": project['role'],
-                "technologies": project.get('technologies', []),
-                "hardware": project.get('hardware', []),
-                "achievements": project.get('achievements', []),
-                "business_impact": project.get('business_impact', ''),
-                "source": "portfolio.yaml"
-            }
-        ))
-        
-        # Chunks individuales para tecnologías específicas
-        for tech in project.get('technologies', []):
-            tech_content = f"""
-TECNOLOGÍA: {tech}
-PROYECTO: {project['name']} ({project_id})
-EMPRESA: {project['company_ref']}
-ROL: {project['role']}
-CONTEXTO: {project['description']}
-"""
-            chunks.append(Document(
-                page_content=tech_content.strip(),
-                metadata={
-                    "type": "technology",
-                    "technology": tech,
-                    "project_id": project_id,
-                    "project_name": project['name'],
-                    "company_ref": project['company_ref'],
-                    "role": project['role'],
-                    "source": "portfolio.yaml"
-                }
-            ))
-        
-        # Chunks individuales para hardware específico
-        for hw in project.get('hardware', []):
-            hw_content = f"""
-HARDWARE: {hw}
-PROYECTO: {project['name']} ({project_id})
-EMPRESA: {project['company_ref']}
-ROL: {project['role']}
-CONTEXTO: {project['description']}
-"""
-            chunks.append(Document(
-                page_content=hw_content.strip(),
-                metadata={
-                    "type": "hardware",
-                    "hardware": hw,
-                    "project_id": project_id,
-                    "project_name": project['name'],
-                    "company_ref": project['company_ref'],
-                    "role": project['role'],
-                    "source": "portfolio.yaml"
-                }
-            ))
-    
+        except Exception as e:
+            print(f"Error procesando el proyecto {project_id}: {e}")
+            # Continuar con el siguiente proyecto
+            pass
+
+    print(f"Se crearon {len(chunks)} chunks de proyectos.")
     return chunks
 
 def create_companies_chunks(companies: Dict[str, Any]) -> List[Document]:
