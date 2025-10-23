@@ -165,7 +165,7 @@ async def chat(
                 message=result["response"],
                 sources=result.get("sources", []),
                 session_id=session_id,
-                model=settings.GROQ_MODEL,
+                model=settings.GEMINI_MODEL,
                 action_type="normal_response",  # Cambiar a normal_response
                 next_flow_state=next_flow_state.value,
                 requires_data_capture=False,
@@ -226,7 +226,7 @@ async def chat(
                 message=result["response"],
                 sources=result.get("sources", []),
                 session_id=session_id,
-                model=settings.GROQ_MODEL,
+                model=settings.GEMINI_MODEL,
                 action_type="request_data_capture",
                 next_flow_state=next_flow_state.value,
                 requires_data_capture=True,
@@ -287,7 +287,7 @@ async def chat(
                 message=result["response"],
                 sources=result.get("sources", []),
                 session_id=session_id,
-                model=settings.GROQ_MODEL,
+                model=settings.GEMINI_MODEL,
                 action_type="request_gdpr_consent",
                 next_flow_state=next_flow_state.value,
                 requires_data_capture=False,
@@ -348,7 +348,7 @@ async def chat(
                 message=result["response"],
                 sources=result.get("sources", []),
                 session_id=session_id,
-                model=result.get("model", settings.GROQ_MODEL),
+                model=result.get("model", settings.GEMINI_MODEL),
                 action_type="normal_response",
                 next_flow_state=next_flow_state.value,
                 requires_data_capture=False,
@@ -460,25 +460,11 @@ async def health_check() -> HealthResponse:
         if connection_ok:
             return HealthResponse(status="healthy", version=settings.VERSION)
         else:
-            return JSONResponse(
-                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                content={
-                    "status": "unhealthy",
-                    "version": settings.VERSION,
-                    "detail": "No se puede conectar al vector store",
-                },
-            )
+            return HealthResponse(status="unhealthy", version=settings.VERSION)
 
     except Exception as e:
         logger.error(f"Error en health check: {e}")
-        return JSONResponse(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            content={
-                "status": "unhealthy",
-                "version": settings.VERSION,
-                "detail": str(e),
-            },
-        )
+        return HealthResponse(status="unhealthy", version=settings.VERSION)
 
 
 @router.get("/", status_code=status.HTTP_200_OK)

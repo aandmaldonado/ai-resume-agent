@@ -5,8 +5,8 @@ Chatbot RAG (Retrieval Augmented Generation) para portfolio profesional. Respond
 ## 🎯 Características
 
 - ✅ **100% Cloud**: Desplegado en Google Cloud Run (europe-west1)
-- ✅ **100% Gratis**: Usa free tiers de Groq, HuggingFace y GCP
-- ✅ **Ultra Rápido**: Groq (Llama 3.3 70B) a 1000+ tokens/segundo
+- ✅ **100% Gratis**: Usa free tiers de Gemini, HuggingFace y GCP
+- ✅ **Ultra Rápido**: Gemini 2.5 Flash con respuestas optimizadas
 - ✅ **RAG Avanzado**: Retrieval con pgvector + embeddings locales
 - ✅ **Sin Dependencias Pagas**: HuggingFace embeddings locales (no requiere APIs)
 - ✅ **Seguro**: CORS, validación de inputs, usuario no-root
@@ -23,7 +23,7 @@ RAG Pipeline:
   1. Query Embedding → HuggingFace (local, sentence-transformers)
   2. Semantic Search → pgvector (Cloud SQL)
   3. Context Retrieval → Top-K chunks
-  4. Response Generation → Groq (Llama 3.3 70B)
+  4. Response Generation → Gemini 2.5 Flash
     ↓
 Knowledge Base (portfolio.yaml → 70 vectores indexados)
 ```
@@ -32,7 +32,7 @@ Knowledge Base (portfolio.yaml → 70 vectores indexados)
 
 | Servicio | Límite Gratuito | Uso Actual | Costo |
 |----------|-----------------|------------|-------|
-| Groq API | 330K tokens/día | ~500 tokens/query | $0/mes |
+| Gemini API | 15 requests/min | ~500 tokens/query | $0/mes |
 | HuggingFace | Ilimitado (local) | Embeddings 384-dim | $0/mes |
 | Cloud SQL (f1-micro) | Included | PostgreSQL + pgvector | $0/mes |
 | Cloud Run | 2M requests/mes | ~1K requests/mes | $0/mes |
@@ -45,7 +45,7 @@ Knowledge Base (portfolio.yaml → 70 vectores indexados)
 
 - **Python 3.11** (requerido - ver `.python-version`)
 - Cuenta de Google Cloud Platform (con billing habilitado para free tier)
-- Cuenta de Groq (gratis en [console.groq.com](https://console.groq.com))
+- Cuenta de Google con Gemini API habilitada (gratis con Google Workspace)
 
 ## 🔧 Desarrollo con Pre-commit Hooks
 
@@ -132,14 +132,14 @@ chmod +x scripts/setup/setup-gcp.sh
 
 ### 2. Configurar Variables de Entorno
 
-El script de setup genera `.env` automáticamente. Solo necesitas agregar tu **Groq API Key**:
+El script de setup genera `.env` automáticamente. Solo necesitas agregar tu **Gemini API Key**:
 
 ```bash
 # Editar .env
 nano .env
 
 # Agregar/verificar:
-GROQ_API_KEY=gsk_...  # Obtener en console.groq.com/keys
+GEMINI_API_KEY=AI...  # Obtener en aistudio.google.com/app/apikey
 ```
 
 Ver `ENV_TEMPLATE.md` para referencia completa de variables.
@@ -259,7 +259,7 @@ ai-resume-agent/
 │   ├── core/
 │   │   └── config.py            # Configuración centralizada
 │   ├── services/
-│   │   └── rag_service.py       # Servicio RAG (Groq + HuggingFace + pgvector)
+│   │   └── rag_service.py       # Servicio RAG (Gemini + HuggingFace + pgvector)
 │   ├── api/v1/endpoints/
 │   │   └── chat.py              # Endpoints /chat y /health
 │   └── schemas/
@@ -343,7 +343,7 @@ python --version  # Debe mostrar Python 3.11.x
 pip install -r requirements.txt
 
 # 4. Verificar .env configurado
-cat .env | grep GROQ_API_KEY
+cat .env | grep GEMINI_API_KEY
 
 # 5. Ejecutar servidor con hot-reload
 uvicorn app.main:app --reload --port 8080 --host 0.0.0.0
@@ -474,9 +474,9 @@ gcloud sql connect almapi-chatbot-db --user=postgres
 # Luego: SELECT * FROM pg_extension WHERE extname = 'vector';
 ```
 
-### Error: Groq API Key inválida
+### Error: Gemini API Key inválida
 - Verificar que la key está en `.env`
-- Obtener nueva key en https://console.groq.com
+- Obtener nueva key en https://aistudio.google.com/app/apikey
 
 ### Error: Embeddings de HuggingFace fallan
 ```bash
@@ -513,7 +513,7 @@ def _create_system_prompt(self) -> PromptTemplate:
 Editar `app/core/config.py`:
 ```python
 VECTOR_SEARCH_K: int = 3  # Número de chunks a recuperar
-GROQ_TEMPERATURE: float = 0.7  # Creatividad del LLM
+GEMINI_TEMPERATURE: float = 0.1  # Creatividad del LLM
 ```
 
 ### Actualizar Portfolio
@@ -539,7 +539,7 @@ python scripts/setup/initialize_vector_store.py
 
 ### Backend & AI
 - **Framework**: FastAPI 0.115+ (Python 3.11)
-- **LLM**: Groq - Llama 3.3 70B Versatile (~1000 tokens/s)
+- **LLM**: Gemini 2.5 Flash (~1-2s respuesta)
 - **Embeddings**: HuggingFace sentence-transformers (all-MiniLM-L6-v2, 384-dim, local)
 - **Vector DB**: pgvector 0.5+ en PostgreSQL 15 (Cloud SQL)
 - **RAG Framework**: LangChain 0.3+
@@ -595,7 +595,7 @@ Este proyecto está bajo la licencia MIT. Ver `LICENSE` para más detalles.
 ### ¿Por qué Llama 3.3 70B?
 - ✅ **Más reciente** que 3.1
 - ✅ **Mejor performance** en tareas conversacionales
-- ✅ **Igualmente gratis** en Groq
+- ✅ **Igualmente gratis** con Gemini API
 - ✅ **~1000 tokens/s** (ultra rápido)
 
 ### ¿Por qué europe-west1?
@@ -609,7 +609,7 @@ Este proyecto está bajo la licencia MIT. Ver `LICENSE` para más detalles.
 Latencia típica: ~1.5-2 segundos (end-to-end)
   - Embedding query: ~50ms (local)
   - Vector search: ~20ms (pgvector)
-  - LLM generation: ~1-1.5s (Groq)
+  - LLM generation: ~1-2s (Gemini)
   - Total: ~1.5-2s ✅
 
 Throughput: 30-50 requests/minuto
@@ -618,7 +618,7 @@ Vector store: 70 chunks, 384-dim embeddings
 
 ## 🙏 Agradecimientos
 
-- [Groq](https://groq.com) - LLM ultra rápido y gratuito (Llama 3.3 70B)
+- [Gemini](https://aistudio.google.com) - LLM gratuito con Google Workspace
 - [HuggingFace](https://huggingface.co) - Embeddings locales open-source
 - [Google Cloud](https://cloud.google.com) - Free tiers generosos
 - [LangChain](https://langchain.com) - Framework RAG moderno

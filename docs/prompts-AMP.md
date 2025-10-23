@@ -378,7 +378,7 @@
 - **Categoría:** `🧪 Tests`
 - **Prompt:** 
     ```
-    Como QA Lead especializado en testing de sistemas de IA, analiza la estrategia de testing del chatbot y genera un plan de testing de integración que incluya: 1) Testing de la integración Dialogflow + Vertex AI, 2) Testing de la API completa con diferentes escenarios, 3) Testing de performance y carga, 4) Testing de seguridad y vulnerabilidades, 5) Testing de usabilidad y accesibilidad. El plan debe ser ejecutable y cubrir todos los aspectos críticos del sistema. Documenta todo en QA.md
+    Como QA Lead especializado en testing de sistemas de IA, analiza la estrategia de testing del chatbot y genera un plan de testing de integración que incluya: 1) Testing de la integración Dialogflow + HuggingFace, 2) Testing de la API completa con diferentes escenarios, 3) Testing de performance y carga, 4) Testing de seguridad y vulnerabilidades, 5) Testing de usabilidad y accesibilidad. El plan debe ser ejecutable y cubrir todos los aspectos críticos del sistema. Documenta todo en QA.md
     ```
 - **LLM:** Claude Sonnet 4
 

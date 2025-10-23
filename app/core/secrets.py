@@ -87,11 +87,6 @@ def get_database_password() -> str:
     return secret_manager.get_secret("CLOUD_SQL_PASSWORD")
 
 
-def get_groq_api_key() -> str:
-    """Obtiene la API key de Groq"""
-    return secret_manager.get_secret("GROQ_API_KEY")
-
-
 def get_gcp_project_id() -> str:
     """Obtiene el Project ID de GCP"""
     return secret_manager.get_secret("GCP_PROJECT_ID", default_value="ai-resume-agent")

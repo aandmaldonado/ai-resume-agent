@@ -18,22 +18,15 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
 
     # GCP
-    GCP_PROJECT_ID: str
+    GCP_PROJECT_ID: str = ""
     GCP_REGION: str = "europe-west1"  # Misma región que el portfolio
 
-    # Groq API (LLM gratis)
-    GROQ_API_KEY: str
-    GROQ_MODEL: str = "llama-3.1-8b-instant"  # Modelo más pequeño, menos límites
-    GROQ_TEMPERATURE: float = 0.1
-    GROQ_TOP_P: float = 0.3  # Nucleus sampling para reducir alucinación
-    GROQ_MAX_TOKENS: int = 512  # Reducir tokens para evitar límites
-    GROQ_TIMEOUT: int = 30  # Timeout en segundos (protección anti-DoS)
-
-    # Vertex AI (Embeddings gratis)
-    VERTEX_AI_EMBEDDING_MODEL: str = "textembedding-gecko@003"  # Versión más reciente
-    VERTEX_AI_EMBEDDING_LOCATION: str = (
-        "us-central1"  # Región con embeddings disponibles
-    )
+    # Google Gemini API (LLM alternativo)
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-2.5-flash"  # Modelo más rápido y menos restrictivo
+    GEMINI_TEMPERATURE: float = 0.1
+    GEMINI_TOP_P: float = 0.3  # Nucleus sampling para reducir alucinación
+    GEMINI_MAX_TOKENS: int = 256  # Reducido de 1024 para minimizar costos
 
     # Cloud SQL (PostgreSQL + pgvector)
     CLOUD_SQL_CONNECTION_NAME: Optional[str] = None  # Para Cloud Run
@@ -41,7 +34,7 @@ class Settings(BaseSettings):
     CLOUD_SQL_PORT: str = "5432"
     CLOUD_SQL_DB: str = "chatbot_db"
     CLOUD_SQL_USER: str = "postgres"
-    CLOUD_SQL_PASSWORD: str
+    CLOUD_SQL_PASSWORD: str = ""
 
     # Cloud Storage
     PORTFOLIO_BUCKET: str = "almapi-portfolio-data"
@@ -65,12 +58,16 @@ class Settings(BaseSettings):
         "https://*.almapi.dev",
     ]
 
-    # Rate Limiting
-    RATE_LIMIT_PER_MINUTE: int = 10
+    # Cache para optimizar costos
+    ENABLE_RESPONSE_CACHE: bool = True
+    CACHE_TTL_MINUTES: int = 30  # Cache por 30 minutos
+    MAX_CACHE_SIZE: int = 100  # Máximo 100 respuestas en cache
+
+    # Rate Limiting (optimizado para costos)
+    RATE_LIMIT_PER_MINUTE: int = 5  # Reducido para minimizar costos
 
     # Testing
     TESTING: bool = False
-    TESTING_DATABASE_URL: Optional[str] = None
 
     # Analytics y Captura de Leads
     ENABLE_ANALYTICS: bool = True

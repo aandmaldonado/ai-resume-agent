@@ -5,7 +5,7 @@
 **Proyecto:** Chatbot de Portfolio Profesional - almapi.dev  
 **Horas Disponibles:** 30 horas  
 **Metodología:** Desarrollo Incremental y Funcional  
-**Stack Tecnológico:** Python/FastAPI + React + Dialogflow ES + Vertex AI  
+**Stack Tecnológico:** Python/FastAPI + React + Dialogflow ES + HuggingFace  
 **Infraestructura:** Google Cloud Platform (Cloud Run, Cloud SQL, Memorystore)
 
 ---
@@ -87,16 +87,16 @@
 
 ### **TICKET-002: Implementación del Servicio de Routing Híbrido**
 
-**Título:** Implementación del Servicio de Routing Híbrido Dialogflow + Vertex AI
+**Título:** Implementación del Servicio de Routing Híbrido Dialogflow + HuggingFace
 
 **Descripción:**  
-**Propósito:** Crear el servicio core que decide automáticamente si usar Dialogflow ES (free) o Vertex AI según la complejidad de la consulta.  
-**Detalles Específicos:** Implementar HybridRoutingService que detecte intents con Dialogflow y rutee a Vertex AI solo cuando sea necesario.
+**Propósito:** Crear el servicio core que decide automáticamente si usar Dialogflow ES (free) o HuggingFace según la complejidad de la consulta.  
+**Detalles Específicos:** Implementar HybridRoutingService que detecte intents con Dialogflow y rutee a HuggingFace solo cuando sea necesario.
 
 **Criterios de Aceptación:**
 - [ ] HybridRoutingService implementado y funcional
 - [ ] Lógica de routing inteligente funcionando correctamente
-- [ ] Fallback automático a Vertex AI implementado
+- [ ] Fallback automático a HuggingFace implementado
 - [ ] Métricas de routing híbrido funcionando
 - [ ] Testing de routing exitoso (100% de casos cubiertos)
 - [ ] Performance del routing <50ms overhead
@@ -122,7 +122,7 @@
 
 ### **TICKET-003: Endpoint de Chat Básico con Arquitectura Híbrida**
 
-**Título:** Endpoint de Chat Básico Integrando Dialogflow + Vertex AI
+**Título:** Endpoint de Chat Básico Integrando Dialogflow + HuggingFace
 
 **Descripción:**  
 **Propósito:** Crear el endpoint principal de chat que integre la arquitectura híbrida y permita a los usuarios interactuar con el chatbot.  
@@ -131,7 +131,7 @@
 **Criterios de Aceptación:**
 - [ ] Endpoint POST /api/v1/chat implementado y funcional
 - [ ] Integración con HybridRoutingService funcionando
-- [ ] Manejo de respuestas de Dialogflow y Vertex AI
+- [ ] Manejo de respuestas de Dialogflow y HuggingFace
 - [ ] Validación de entrada con Pydantic implementada
 - [ ] Manejo de errores y fallbacks implementado
 - [ ] Testing del endpoint exitoso (100% cobertura)
@@ -167,7 +167,7 @@
 - [ ] Componente ChatbotComponent implementado y funcional
 - [ ] Interfaz básica de chat (input, botón enviar, área de mensajes)
 - [ ] Integración con endpoint de chat funcionando
-- [ ] Visualización de respuestas de Dialogflow y Vertex AI
+- [ ] Visualización de respuestas de Dialogflow y HuggingFace
 - [ ] Estados de loading y error implementados
 - [ ] Testing del componente exitoso
 
@@ -267,7 +267,7 @@
 **Título:** Implementación del Sistema de Cache Inteligente para Optimización de Costos
 
 **Descripción:**  
-**Propósito:** Implementar sistema de cache multinivel para reducir llamadas a Vertex AI y optimizar costos operativos del sistema.  
+**Propósito:** Implementar sistema de cache multinivel para reducir llamadas a HuggingFace y optimizar costos operativos del sistema.  
 **Detalles Específicos:** Implementar Redis cache, Cloud Storage cache, y lógica de cache inteligente con TTL y eviction policies.
 
 **Criterios de Aceptación:**
@@ -374,14 +374,14 @@
 **Título:** Dashboard de Métricas para Monitoreo de la Arquitectura Híbrida
 
 **Descripción:**  
-**Propósito:** Crear dashboard visual que muestre métricas de Dialogflow ES, Vertex AI, costos y eficiencia de la arquitectura híbrida.  
+**Propósito:** Crear dashboard visual que muestre métricas de Dialogflow ES, HuggingFace, costos y eficiencia de la arquitectura híbrida.  
 **Detalles Específicos:** Implementar componente HybridMetrics con visualizaciones de métricas clave y recomendaciones de optimización.
 
 **Criterios de Aceptación:**
 - [ ] Componente HybridMetrics implementado y funcional
 - [ ] Visualizaciones de métricas clave funcionando
 - [ ] Métricas de Dialogflow ES mostradas correctamente
-- [ ] Métricas de Vertex AI mostradas correctamente
+- [ ] Métricas de HuggingFace mostradas correctamente
 - [ ] Cálculo de eficiencia híbrida funcionando
 - [ ] Testing del dashboard exitoso
 
@@ -446,7 +446,7 @@
 **Título:** Implementación de Testing End-to-End Completo del Sistema
 
 **Descripción:**  
-**Propósito:** Crear suite completa de testing que valide el funcionamiento end-to-end del chatbot, incluyendo integración con Dialogflow y Vertex AI.  
+**Propósito:** Crear suite completa de testing que valide el funcionamiento end-to-end del chatbot, incluyendo integración con Dialogflow y HuggingFace.  
 **Detalles Específicos:** Implementar tests unitarios, de integración y end-to-end para todos los componentes del sistema.
 
 **Criterios de Aceptación:**
@@ -585,7 +585,7 @@
 
 ### **Sprint 1: MVP Core (8 horas)**
 - **Objetivo:** Funcionalidad básica del chatbot funcionando
-- **Entregables:** Chatbot básico con Dialogflow ES + Vertex AI + Documento YAML consolidado
+- **Entregables:** Chatbot básico con Dialogflow ES + HuggingFace + Documento YAML consolidado
 - **Tickets:** 5 tickets críticos
 - **Estado:** En desarrollo
 
@@ -616,7 +616,7 @@
 
 ### **Funcionales:**
 - [ ] Chatbot respondiendo preguntas básicas con Dialogflow ES
-- [ ] Chatbot manejando consultas complejas con Vertex AI
+- [ ] Chatbot manejando consultas complejas con HuggingFace
 - [ ] Sistema de sesiones manteniendo contexto
 - [ ] Integración con documento YAML funcionando
 - [ ] Cache inteligente optimizando costos
@@ -643,12 +643,12 @@
 **Mitigación:** Priorizar tickets críticos, implementar funcionalidades básicas primero, usar componentes existentes cuando sea posible.
 
 ### **Riesgo 2: Problemas de integración con Dialogflow**
-**Mitigación:** Testing temprano de integración, fallback a Vertex AI implementado, documentación clara de configuración.
+**Mitigación:** Testing temprano de integración, fallback a HuggingFace implementado, documentación clara de configuración.
 
 ### **Riesgo 3: Problemas de performance en producción**
 **Mitigación:** Testing de performance en desarrollo, monitoreo continuo, optimizaciones incrementales.
 
-### **Riesgo 4: Costos inesperados de Vertex AI**
+### **Riesgo 4: Costos inesperados de HuggingFace**
 **Mitigación:** Monitoreo de costos en tiempo real, límites de uso configurados, cache inteligente implementado.
 
 ---

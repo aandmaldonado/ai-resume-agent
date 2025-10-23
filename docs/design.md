@@ -15,9 +15,9 @@ Este documento detalla el diseño técnico completo para implementar el chatbot 
 
 ## 🏗️ Arquitectura del Sistema de Implementación
 
-### **🎯 Arquitectura Híbrida Dialogflow + Vertex AI**
+### **🎯 Arquitectura Híbrida Dialogflow + HuggingFace**
 
-El sistema implementa una **arquitectura híbrida inteligente** que combina **Dialogflow ES (Free Tier)** para detección de intenciones y **Vertex AI** para generación de respuestas avanzadas, maximizando eficiencia y minimizando costos.
+El sistema implementa una **arquitectura híbrida inteligente** que combina **Dialogflow ES (Free Tier)** para detección de intenciones y **HuggingFace** para generación de respuestas avanzadas, maximizando eficiencia y minimizando costos.
 
 ```mermaid
 graph TB
@@ -42,7 +42,7 @@ graph TB
         L[Basic Responses]
     end
     
-    subgraph "Vertex AI (Optimizado)"
+    subgraph "HuggingFace (Optimizado)"
         M[Smart Context Filtering]
         N[Document Retrieval]
         O[Advanced Response Generation]
@@ -112,7 +112,7 @@ sequenceDiagram
     participant B as Backend
     participant G as Hybrid Router
     participant D as Dialogflow ES
-    participant V as Vertex AI
+    participant V as HuggingFace
     participant C as Cache
     participant S as Document Store
     
@@ -172,7 +172,7 @@ cost_analysis:
 ```python
 # app/services/hybrid_routing_service.py
 class HybridRoutingService:
-    """Servicio de routing inteligente entre Dialogflow y Vertex AI"""
+    """Servicio de routing inteligente entre Dialogflow y HuggingFace"""
     
     def __init__(self):
         self.dialogflow_service = DialogflowService()
@@ -180,7 +180,7 @@ class HybridRoutingService:
         self.cost_optimizer = CostOptimizationService()
     
     async def route_message(self, message: str, session_id: str) -> dict:
-        """Rutea mensaje a Dialogflow o Vertex AI según complejidad"""
+        """Rutea mensaje a Dialogflow o HuggingFace según complejidad"""
         
         # 1. Detección de intención con Dialogflow (Free)
         dialogflow_result = await self.dialogflow_service.detect_intent(
@@ -191,7 +191,7 @@ class HybridRoutingService:
         if self._can_dialogflow_handle(dialogflow_result):
             return await self._handle_with_dialogflow(dialogflow_result)
         
-        # 3. Si no, usar Vertex AI con contexto optimizado
+        # 3. Si no, usar HuggingFace con contexto optimizado
         return await self._handle_with_vertex_ai(message, dialogflow_result)
     
     def _can_dialogflow_handle(self, dialogflow_result: dict) -> bool:
@@ -388,7 +388,7 @@ class DialogflowIntegrationService:
             
         except Exception as e:
             logger.error(f"Error en Dialogflow: {e}")
-            # Fallback a Vertex AI
+            # Fallback a HuggingFace
             return await self._fallback_to_vertex_ai(text)
     
     async def _extract_entities(self, parameters) -> list:
@@ -417,8 +417,8 @@ class DialogflowIntegrationService:
         return contexts
     
     async def _fallback_to_vertex_ai(self, text: str) -> dict:
-        """Fallback a Vertex AI si Dialogflow falla"""
-        # Implementar fallback a Vertex AI
+        """Fallback a HuggingFace si Dialogflow falla"""
+        # Implementar fallback a HuggingFace
         from app.services.vertex_ai_service import VertexAIService
         
         vertex_service = VertexAIService()
@@ -462,7 +462,7 @@ class HybridMonitoringService:
             # Métricas de Dialogflow
             dialogflow_metrics = await self._get_dialogflow_metrics()
             
-            # Métricas de Vertex AI
+            # Métricas de HuggingFace
             vertex_ai_metrics = await self._get_vertex_ai_metrics()
             
             # Métricas de costos
@@ -512,13 +512,13 @@ class HybridMonitoringService:
 technical_benefits:
   performance:
     - "Respuestas instantáneas para intents simples (Dialogflow)"
-    - "Respuestas contextuales avanzadas para casos complejos (Vertex AI)"
+    - "Respuestas contextuales avanzadas para casos complejos (HuggingFace)"
     - "Reducción de latencia general del sistema"
     - "Mejor experiencia de usuario"
   
   scalability:
     - "Dialogflow maneja picos de tráfico (Free tier)"
-    - "Vertex AI se enfoca en casos complejos"
+    - "HuggingFace se enfoca en casos complejos"
     - "Distribución inteligente de carga"
     - "Escalado automático según demanda"
   
@@ -584,7 +584,7 @@ phase_2_integration:
   backend_integration:
     - "Implementar DialogflowIntegrationService"
     - "Configurar routing híbrido"
-    - "Implementar fallback a Vertex AI"
+    - "Implementar fallback a HuggingFace"
     - "Configurar manejo de errores"
   
   api_endpoints:
@@ -1067,13 +1067,13 @@ class IntentClassifier:
 
 ---
 
-## 🤖 **Optimizaciones de Costos y Vertex AI**
+## 🤖 **Optimizaciones de Costos y HuggingFace**
 
 ### **🎯 Resumen de Optimizaciones Implementadas**
 
 Esta sección detalla las optimizaciones de costos identificadas en la auditoría GCP, permitiendo **ahorros del 60-80% en costos de LLM** y **68-71% en costos totales** mediante la integración nativa con Google Cloud Platform.
 
-### **1. Integración con Vertex AI**
+### **1. Integración con HuggingFace**
 
 #### **Modelos Implementados**
 - **text-bison@001:** Para generación de texto y respuestas
@@ -1136,7 +1136,7 @@ graph TB
 - **Cloud Run:** 2M requests/mes, 360K vCPU-segundos
 - **Cloud SQL:** 10GB storage, instancia db-f1-micro
 - **Memorystore:** 0.5GB RAM, instancia M1
-- **Vertex AI:** 100K requests/mes, 10M tokens/mes
+- **HuggingFace:** 100K requests/mes, 10M tokens/mes
 
 #### **Configuración Optimizada**
 ```yaml
@@ -1958,11 +1958,11 @@ authentication:
 summary: "Envía un mensaje al chatbot y recibe respuesta"
 description: |
   Procesa un mensaje del usuario, aplica Smart Context Filtering,
-  genera respuesta con Vertex AI, y registra analytics.
+  genera respuesta con HuggingFace, y registra analytics.
   
   - Valida input del usuario contra OWASP LLM
   - Aplica Smart Context Filtering optimizado
-  - Genera respuesta con modelos Vertex AI
+  - Genera respuesta con modelos HuggingFace
   - Registra métricas de costos y performance
   - Almacena en cache para optimización
 
@@ -2454,7 +2454,7 @@ responses:
 summary: "Health check del sistema"
 description: |
   Verifica el estado de salud de todos los servicios
-  del sistema, incluyendo Vertex AI y bases de datos.
+  del sistema, incluyendo HuggingFace y bases de datos.
 
 tags: ["Health", "Monitoring"]
 security: []
@@ -2814,7 +2814,7 @@ def create_app() -> FastAPI:
         
         ## Características Principales
         
-        * **Chat Inteligente**: Integración con Vertex AI para respuestas contextuales
+        * **Chat Inteligente**: Integración con HuggingFace para respuestas contextuales
         * **Smart Context Filtering**: Optimización de tokens y costos
         * **Cache Inteligente**: Sistema multinivel para maximizar eficiencia
         * **Analytics Avanzados**: Métricas de uso, costos y optimizaciones
@@ -2822,7 +2822,7 @@ def create_app() -> FastAPI:
         
         ## Optimizaciones de Costos
         
-        * **Vertex AI Integration**: 60-80% reducción en costos de LLM
+        * **HuggingFace Integration**: 60-80% reducción en costos de LLM
         * **Capas Gratuitas GCP**: $0/mes primer año
         * **Cache Inteligente**: 30-50% reducción en requests
         * **Smart Context Filtering**: 40-60% reducción en tokens
@@ -4345,7 +4345,7 @@ graph TB
     
     subgraph "Core Services"
         G[Chat Service] --> H[Dialogflow Integration]
-        G --> I[Vertex AI Service]
+        G --> I[HuggingFace Service]
         G --> J[Context Management]
         
         K[User Service] --> L[Profile Management]
@@ -4902,7 +4902,7 @@ class ChatServiceCircuitBreaker:
         return await self.dialogflow_cb.call(func, *args, **kwargs)
     
     async def call_vertex_ai(self, func, *args, **kwargs):
-        """Ejecuta llamada a Vertex AI con circuit breaker"""
+        """Ejecuta llamada a HuggingFace con circuit breaker"""
         return await self.vertex_ai_cb.call(func, *args, **kwargs)
     
     def get_status(self) -> dict:

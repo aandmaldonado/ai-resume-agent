@@ -324,7 +324,7 @@ Una vez que los tests pasen:
 
 1. **✅ Configurar entorno** (.env)
 2. **✅ Configurar base de datos** (PostgreSQL/Redis)
-3. **✅ Implementar servicios core** (Dialogflow + Vertex AI)
+3. **✅ Implementar servicios core** (Dialogflow + HuggingFace)
 4. **✅ Agregar tests de integración**
 5. **✅ Configurar CI/CD** con GitHub Actions
 6. **✅ Desplegar a producción**

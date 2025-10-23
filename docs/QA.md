@@ -677,14 +677,14 @@
 
 ## Plan de Testing de Integración
 
-### Testing de Integración Dialogflow + Vertex AI
+### Testing de Integración Dialogflow + HuggingFace
 
-El testing de integración es fundamental para asegurar que todos los componentes del sistema funcionen correctamente juntos, especialmente la integración entre Dialogflow y Vertex AI.
+El testing de integración es fundamental para asegurar que todos los componentes del sistema funcionen correctamente juntos, especialmente la integración entre Dialogflow y HuggingFace.
 
-#### **1. Testing de Integración Dialogflow + Vertex AI**
+#### **1. Testing de Integración Dialogflow + HuggingFace**
 
 ##### **Objetivos del Testing de Integración**
-- Verificar la comunicación correcta entre Dialogflow y Vertex AI
+- Verificar la comunicación correcta entre Dialogflow y HuggingFace
 - Validar el flujo completo de procesamiento de mensajes
 - Asegurar la consistencia de respuestas
 - Probar el manejo de errores y fallbacks
@@ -700,7 +700,7 @@ from services.vertex_ai_service import VertexAIService
 from services.chat_service import ChatService
 
 class TestDialogflowVertexIntegration:
-    """Tests de integración entre Dialogflow y Vertex AI"""
+    """Tests de integración entre Dialogflow y HuggingFace"""
     
     @pytest.fixture
     def mock_dialogflow_service(self):
@@ -716,7 +716,7 @@ class TestDialogflowVertexIntegration:
     
     @pytest.fixture
     def mock_vertex_ai_service(self):
-        """Mock del servicio de Vertex AI"""
+        """Mock del servicio de HuggingFace"""
         service = Mock(spec=VertexAIService)
         service.generate_response.return_value = {
             "response": "Tengo más de 5 años de experiencia en Python...",
@@ -742,7 +742,7 @@ class TestDialogflowVertexIntegration:
         # Verificar que se llamó a Dialogflow
         mock_dialogflow_service.detect_intent.assert_called_once_with(user_message)
         
-        # Verificar que se llamó a Vertex AI
+        # Verificar que se llamó a HuggingFace
         mock_vertex_ai_service.generate_response.assert_called_once()
         
         # Verificar resultado
@@ -1482,7 +1482,7 @@ integration_testing_plan:
     name: "Testing de Integración Core"
     duration: "2 días"
     tests:
-      - "Dialogflow + Vertex AI Integration"
+      - "Dialogflow + HuggingFace Integration"
       - "API Complete Scenarios"
       - "Basic Performance Testing"
     deliverables:
@@ -1571,4 +1571,4 @@ class TestingMetrics:
         }
 ```
 
-Este plan de testing de integración proporciona una cobertura completa para asegurar que todos los componentes del sistema funcionen correctamente juntos, con énfasis en la integración Dialogflow + Vertex AI, testing de la API completa, performance, seguridad y usabilidad.
+Este plan de testing de integración proporciona una cobertura completa para asegurar que todos los componentes del sistema funcionen correctamente juntos, con énfasis en la integración Dialogflow + HuggingFace, testing de la API completa, performance, seguridad y usabilidad.

@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from dotenv import load_dotenv
 from langchain_community.vectorstores import PGVector
 from langchain_huggingface import HuggingFaceEmbeddings
-from prepare_knowledge_base import process_portfolio_to_chunks
+from prepare_knowledge_base import main as prepare_knowledge_base
 
 
 def get_connection_string() -> str:
@@ -49,25 +49,17 @@ def get_connection_string() -> str:
     return connection_string
 
 
-def initialize_vector_store(portfolio_path: str = "data/portfolio.yaml"):
+def initialize_vector_store():
     """
     Inicializa el vector store en pgvector con los chunks del portfolio.
-
-    Args:
-        portfolio_path: Ruta al archivo portfolio.yaml
     """
     print("🚀 Inicializando vector store...\n")
 
-    # 1. Verificar que existe el archivo portfolio
-    if not Path(portfolio_path).exists():
-        print(f"❌ Error: No se encontró {portfolio_path}")
-        return False
-
-    print(f"📄 Procesando {portfolio_path}...")
+    print("📄 Procesando portfolio.yaml desde Cloud Storage...")
 
     # 2. Procesar portfolio en chunks
     try:
-        chunks = process_portfolio_to_chunks(portfolio_path)
+        chunks = prepare_knowledge_base()
         print(f"✓ {len(chunks)} chunks generados\n")
     except Exception as e:
         print(f"❌ Error procesando portfolio: {e}")

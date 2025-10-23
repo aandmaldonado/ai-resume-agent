@@ -48,7 +48,7 @@ class DialogflowService(ILLMService):
 
 class VertexAIService(ILLMService):
     async def generate_response(self, message: str) -> str:
-        # Implementación Vertex AI
+        # Implementación HuggingFace
         pass
 ```
 
@@ -651,7 +651,7 @@ spec:
 class Settings(BaseSettings):
     PROJECT_NAME: str = "AI Resume Agent"
     VERSION: str = "1.0.0"
-    GROQ_API_KEY: str
+    GEMINI_API_KEY: str
     CLOUD_SQL_DB: str = "chatbot_db"
     # ... más configuraciones
 ```
@@ -660,7 +660,7 @@ class Settings(BaseSettings):
 
 #### **Optimizaciones**
 - **Embeddings Locales**: ✅ HuggingFace all-MiniLM-L6-v2
-- **LLM Gratis**: ✅ Groq Llama 3.3 70B
+- **LLM Gratis**: ✅ Gemini 2.5 Flash
 - **Vector Store**: ✅ pgvector optimizado
 - **Memoria**: ✅ Session management eficiente
 

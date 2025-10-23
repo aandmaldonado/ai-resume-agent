@@ -558,7 +558,7 @@ flowchart TD
 - **Búsqueda**: ✅ Similarity search funcionando
 
 #### LLM y RAG
-- **LLM**: ✅ Groq Llama 3.3 70B (gratis y rápido)
+- **LLM**: ✅ Gemini 2.5 Flash (gratis y rápido)
 - **RAG Pipeline**: ✅ Retrieval Augmented Generation implementado
 - **System Prompt**: ✅ Prompt engineering avanzado con seguridad
 - **Memoria**: ✅ Conversational memory con session management

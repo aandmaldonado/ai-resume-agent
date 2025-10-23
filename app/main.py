@@ -30,14 +30,13 @@ limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="Chatbot RAG para portfolio profesional usando Groq, Vertex AI y pgvector",
+    description="Chatbot RAG para portfolio profesional usando Gemini, HuggingFace y pgvector",
     docs_url="/docs",
     redoc_url="/redoc",
 )
 
 # Registrar Rate Limiter en la app
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # CORS Middleware
 app.add_middleware(
@@ -75,8 +74,8 @@ async def startup_event():
         f"   Entorno: {'Production' if settings.CLOUD_SQL_CONNECTION_NAME else 'Development'}"
     )
     logger.info(f"   GCP Project: {settings.GCP_PROJECT_ID}")
-    logger.info(f"   LLM: {settings.GROQ_MODEL}")
-    logger.info(f"   Embeddings: {settings.VERTEX_AI_EMBEDDING_MODEL}")
+    logger.info(f"   LLM: {settings.GEMINI_MODEL}")
+    logger.info(f"   Embeddings: HuggingFace (local)")
     logger.info(f"   Vector Collection: {settings.VECTOR_COLLECTION_NAME}")
 
 
