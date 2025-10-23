@@ -3,11 +3,25 @@
 # Script Helper para Query de Vectores en Cloud SQL
 ####################################################
 
+# Cargar variables de entorno
+if [ -f "../../.env" ]; then
+    source ../../.env
+elif [ -f "../.env" ]; then
+    source ../.env
+fi
+
 # Credenciales (se toman del .env o se configuran aquí)
-export PGPASSWORD="${CLOUD_SQL_PASSWORD:-tu_password_aqui}"
-HOST="${CLOUD_SQL_HOST:-tu_host_aqui}"
+export PGPASSWORD="${CLOUD_SQL_PASSWORD}"
+HOST="${CLOUD_SQL_HOST}"
 USER="postgres"
 DB="chatbot_db"
+
+# Verificar que las variables estén configuradas
+if [ -z "$CLOUD_SQL_PASSWORD" ] || [ -z "$CLOUD_SQL_HOST" ]; then
+    echo "❌ Error: Variables CLOUD_SQL_PASSWORD y CLOUD_SQL_HOST no están configuradas"
+    echo "   Asegúrate de tener un archivo .env con estas variables"
+    exit 1
+fi
 
 # Función helper
 query() {
@@ -72,11 +86,16 @@ WHERE cmetadata->>'type' = 'project'
 AND cmetadata->>'project_name' IS NOT NULL;"
 
 echo ""
-echo "💡 Respuestas Preparadas:"
-query "SELECT DISTINCT cmetadata->>'question_type' as tipo_pregunta 
+echo "💡 Información Personal:"
+query "SELECT cmetadata->>'name' as nombre, cmetadata->>'location' as ubicacion 
 FROM langchain_pg_embedding 
-WHERE cmetadata->>'type' = 'common_answer' 
-AND cmetadata->>'question_type' IS NOT NULL;"
+WHERE cmetadata->>'type' = 'personal_info';"
+
+echo ""
+echo "💡 Filosofía y Motivación:"
+query "SELECT cmetadata->>'title' as titulo 
+FROM langchain_pg_embedding 
+WHERE cmetadata->>'type' = 'philosophy';"
 
 echo ""
 echo "💡 Dimensión de los Vectores:"

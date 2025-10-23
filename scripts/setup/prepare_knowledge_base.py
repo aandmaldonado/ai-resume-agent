@@ -25,27 +25,29 @@ def load_yaml_from_gcs(bucket_name: str, blob_name: str) -> Dict[str, Any]:
 
 
 def create_personal_info_chunks(personal_info: Dict[str, Any]) -> List[Document]:
-    """Crea chunks para información personal"""
+    """Crea chunks enriquecidos para información personal"""
     chunks = []
     
-    personal_content = f"""
-NOMBRE: {personal_info['name']}
-TÍTULO: {personal_info['title']}
-EMAIL: {personal_info['email']}
-UBICACIÓN: {personal_info['location']}
-WEBSITE: {personal_info['website']}
-LINKEDIN: {personal_info['linkedin']}
-GITHUB: {personal_info['github']}
+    # Chunk enriquecido con prosa semánticamente rica
+    personal_prose = f"""
+Información personal y de contacto de Álvaro Maldonado.
+Mi nombre es {personal_info['name']}.
+Mi ubicación actual, ciudad de residencia, es: {personal_info['location']}.
+Nacionalidad: {personal_info['nationality']}.
+Información de contacto: mi email es {personal_info['email']} y mi web es {personal_info['website']}.
+LinkedIn: {personal_info['linkedin']}
+GitHub: {personal_info['github']}
 """
     
     chunks.append(Document(
-        page_content=personal_content.strip(),
+        page_content=personal_prose.strip(),
         metadata={
             "type": "personal_info",
             "name": personal_info['name'],
             "title": personal_info['title'],
             "email": personal_info['email'],
             "location": personal_info['location'],
+            "nationality": personal_info['nationality'],
             "website": personal_info['website'],
             "linkedin": personal_info['linkedin'],
             "github": personal_info['github'],
@@ -78,33 +80,6 @@ RESUMEN PROFESIONAL DETALLADO:
     
     return chunks
 
-def create_philosophy_chunks(philosophy: Dict[str, Any]) -> List[Document]:
-    """Crea chunks para filosofía profesional"""
-    chunks = []
-    
-    philosophy_content = f"""
-FILOSOFÍA DE PRODUCT ENGINEER:
-{philosophy['product_engineer_mindset']}
-
-FILOSOFÍA DE IA:
-{philosophy['ai_philosophy']}
-
-FILOSOFÍA DE LIDERAZGO TÉCNICO:
-{philosophy['technical_leadership']}
-"""
-    
-    chunks.append(Document(
-        page_content=philosophy_content.strip(),
-        metadata={
-            "type": "philosophy",
-            "product_engineer_mindset": philosophy['product_engineer_mindset'],
-            "ai_philosophy": philosophy['ai_philosophy'],
-            "technical_leadership": philosophy['technical_leadership'],
-            "source": "portfolio.yaml"
-        }
-    ))
-    
-    return chunks
 
 def create_chatbot_context_chunks(chatbot_context: Dict[str, Any]) -> List[Document]:
     """Crea chunks para contexto del chatbot"""
@@ -407,22 +382,24 @@ NIVEL: {lang.get('level', 'N/A')}
     return chunks
 
 def create_professional_conditions_chunks(professional_conditions: Dict[str, Any]) -> List[Document]:
-    """Crea chunks para condiciones profesionales con nueva estructura v2.0"""
+    """Crea chunks enriquecidos para condiciones profesionales"""
     chunks = []
     
-    conditions_content = f"""
-DISPONIBILIDAD: {professional_conditions.get('availability', {}).get('status', 'N/A')}
-PERÍODO DE NOTIFICACIÓN: {professional_conditions.get('availability', {}).get('notice_period', 'N/A')}
-TRABAJO REMOTO: {professional_conditions.get('availability', {}).get('remote_work', 'N/A')}
+    # Chunk enriquecido con prosa semánticamente rica
+    conditions_prose = f"""
+Condiciones profesionales y laborales de Álvaro Maldonado.
+Mi disponibilidad actual es: {professional_conditions.get('availability', {}).get('status', 'N/A')}.
+Mi período de pre-aviso es: {professional_conditions.get('availability', {}).get('notice_period', 'N/A')}.
+Trabajo remoto: {professional_conditions.get('availability', {}).get('remote_work', 'N/A')}.
 
-PERMISO DE TRABAJO: {professional_conditions.get('work_permit', {}).get('status', 'N/A')}
-PAÍS OBJETIVO: {professional_conditions.get('work_permit', {}).get('target_country', 'N/A')}
+Mi situación de permiso de trabajo es: {professional_conditions.get('work_permit', {}).get('status', 'N/A')}.
+Mi país objetivo es: {professional_conditions.get('work_permit', {}).get('target_country', 'N/A')}.
 
-EXPECTATIVAS SALARIALES: {professional_conditions.get('salary_expectations', {}).get('notes', 'N/A')}
+Mis expectativas salariales: {professional_conditions.get('salary_expectations', {}).get('notes', 'N/A')}
 """
     
     chunks.append(Document(
-        page_content=conditions_content.strip(),
+        page_content=conditions_prose.strip(),
         metadata={
             "type": "professional_conditions",
             "availability": professional_conditions.get('availability', {}),
@@ -435,24 +412,43 @@ EXPECTATIVAS SALARIALES: {professional_conditions.get('salary_expectations', {})
     return chunks
 
 def create_philosophy_chunks(philosophy_and_interests: List[Dict[str, Any]]) -> List[Document]:
-    """Crea chunks para filosofía e intereses con nueva estructura v2.0"""
+    """Crea chunks enriquecidos para filosofía e intereses"""
     chunks = []
     
-    for item in philosophy_and_interests:
-        philosophy_content = f"""
-FILOSOFÍA/INTERÉS: {item.get('title', 'N/A')}
-DESCRIPCIÓN: {item.get('description', 'N/A')}
+    # Chunk específico para motivación (pregunta frecuente)
+    motivation_chunk = f"""
+Mi motivación para aceptar un nuevo reto profesional.
+Lo que más me motiva es enfrentarme a problemas que no tienen una solución obvia.
+Disfruto del proceso de análisis, la colaboración y la aplicación de la tecnología para encontrar soluciones creativas a desafíos complejos.
+Mi filosofía se centra en la mentalidad de 'Product Engineer': entender el 'porqué' del negocio antes de diseñar el 'cómo' técnico.
+Soy un profesional autodidacta por naturaleza y dedico tiempo al aprendizaje continuo sobre IA.
+Mi objetivo es utilizar la tecnología para resolver problemas reales y aportar valor medible.
 """
-        
-        chunks.append(Document(
-            page_content=philosophy_content.strip(),
-            metadata={
-                "type": "philosophy",
-                "title": item.get('title', 'N/A'),
-                "description": item.get('description', 'N/A'),
-                "source": "portfolio.yaml"
-            }
-        ))
+    
+    chunks.append(Document(
+        page_content=motivation_chunk.strip(),
+        metadata={
+            "type": "philosophy",
+            "title": "Motivación Profesional",
+            "description": "Motivación para nuevos retos profesionales",
+            "source": "portfolio.yaml"
+        }
+    ))
+    
+    # Chunk general de filosofía
+    philosophy_prose = "Filosofía de trabajo, intereses y motivación profesional de Álvaro Maldonado.\n"
+    for item in philosophy_and_interests:
+        philosophy_prose += f"Título: {item.get('title')}. Descripción: {item.get('description')}\n"
+    
+    chunks.append(Document(
+        page_content=philosophy_prose.strip(),
+        metadata={
+            "type": "philosophy",
+            "title": "Filosofía General",
+            "description": "Filosofía general de trabajo e intereses",
+            "source": "portfolio.yaml"
+        }
+    ))
 
     return chunks
 
@@ -525,7 +521,7 @@ def main():
         chunks = prepare_knowledge_base_from_yaml(yaml_data)
         
         logger.info(f"Base de conocimiento preparada con {len(chunks)} chunks")
-        
+
         # Mostrar estadísticas
         type_counts = {}
         for chunk in chunks:

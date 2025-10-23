@@ -495,9 +495,9 @@
                     <label for="userType">Tipo de Usuario * <span id="userTypeError" class="error-text"></span></label>
                     <select id="userType">
                         <option value="">Seleccionar...</option>
-                        <option value="Profesional RRHH">Profesional RRHH</option>
-                        <option value="Profesional TI">Profesional TI</option>
-                        <option value="Otro">Otro</option>
+                        <option value="HR">Profesional RRHH</option>
+                        <option value="IT">Profesional TI</option>
+                        <option value="OT">Otro</option>
                     </select>
                 </div>
                 <div class="modal-buttons">
@@ -679,7 +679,7 @@
                         body: JSON.stringify({ 
                             message,
                             session_id: currentSessionId,
-                            user_type: 'Profesional TI'
+                            user_type: 'IT'
                         })
                     });
 
@@ -728,7 +728,7 @@
                         body: JSON.stringify({ 
                             message: message,
                             session_id: currentSessionId,
-                            user_type: 'Profesional TI',
+                            user_type: 'IT',
                             force_rag: true
                         })
                     });

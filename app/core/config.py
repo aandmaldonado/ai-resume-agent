@@ -24,9 +24,9 @@ class Settings(BaseSettings):
     # Google Gemini API (LLM alternativo)
     GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-2.5-flash"  # Modelo más rápido y menos restrictivo
-    GEMINI_TEMPERATURE: float = 0.1
-    GEMINI_TOP_P: float = 0.3  # Nucleus sampling para reducir alucinación
-    GEMINI_MAX_TOKENS: int = 256  # Reducido de 1024 para minimizar costos
+    GEMINI_TEMPERATURE: float = 0.4  # Más confianza para sintetizar respuestas STAR
+    GEMINI_TOP_P: float = 0.7  # Ventana más amplia para construcción de frases
+    GEMINI_MAX_TOKENS: int = 512  # Espacio suficiente para respuestas detalladas
 
     # Cloud SQL (PostgreSQL + pgvector)
     CLOUD_SQL_CONNECTION_NAME: Optional[str] = None  # Para Cloud Run
