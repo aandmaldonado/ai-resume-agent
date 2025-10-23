@@ -1,0 +1,84 @@
+steps:
+  # --- PASO 1: Construir la imagen ---
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/chatbot-repo/chatbot-api', '.']
+    id: Build
+    
+  # --- PASO 2: Subir la imagen ---
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/chatbot-repo/chatbot-api']
+    id: Push
+    waitFor:
+      - Build
+    
+  # --- PASO 3: Desplegar con secrets ---
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'chatbot-api'
+      - '--image'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/chatbot-repo/chatbot-api'
+      - '--platform'
+      - 'managed'
+      - '--region'
+      - '${_REGION}'
+      - '--allow-unauthenticated'
+      - '--memory'
+      - '1Gi'
+      - '--cpu'
+      - '1'
+      - '--timeout'
+      - '300'
+      - '--max-instances'
+      - '10'
+      - '--min-instances'
+      - '0'
+      - '--set-env-vars'
+      - 'GCP_PROJECT_ID=${PROJECT_ID}'
+      - '--set-env-vars'
+      - 'GCP_REGION=${_REGION}'
+      - '--set-env-vars'
+      - 'CLOUD_SQL_CONNECTION_NAME=${_CLOUD_SQL_CONNECTION_NAME}'
+      - '--set-env-vars'
+      - 'CLOUD_SQL_HOST=${_CLOUD_SQL_HOST}'
+      - '--set-env-vars'
+      - 'CLOUD_SQL_PORT=${_CLOUD_SQL_PORT}'
+      - '--set-env-vars'
+      - 'CLOUD_SQL_DB=${_CLOUD_SQL_DB}'
+      - '--set-env-vars'
+      - 'CLOUD_SQL_USER=${_CLOUD_SQL_USER}'
+      - '--set-env-vars'
+      - 'PORTFOLIO_BUCKET=${_PORTFOLIO_BUCKET}'
+      - '--set-secrets'
+      - 'GEMINI_API_KEY=gemini-api-key:latest'
+      - '--set-secrets'
+      - 'CLOUD_SQL_PASSWORD=cloud-sql-password:latest'
+      - '--add-cloudsql-instances'
+      - '${_CLOUD_SQL_CONNECTION_NAME}'
+      - '--project'
+      - '${PROJECT_ID}'
+    id: Deploy
+    waitFor:
+      - Push
+
+# Substitution variables (valores por defecto)
+substitutions:
+  _REGION: 'europe-west1'
+  _CLOUD_SQL_CONNECTION_NAME: 'almapidev:europe-west1:almapi-chatbot-db'
+  _CLOUD_SQL_HOST: '34.34.149.50'
+  _CLOUD_SQL_PORT: '5432'
+  _CLOUD_SQL_DB: 'chatbot_db'
+  _CLOUD_SQL_USER: 'postgres'
+  _PORTFOLIO_BUCKET: 'almapi-portfolio-data'
+
+# Options
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'  # Máquina más potente para builds más rápidos
+  diskSizeGb: 100
+  substitution_option: 'ALLOW_LOOSE'
+
+# Timeout
+timeout: '1200s'  # 20 minutos

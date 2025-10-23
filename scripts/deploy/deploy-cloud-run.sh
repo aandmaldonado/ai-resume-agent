@@ -65,7 +65,7 @@ gcloud run deploy ${SERVICE_NAME} \
   --min-instances 0 \
   --set-env-vars "GCP_PROJECT_ID=${PROJECT_ID}" \
   --set-env-vars "GCP_REGION=${REGION}" \
-  --set-env-vars "GROQ_API_KEY=${GROQ_API_KEY}" \
+  --set-env-vars "GEMINI_API_KEY=${GEMINI_API_KEY}" \
   --set-env-vars "CLOUD_SQL_CONNECTION_NAME=${CLOUD_SQL_INSTANCE}" \
   --set-env-vars "CLOUD_SQL_DB=${CLOUD_SQL_DB:-chatbot_db}" \
   --set-env-vars "CLOUD_SQL_USER=${CLOUD_SQL_USER:-postgres}" \

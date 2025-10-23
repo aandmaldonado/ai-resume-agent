@@ -92,18 +92,34 @@ class Settings(BaseSettings):
         Construye la URL de la base de datos según el entorno.
         En Cloud Run usa Unix socket, en local usa TCP.
         """
+        import logging
+        import os
+        logger = logging.getLogger(__name__)
+        
+        # Debug logging para variables de entorno
+        logger.info(f"DEBUG: CLOUD_SQL_CONNECTION_NAME exists: {'CLOUD_SQL_CONNECTION_NAME' in os.environ}")
+        logger.info(f"DEBUG: CLOUD_SQL_CONNECTION_NAME value: {self.CLOUD_SQL_CONNECTION_NAME}")
+        logger.info(f"DEBUG: CLOUD_SQL_PASSWORD exists: {'CLOUD_SQL_PASSWORD' in os.environ}")
+        logger.info(f"DEBUG: CLOUD_SQL_PASSWORD length: {len(self.CLOUD_SQL_PASSWORD) if self.CLOUD_SQL_PASSWORD else 'Not Set'}")
+        logger.info(f"DEBUG: CLOUD_SQL_USER: {self.CLOUD_SQL_USER}")
+        logger.info(f"DEBUG: CLOUD_SQL_DB: {self.CLOUD_SQL_DB}")
+        
         if self.CLOUD_SQL_CONNECTION_NAME:
             # Cloud Run con Cloud SQL Proxy (Unix socket)
-            return (
+            url = (
                 f"postgresql://{self.CLOUD_SQL_USER}:{self.CLOUD_SQL_PASSWORD}@/"
                 f"{self.CLOUD_SQL_DB}?host=/cloudsql/{self.CLOUD_SQL_CONNECTION_NAME}"
             )
+            logger.info(f"DEBUG: Using Cloud SQL Unix socket connection")
+            return url
         else:
             # Desarrollo local o conexión directa
-            return (
+            url = (
                 f"postgresql://{self.CLOUD_SQL_USER}:{self.CLOUD_SQL_PASSWORD}@"
                 f"{self.CLOUD_SQL_HOST}:{self.CLOUD_SQL_PORT}/{self.CLOUD_SQL_DB}"
             )
+            logger.info(f"DEBUG: Using direct TCP connection")
+            return url
 
     @property
     def ASYNC_DATABASE_URL(self) -> str:

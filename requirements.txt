@@ -6,15 +6,13 @@ python-multipart==0.0.20
 # Pydantic para validación
 pydantic==2.12.1
 pydantic-settings==2.11.0
+email-validator==2.1.1
 
-# LangChain - versiones compatibles (deja que pip resuelva)
+# LangChain - versiones compatibles
 langchain>=0.3.18
 langchain-community>=0.3.18
 langchain-core>=0.3.79
 langchain-text-splitters>=0.3.6
-
-# LLM: Groq (gratis)
-langchain-groq==0.3.8
 
 # Embeddings: HuggingFace (local, 100% gratis)
 langchain-huggingface==0.3.1
@@ -30,9 +28,10 @@ sqlalchemy==2.0.25
 alembic==1.13.1
 greenlet==3.0.3
 
-# GCP (solo para Cloud Storage y autenticación)
+# GCP (Cloud Storage, Secret Manager y Gemini)
 google-cloud-storage==2.14.0
 google-cloud-secret-manager==2.16.4
+google-generativeai==0.8.3
 
 # Utilidades
 PyYAML==6.0.1
