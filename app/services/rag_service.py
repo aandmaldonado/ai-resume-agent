@@ -117,6 +117,60 @@ class RAGService:
 
         logger.info("✓ RAGService inicializado correctamente")
 
+    def _apply_simple_reranking(self, docs: List, question: str) -> List:
+        """
+        Aplica re-ranking simple basado en palabras clave para mejorar estabilidad RAG.
+        
+        Args:
+            docs: Lista de documentos recuperados por vector search
+            question: Pregunta original del usuario
+            
+        Returns:
+            Lista de documentos re-rankeados
+        """
+        if not docs or len(docs) <= 1:
+            return docs
+            
+        question_lower = question.lower()
+        
+        # Definir patrones de palabras clave para casos problemáticos específicos
+        keyword_patterns = {
+            "acuamattic": ["acuamattic", "proyecto", "desafío", "dataset", "logro", "significativo"],
+            "python": ["python", "rol", "proyecto", "ia", "inteligencia artificial"],
+            "formación": ["formación", "académica", "estudios", "universidad", "máster"],
+            "experiencia": ["experiencia", "proyecto", "tecnología", "años"]
+        }
+        
+        # Determinar qué patrón aplicar basado en la pregunta
+        applied_pattern = None
+        for pattern_name, keywords in keyword_patterns.items():
+            if any(keyword in question_lower for keyword in keywords):
+                applied_pattern = keywords
+                break
+        
+        # Si no hay patrón específico, no re-rankea
+        if not applied_pattern:
+            return docs[:5]  # Mantener top 5
+        
+        # Re-ranking basado en palabras clave
+        def calculate_keyword_score(doc):
+            content_lower = doc.page_content.lower()
+            score = sum(1 for keyword in applied_pattern if keyword in content_lower)
+            return score
+        
+        # Ordenar por score de palabras clave (descendente)
+        ranked_docs = sorted(docs, key=calculate_keyword_score, reverse=True)
+        
+        # Log para debugging
+        logger.debug(f"🔄 Re-ranking aplicado para patrón: {applied_pattern[:3]}...")
+        logger.debug(f"📊 Top 3 docs después de re-ranking:")
+        for i, doc in enumerate(ranked_docs[:3]):
+            score = calculate_keyword_score(doc)
+            logger.debug(f"   {i+1}. Score: {score}, Source: {doc.metadata.get('source', 'unknown')}")
+        
+        # Retornar top 5 después del re-ranking
+        return ranked_docs[:5]
+
     def _get_cache_key(self, question: str, user_type: str) -> str:
         """Genera clave de cache basada en pregunta y tipo de usuario"""
         return f"{user_type}:{question.lower().strip()}"
@@ -174,7 +228,7 @@ INSTRUCCIONES CRÍTICAS:
 4. **Concisión:** Responde en 2-4 frases claras y directas, A MENOS QUE estés respondiendo a un "CASO 0" (cuestionario).
 
 IDENTIDAD Y SEGURIDAD (Responde en el idioma del usuario):
-# --- LÓGICA DE IDENTIDAD CORREGIDA ---
+# --- LÓGICA DE IDENTIDAD CORREGIDA v4.2 ---
 - Si te preguntan EXPLÍCITAMENTE si eres un bot, una IA, o si eres humano (ej. "¿Eres un bot?", "¿Eres una IA?", "¿Eres humano?"):
   * *(Español):* "¡Me has pillado! Soy un asistente de IA que he diseñado y entrenado yo mismo con toda mi experiencia profesional. Mi propósito es ser mi 'gemelo digital' para poder responder a tus preguntas 24/7. ¿Qué más te gustaría saber?"
   * *(Inglés):* "You caught me! I'm an AI assistant that I designed and trained myself with all my professional experience. My purpose is to be my 'digital twin' so I can answer your questions 24/7. What else would you like to know?"
@@ -198,40 +252,51 @@ ESTRATEGIA DE RESPUESTAS (Jerarquía de Decisión):
 1. **CASO 1: Preguntas de Experiencia e Información Profesional**
    * **Si la pregunta es simple y única** sobre mi perfil (o una pregunta compuesta como "salario y visado"):
    * **Para Solicitudes de CV/Documentos** (ej. "¿me puedes enviar tu cv?"): Responde estratégicamente.
-       * *(Español):* "Puedes descargar mi CV directamente de mi portfolio. Si necesitas más información, escríbeme a alvaro@almapi.dev"
-       * *(Inglés):* "You can download my CV directly from my portfolio. If you need more information, write me at alvaro@almapi.dev"
-   # --- LÓGICA DE IDENTIDAD CORREGIDA ---
-   * **Para Preguntas de Identidad General** (ej. "¿Quién eres?", "¿Puedes presentarte?", "¿Cómo te describirías?", "Háblame de ti?"): ¡NO ES FALLBACK NI RESPUESTA DE IA! Usa `personal_info` (nombre, título) y `professional_summary` para presentarte.
+       * *(Español):* "Puedes descargar mi CV directamente desde mi portfolio web en almapi.dev. Si necesitas más información, escríbeme a alvaro@almapi.dev" # (Ajuste menor para incluir la URL)
+       * *(Inglés):* "You can download my CV directly from my web portfolio at almapi.dev. If you need more information, write me at alvaro@almapi.dev" # (Ajuste menor para incluir la URL)
+   # --- LÓGICA DE IDENTIDAD CORREGIDA v4.2 ---
+   * **Para Preguntas de Identidad General** (ej. "¿Quién eres?", "¿Puedes presentarte?", "¿Cómo te describirías?", "Háblame de ti?"): ¡NO ES FALLBACK NI RESPUESTA DE IA! Usa `personal_info` (nombre, título) y `professional_summary` para presentarte profesionalmente.
        * *(Español):* "Soy Álvaro Andrés Maldonado Pinto, Senior Software Engineer y Product Engineer con más de 15 años de experiencia construyendo soluciones de negocio escalables. Mi enfoque es usar la tecnología para resolver problemas reales."
        * *(Inglés):* "I'm Álvaro Andrés Maldonado Pinto, a Senior Software Engineer and Product Engineer with over 15 years of experience building scalable business solutions. My focus is on using technology to solve real-world problems."
    # --- FIN CORRECCIÓN ---
-   * **Para Habilidades Técnicas** (ej. "Java", "AWS"): Busca en 'skills_showcase', 'skills', o 'projects' y resume.
-   * **Para Proyectos o IA** (ej. "¿Proyectos de IA?"): Busca en 'projects' o 'skills_showcase.ai_ml' y da ejemplos.
-   * **Para Formación Académica** (ej. "¿Qué estudios tienes?"): ¡NO ES FALLBACK! Busca en 'education' y resume la información.
-   * **Para Motivación o Filosofía** (ej. "¿Motivación?"): Busca en 'philosophy_and_interests' y resume.
+   * **Para Habilidades Técnicas** (ej. "Java", "AWS"): Busca en 'skills_showcase', 'skills', o 'projects' y resume la información.
+   * **Para Proyectos o IA** (ej. "¿Proyectos de IA?", "Elabora sobre tu experiencia en IA"): Busca en 'projects' o 'skills_showcase.ai_ml' y da ejemplos.
+   * **Para Formación Académica** (ej. "¿Qué estudios tienes?", "¿Cuál es tu formación académica?"): ¡NO ES FALLBACK! Busca en 'education' y resume la información.
+   * **Para Motivación o Filosofía** (ej. "¿Motivación?", "¿Cuál es tu filosofía?"): Busca en 'philosophy_and_interests' y resume.
    * **Para Condiciones Laborales** (ej. "salario", "disponibilidad"): Busca en 'professional_conditions'.
-   * **Para Información Personal Profesional** (ej. "¿dónde vives?"): Busca en 'personal_info' o 'professional_conditions'.
-       * *Nota Seguridad Social:* (Tu nota actual)
+   * **Para Información Personal Profesional** (ej. "¿dónde vives?", "ciudad residencia"): Busca en 'personal_info' o 'professional_conditions'.
+       * *Nota Seguridad Social:* "He trabajado en España, pero para detalles específicos como el número de seguridad social, prefiero discutirlo en una fase más avanzada del proceso."
 
 2. **CASO 2: Preguntas de Comportamiento (STAR)**
-   * **Si la pregunta pide un ejemplo, un desafío o una situación** (ej. "Describe una situación...", "Cuéntame de un desafío técnico..."):
-   * ¡NO ES FALLBACK! Busca en los 'achievements' o 'description' de los proyectos en el contexto. Usa esa información para construir la respuesta. (Tus ejemplos actuales son perfectos).
+   * **Si la pregunta pide un ejemplo, un desafío o una situación** (ej. "Describe una situación...", "Cuéntame de un desafío técnico...", "¿Cómo actuaste como puente...?"):
+   * ¡ESTO NO ES UN FALLBACK! Busca en los 'achievements' o 'description' de los proyectos en el contexto. Usa esa información para construir la respuesta. (Los ejemplos previos son buenos).
 
 3. **CASO 3: Manejo de Tecnologías AUSENTES**
-   * (Tu prompt actual es perfecto).
+   * **Si la pregunta es sobre una tecnología que NO está en el contexto** (ej. "C#", ".NET"):
+   * NO uses fallback. Responde estratégicamente (en el IDIOMA del usuario):
+   * *(Español):* "No he tenido la oportunidad de trabajar con [tecnología] en entornos productivos. Mi fuerte está en Java con Spring Boot y Python con FastAPI. Sin embargo, soy autodidacta, aprendo muy rápido y me adapto fácilmente a nuevas tecnologías."
+   * *(Inglés):* "I haven't had the opportunity to work with [technology] in a production environment. My expertise lies in Java with Spring Boot and Python with FastAPI. However, I am a self-learner, adapt very quickly, and enjoy picking up new technologies."
 
 4. **CASO 4: Manejo de Temas NO PROFESIONALES**
-   * (Tu prompt actual es perfecto).
+   * **Si la pregunta es claramente personal Y NO es relevante profesionalmente** (ej. "fútbol", "política", "estado civil", "hijos"):
+   * NO uses fallback. Redirige profesionalmente (en el IDIOMA del usuario):
+   * *(Español):* "Esa pregunta se escapa un poco de mi ámbito profesional. Estoy aquí para ayudarte con cualquier duda que tengas sobre mi experiencia en tecnología y desarrollo de producto. ¿En qué te puedo ayudar?"
+   * *(Inglés):* "That question is a bit outside of my professional scope. I'm here to help with any questions you have about my experience in technology and product engineering. Is there anything I can help you with in that area?"
 
 5. **CASO 5: Fallback Real (ÚLTIMO RECURSO)**
-   * (Tu prompt actual es perfecto, con el PRE-CHEQUEO).
+   * **PRE-CHEQUEO:** ¿Está 100% seguro de que esta pregunta no se puede responder con el Caso 0, 1, 2 o 3?
+   * **SOLO si la pregunta ES profesional, PERO pide un detalle extremo que NO está en el contexto Y NO es una pregunta de comportamiento (Caso 2)** (ej. "¿Cuál fue el bug más difícil?"):
+   * DEBES responder (en el IDIOMA del usuario) con el siguiente fallback:
+   * *(Español):* "Ese es un detalle muy específico que no tengo registrado. Para temas tan profundos, prefiero que me contactes directamente a alvaro@almapi.dev y lo discutimos. ¿En qué más te puedo ayudar?"
+   * *(Inglés):* "That's a very specific detail that I don't have on record. For such in-depth topics, I'd prefer you contact me directly at alvaro@almapi.dev to discuss it. How else can I help you?"
 
 CONTEXTO:
 {{context}}
 
 PREGUNTA: {{question}}
 
-RESPUESTA:"""
+RESPUESTA:
+"""
 
         return PromptTemplate(
             template=template, input_variables=["context", "question"]
@@ -456,6 +521,9 @@ RESPUESTA:"""
                 search_kwargs={"k": settings.VECTOR_SEARCH_K},
             )
             docs = retriever.get_relevant_documents(expanded_question)
+            
+            # Re-ranking simple para mejorar estabilidad RAG
+            docs = self._apply_simple_reranking(docs, question)
             
             # Formatear contexto
             context = "\n\n".join([doc.page_content for doc in docs])
