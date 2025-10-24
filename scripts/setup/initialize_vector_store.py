@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 from langchain_community.vectorstores import PGVector
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.docstore.document import Document
+from build_knowledge_base import load_and_prepare_chunks
 
 
 def get_connection_string() -> str:
@@ -50,7 +51,7 @@ def get_connection_string() -> str:
     return connection_string
 
 
-def initialize_vector_store():
+def initialize_vector_store_script():
     """
     Inicializa el vector store en pgvector con los chunks del portfolio.
     """
@@ -190,7 +191,7 @@ if __name__ == "__main__":
     print("=" * 80 + "\n")
 
     # Inicializar
-    success = initialize_vector_store()
+    success = initialize_vector_store_script()
 
     if success:
         # Probar
