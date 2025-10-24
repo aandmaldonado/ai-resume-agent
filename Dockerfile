@@ -47,10 +47,6 @@ USER appuser
 # Esto descarga el modelo en el cache del usuario correcto (~90MB)
 RUN python -c "from sentence_transformers import SentenceTransformer; model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2'); print(f'✓ Modelo descargado: {model}')"
 
-# CRÍTICO: Inicializar vector store con chunks enriquecidos
-# Esto asegura que el vector store esté actualizado con los nuevos chunks
-RUN python scripts/setup/initialize_vector_store.py
-
 # Cloud Run usa la variable PORT
 ENV PORT=8080
 EXPOSE 8080

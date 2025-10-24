@@ -4,6 +4,7 @@ Ejecutar una sola vez para cargar la base de conocimientos.
 """
 import os
 import sys
+import asyncio
 from pathlib import Path
 
 # Añadir el directorio raíz al path para imports
@@ -12,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from dotenv import load_dotenv
 from langchain_community.vectorstores import PGVector
 from langchain_huggingface import HuggingFaceEmbeddings
-from build_knowledge_base import load_and_prepare_chunks
+from langchain.docstore.document import Document
 
 
 def get_connection_string() -> str:
@@ -202,3 +203,60 @@ if __name__ == "__main__":
         print("❌ PROCESO FALLÓ - Revisa los errores arriba")
         print("=" * 80)
         sys.exit(1)
+
+
+async def initialize_vector_store(chunks: list[Document]) -> bool:
+    """
+    Función async para inicializar el vector store con chunks dados.
+    
+    Args:
+        chunks: Lista de documentos para cargar en el vector store
+        
+    Returns:
+        bool: True si la inicialización fue exitosa, False en caso contrario
+    """
+    try:
+        print("🚀 Inicializando vector store...")
+        
+        # Verificar variables de entorno
+        required_vars = [
+            "GCP_PROJECT_ID",
+            "CLOUD_SQL_DB", 
+            "CLOUD_SQL_USER",
+            "CLOUD_SQL_PASSWORD"
+        ]
+        
+        missing_vars = [var for var in required_vars if not os.getenv(var)]
+        if missing_vars:
+            print(f"❌ Faltan variables de entorno: {', '.join(missing_vars)}")
+            return False
+        
+        # Configurar embeddings
+        embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2"
+        )
+        
+        # Obtener connection string
+        connection_string = get_connection_string()
+        
+        # Crear vector store
+        vector_store = PGVector(
+            connection_string=connection_string,
+            embedding_function=embeddings,
+            collection_name="portfolio_chunks"
+        )
+        
+        # Limpiar colección existente
+        print("🧹 Limpiando colección existente...")
+        vector_store.delete_collection()
+        
+        # Cargar chunks
+        print(f"📚 Cargando {len(chunks)} chunks enriquecidos...")
+        vector_store.add_documents(chunks)
+        
+        print("✅ Vector store inicializado exitosamente")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error inicializando vector store: {e}")
+        return False
