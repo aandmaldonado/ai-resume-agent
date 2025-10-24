@@ -78,27 +78,6 @@ async def startup_event():
     logger.info(f"   LLM: {settings.GEMINI_MODEL}")
     logger.info(f"   Embeddings: HuggingFace (local)")
     logger.info(f"   Vector Collection: {settings.VECTOR_COLLECTION_NAME}")
-    
-    # Inicializar vector store con chunks enriquecidos
-    try:
-        logger.info("🚀 Inicializando vector store...")
-        
-        # Importar aquí para evitar imports circulares
-        from scripts.setup.build_knowledge_base import load_and_prepare_chunks
-        from scripts.setup.initialize_vector_store import initialize_vector_store
-        
-        # Cargar chunks enriquecidos
-        chunks = load_and_prepare_chunks("data/portfolio.yaml")
-        logger.info(f"✓ {len(chunks)} chunks enriquecidos cargados")
-        
-        # Inicializar vector store
-        await initialize_vector_store(chunks)
-        logger.info("✅ Vector store inicializado exitosamente")
-        
-    except Exception as e:
-        logger.error(f"❌ Error inicializando vector store: {e}")
-        # No fallar la aplicación si hay error en vector store
-        logger.warning("⚠️ Continuando sin vector store inicializado")
 
 
 @app.on_event("shutdown")

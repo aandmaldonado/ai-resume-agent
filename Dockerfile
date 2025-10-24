@@ -31,10 +31,8 @@ RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/wh
 # Instalar resto de dependencias
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar código de la aplicación y scripts
+# Copiar código de la aplicación
 COPY app/ ./app/
-COPY scripts/ ./scripts/
-COPY data/ ./data/
 
 # Crear usuario no-root para seguridad
 RUN useradd -m -u 1000 appuser && \
