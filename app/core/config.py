@@ -96,13 +96,14 @@ class Settings(BaseSettings):
         import os
         logger = logging.getLogger(__name__)
         
-        # Debug logging para variables de entorno
-        logger.info(f"DEBUG: CLOUD_SQL_CONNECTION_NAME exists: {'CLOUD_SQL_CONNECTION_NAME' in os.environ}")
-        logger.info(f"DEBUG: CLOUD_SQL_CONNECTION_NAME value: {self.CLOUD_SQL_CONNECTION_NAME}")
-        logger.info(f"DEBUG: CLOUD_SQL_PASSWORD exists: {'CLOUD_SQL_PASSWORD' in os.environ}")
-        logger.info(f"DEBUG: CLOUD_SQL_PASSWORD length: {len(self.CLOUD_SQL_PASSWORD) if self.CLOUD_SQL_PASSWORD else 'Not Set'}")
-        logger.info(f"DEBUG: CLOUD_SQL_USER: {self.CLOUD_SQL_USER}")
-        logger.info(f"DEBUG: CLOUD_SQL_DB: {self.CLOUD_SQL_DB}")
+        # Debug logging para variables de entorno (solo en desarrollo)
+        if not self.CLOUD_SQL_CONNECTION_NAME:  # Solo en desarrollo local
+            logger.debug(f"DEBUG: CLOUD_SQL_CONNECTION_NAME exists: {'CLOUD_SQL_CONNECTION_NAME' in os.environ}")
+            logger.debug(f"DEBUG: CLOUD_SQL_CONNECTION_NAME value: {self.CLOUD_SQL_CONNECTION_NAME}")
+            logger.debug(f"DEBUG: CLOUD_SQL_PASSWORD exists: {'CLOUD_SQL_PASSWORD' in os.environ}")
+            logger.debug(f"DEBUG: CLOUD_SQL_PASSWORD length: {len(self.CLOUD_SQL_PASSWORD) if self.CLOUD_SQL_PASSWORD else 'Not Set'}")
+            logger.debug(f"DEBUG: CLOUD_SQL_USER: {self.CLOUD_SQL_USER}")
+            logger.debug(f"DEBUG: CLOUD_SQL_DB: {self.CLOUD_SQL_DB}")
         
         if self.CLOUD_SQL_CONNECTION_NAME:
             # Cloud Run con Cloud SQL Proxy (Unix socket)
@@ -110,7 +111,7 @@ class Settings(BaseSettings):
                 f"postgresql://{self.CLOUD_SQL_USER}:{self.CLOUD_SQL_PASSWORD}@/"
                 f"{self.CLOUD_SQL_DB}?host=/cloudsql/{self.CLOUD_SQL_CONNECTION_NAME}"
             )
-            logger.info(f"DEBUG: Using Cloud SQL Unix socket connection")
+            logger.debug(f"DEBUG: Using Cloud SQL Unix socket connection")
             return url
         else:
             # Desarrollo local o conexión directa
@@ -118,7 +119,7 @@ class Settings(BaseSettings):
                 f"postgresql://{self.CLOUD_SQL_USER}:{self.CLOUD_SQL_PASSWORD}@"
                 f"{self.CLOUD_SQL_HOST}:{self.CLOUD_SQL_PORT}/{self.CLOUD_SQL_DB}"
             )
-            logger.info(f"DEBUG: Using direct TCP connection")
+            logger.debug(f"DEBUG: Using direct TCP connection")
             return url
 
     @property

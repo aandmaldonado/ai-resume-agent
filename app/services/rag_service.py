@@ -135,7 +135,7 @@ class RAGService:
                 # Mover al final (LRU)
                 self.response_cache.move_to_end(cache_key)
                 self.cache_hits += 1
-                logger.info(f"✓ Cache hit para: {cache_key[:50]}...")
+                logger.debug(f"✓ Cache hit para: {cache_key[:50]}...")
                 return cached_data["response"]
             else:
                 # Cache expirado, eliminar
@@ -157,7 +157,7 @@ class RAGService:
             "response": response,
             "timestamp": datetime.now()
         }
-        logger.info(f"✓ Respuesta cacheada: {cache_key[:50]}...")
+        logger.debug(f"✓ Respuesta cacheada: {cache_key[:50]}...")
 
     def _create_system_prompt(self, user_type: str = "OT") -> PromptTemplate:
         """
@@ -363,7 +363,7 @@ RESPUESTA:"""
 
         # Si no existe, crear nueva memoria
         if session_id not in self.conversations:
-            logger.info(f"Creando nueva memoria para sesión: {session_id}")
+            logger.debug(f"Creando nueva memoria para sesión: {session_id}")
             memory = ConversationBufferWindowMemory(
                 k=settings.MAX_CONVERSATION_HISTORY,  # Últimos N pares de mensajes
                 memory_key="chat_history",
@@ -394,7 +394,7 @@ RESPUESTA:"""
         ]
 
         for session_id in sessions_to_remove:
-            logger.info(f"Limpiando sesión inactiva: {session_id}")
+            logger.debug(f"Limpiando sesión inactiva: {session_id}")
             del self.conversations[session_id]
 
         if sessions_to_remove:
@@ -415,7 +415,7 @@ RESPUESTA:"""
             Dict con la respuesta y metadatos
         """
         try:
-            logger.info(
+            logger.debug(
                 f"Generando respuesta para sesión '{session_id}': '{question[:50]}...'"
             )
 
@@ -468,12 +468,10 @@ RESPUESTA:"""
             # Formatear contexto
             context = "\n\n".join([doc.page_content for doc in docs])
             
-            # Log del contexto extraído para debugging
-            logger.info(f"🔍 Contexto extraído para pregunta '{question[:50]}...':")
-            logger.info(f"📄 Número de documentos: {len(docs)}")
-            for i, doc in enumerate(docs):
-                logger.info(f"   Doc {i+1}: {doc.page_content[:100]}...")
-            logger.info(f"📝 Contexto completo: {context[:500]}...")
+            # Log del contexto extraído para debugging (sin exponer contenido sensible)
+            logger.debug(f"🔍 Contexto extraído para pregunta '{question[:50]}...':")
+            logger.debug(f"📄 Número de documentos: {len(docs)}")
+            logger.debug(f"📝 Longitud del contexto: {len(context)} caracteres")
             
             # Crear prompt con contexto y memoria
             chat_history = memory.chat_memory.messages
@@ -532,7 +530,7 @@ RESPUESTA:"""
             # Formatear sources
             sources = self._format_sources(docs)
 
-            logger.info(
+            logger.debug(
                 f"✓ Respuesta generada. Fuentes: {len(sources)} | Historial: {len(memory.chat_memory.messages)//2} pares"
             )
 

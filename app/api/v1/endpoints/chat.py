@@ -76,7 +76,7 @@ async def chat(
     )
 
     try:
-        logger.info(f"Petición de chat recibida. Sesión: {session_id}")
+        logger.debug(f"Petición de chat recibida. Sesión: {session_id}")
 
         # 1. Crear o actualizar sesión de analytics (solo si analytics está habilitado)
         if settings.ENABLE_ANALYTICS and not settings.TESTING:
@@ -106,7 +106,7 @@ async def chat(
             next_flow_state = FlowState.CONVERSATION_ACTIVE
             flow_data = {"testing_mode": True}
 
-        logger.info(
+        logger.debug(
             f"🔍 Flow controller devolvió: action_type={action_type.value}, next_state={next_flow_state.value}"
         )
 
@@ -127,7 +127,7 @@ async def chat(
                 )
 
                 # Guardar par de conversación (pregunta-respuesta asociadas)
-                logger.info(
+                logger.debug(
                     f"🔍 Intentando guardar par de conversación para sesión {session_id}"
                 )
                 # Normalizar fuentes a TEXT[] (strings) antes de guardar
@@ -158,7 +158,7 @@ async def chat(
                     intent_category="general",  # Se puede mejorar con análisis real
                     engagement_score=0.5,  # Score por defecto, se puede calcular
                 )
-                logger.info(f"🔍 Resultado del guardado: {save_result}")
+                logger.debug(f"🔍 Resultado del guardado: {save_result}")
 
             # Construir respuesta con RAG (sin mensaje de bienvenida redundante)
             response = ChatResponse(
@@ -188,7 +188,7 @@ async def chat(
                 )
 
                 # Guardar par de conversación (pregunta-respuesta asociadas)
-                logger.info(
+                logger.debug(
                     f"🔍 Intentando guardar par de conversación para sesión {session_id}"
                 )
                 # Normalizar fuentes a TEXT[] (strings) antes de guardar
@@ -219,7 +219,7 @@ async def chat(
                     intent_category="general",
                     engagement_score=0.5,
                 )
-                logger.info(f"🔍 Resultado del guardado: {save_result}")
+                logger.debug(f"🔍 Resultado del guardado: {save_result}")
 
             # 6. Construir respuesta con RAG + solicitud de captura
             response = ChatResponse(
@@ -249,7 +249,7 @@ async def chat(
                 )
 
                 # Guardar par de conversación (pregunta-respuesta asociadas)
-                logger.info(
+                logger.debug(
                     f"🔍 Intentando guardar par de conversación para sesión {session_id}"
                 )
                 # Normalizar fuentes a TEXT[] (strings) antes de guardar
@@ -280,7 +280,7 @@ async def chat(
                     intent_category="general",
                     engagement_score=0.5,
                 )
-                logger.info(f"🔍 Resultado del guardado: {save_result}")
+                logger.debug(f"🔍 Resultado del guardado: {save_result}")
 
             # 6. Construir respuesta con RAG + solicitud de GDPR
             response = ChatResponse(
@@ -310,7 +310,7 @@ async def chat(
                 )
 
                 # Guardar par de conversación (pregunta-respuesta asociadas)
-                logger.info(
+                logger.debug(
                     f"🔍 Intentando guardar par de conversación para sesión {session_id}"
                 )
                 # Normalizar fuentes a TEXT[] (strings) antes de guardar
@@ -341,7 +341,7 @@ async def chat(
                     intent_category="general",
                     engagement_score=0.5,
                 )
-                logger.info(f"🔍 Resultado del guardado: {save_result}")
+                logger.debug(f"🔍 Resultado del guardado: {save_result}")
 
             # 6. Construir respuesta normal
             response = ChatResponse(
