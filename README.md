@@ -1586,3 +1586,14 @@ Implementación del esquema de base de datos con extensión pgvector, sistema de
 
 **URL:** https://github.com/aandmaldonado/ai-resume-agent/pull/4
 
+---
+
+### **Pull Request 4: GDPR Compliance and Data Capture**
+
+**Título:** `🔐 Agregar Flujos de Captura de Datos y Consentimiento GDPR al Chatbot`
+
+**Descripción:**
+Implementación completa de funcionalidad de captura de datos y consentimiento GDPR al chatbot, permitiendo la recolección discreta de información de contacto del usuario mientras mantiene el cumplimiento con las regulaciones de privacidad. Incluye nuevos endpoints API, componentes UI, internacionalización completa, y mejoras de seguridad con autenticación GCP corregida.
+
+**URL:** https://github.com/aandmaldonado/my-resume-react/pull/14
+
