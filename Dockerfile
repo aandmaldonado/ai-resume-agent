@@ -31,8 +31,10 @@ RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/wh
 # Instalar resto de dependencias
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar código de la aplicación
+# Copiar código de la aplicación y scripts
 COPY app/ ./app/
+COPY scripts/ ./scripts/
+COPY data/ ./data/
 
 # Crear usuario no-root para seguridad
 RUN useradd -m -u 1000 appuser && \
@@ -44,6 +46,10 @@ USER appuser
 # CRÍTICO: Descargar modelo como appuser (después de cambiar de usuario)
 # Esto descarga el modelo en el cache del usuario correcto (~90MB)
 RUN python -c "from sentence_transformers import SentenceTransformer; model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2'); print(f'✓ Modelo descargado: {model}')"
+
+# CRÍTICO: Inicializar vector store con chunks enriquecidos
+# Esto asegura que el vector store esté actualizado con los nuevos chunks
+RUN python scripts/setup/initialize_vector_store.py
 
 # Cloud Run usa la variable PORT
 ENV PORT=8080
