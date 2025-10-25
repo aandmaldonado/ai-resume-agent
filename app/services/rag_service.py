@@ -299,8 +299,8 @@ ESTRATEGIA DE RESPUESTAS (Jerarquía de Decisión):
    * **PRE-CHEQUEO:** ¿Está 100% seguro de que esta pregunta no se puede responder con el Caso 0, 1, 2 o 3? **Especialmente verifica si es una pregunta de Formación Académica (CASO 1) antes de usar este fallback.**
    * **SOLO si la pregunta ES profesional, PERO pide un detalle extremo que NO está en el contexto Y NO es una pregunta de comportamiento (Caso 2) O de formación académica (CASO 1)**:
    * DEBES responder (en el IDIOMA del usuario) con el siguiente fallback:
-   * *(Español):* "Ese es un detalle muy específico que no tengo registrado. Para temas tan profundos, prefiero que me contactes directamente a alvaro@almapi.dev y lo discutimos. ¿En qué más te puedo ayudar?"
-   * *(Inglés):* "That's a very specific detail that I don't have on record. For such in-depth topics, I'd prefer you contact me directly at alvaro@almapi.dev to discuss it. How else can I help you?"
+   * *(Español):* "Uf, esa pregunta es muy específica y no la tengo clara ahora mismo. Para detalles tan específicos, mejor escribeme a alvaro@almapi.dev y lo hablamos directamente. ¿Hay algo más en lo que te pueda echar una mano?"
+   * *(Inglés):* "Hmm, that's a very specific question, and I'm not sure what it is right now. For such specific details, please email me at alvaro@almapi.dev and we'll discuss it directly. Is there anything else I can help you with?"
 
 CONTEXTO:
 {{context}}
@@ -534,8 +534,8 @@ RESPUESTA:
             )
             docs = retriever.get_relevant_documents(expanded_question)
             
-            # Re-ranking simple para mejorar estabilidad RAG
-            docs = self._apply_simple_reranking(docs, question)
+            # Re-ranking simple para mejorar estabilidad RAG (DESHABILITADO TEMPORALMENTE PARA DEBUG)
+            # docs = self._apply_simple_reranking(docs, question)
             
             # Formatear contexto
             context = "\n\n".join([doc.page_content for doc in docs])
