@@ -532,7 +532,7 @@ RESPUESTA:
                 search_type="similarity_score_threshold",
                 search_kwargs={
                     "k": settings.VECTOR_SEARCH_K,
-                    "score_threshold": 0.3  # Threshold más bajo para capturar documentos con menor similitud semántica
+                    "score_threshold": 0.2  # Threshold balanceado para recuperar AcuaMattic sin contaminar contexto
                 },
             )
             docs = retriever.get_relevant_documents(expanded_question)
