@@ -192,6 +192,11 @@ def create_projects_chunks(data):
         try:
             project_prose = f"Proyecto: {project_data.get('name')}. Mi rol fue: {project_data.get('role')}.\n"
             project_prose += f"Descripción del proyecto: {project_data.get('description')}.\n"
+            
+            # Agregar tecnologías utilizadas
+            technologies = project_data.get('technologies', [])
+            if technologies:
+                project_prose += f"Tecnologías utilizadas: {', '.join(technologies)}.\n"
 
             faq_prose = "\n--- Preguntas Frecuentes Relevantes ---\n"
             has_faq = False
@@ -346,6 +351,58 @@ def create_education_chunks(data):
         )
     return chunks
 
+def create_languages_chunks(data):
+    """Crea chunks enriquecidos para idiomas."""
+    print("Creando chunks: languages...")
+    chunks = []
+    languages_data = data.get("languages", [])
+    
+    if not languages_data:
+        print("   ⚠️ No se encontraron datos de idiomas")
+        return chunks
+    
+    languages_prose = "Información sobre los idiomas que manejo Álvaro Maldonado.\n"
+    
+    for i, lang_item in enumerate(languages_data):
+        languages_prose += f"Idioma: {lang_item.get('name')}. Nivel: {lang_item.get('level')}.\n"
+    
+    # FAQ Hints para preguntas sobre idiomas
+    languages_prose += "\n--- Preguntas Frecuentes Relevantes ---\n"
+    languages_prose += "¿Qué idiomas manejas?\n"
+    languages_prose += "¿Cuál es tu nivel de inglés?\n"
+    languages_prose += "¿Hablas inglés?\n"
+    languages_prose += "¿Qué nivel de inglés tienes?\n"
+    languages_prose += "¿Manejas otros idiomas además del español?\n"
+    
+    # Dividir la prosa si es muy larga
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+    
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=400,  # Tamaño ideal del chunk (en caracteres)
+        chunk_overlap=50,  # Solapamiento para mantener contexto entre chunks
+        length_function=len,
+        is_separator_regex=False,
+        separators=["\n\n", "\n", ". ", ", ", " ", ""],  # Prioridad de separadores
+    )
+    
+    sub_chunks_content = text_splitter.split_text(languages_prose)
+    
+    for i, sub_content in enumerate(sub_chunks_content):
+        chunks.append(
+            Document(
+                page_content=sub_content,
+                metadata={
+                    "source": "languages", 
+                    "id": f"languages_{i}",
+                    "chunk_index": i,
+                    "total_chunks": len(sub_chunks_content)
+                }
+            )
+        )
+    
+    print(f"   ✅ Generados {len(chunks)} chunks de idiomas")
+    return chunks
+
 
 # --- 2. FUNCIÓN PRINCIPAL ---
 
@@ -371,6 +428,7 @@ def load_and_prepare_chunks(yaml_file_path):
     all_chunks.extend(create_projects_chunks(data))
     all_chunks.extend(create_skills_showcase_chunks(data))
     all_chunks.extend(create_education_chunks(data)) # <-- Añadido
+    all_chunks.extend(create_languages_chunks(data)) # <-- Añadido
 
     print(f"\n--- Preparación de Chunks Completa ---")
     print(f"Total de chunks generados: {len(all_chunks)}")
