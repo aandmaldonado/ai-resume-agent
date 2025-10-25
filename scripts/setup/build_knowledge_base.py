@@ -110,6 +110,9 @@ def create_projects_chunks(data):
             if project_id == 'proj_acuamattic':
                 faq_prose += "¿Cuáles fueron los mayores desafíos técnicos al construir el dataset para AcuaMattic y cómo los superaste?\n"
                 faq_prose += "¿Dame un ejemplo de un desafío técnico en un proyecto de IA?\n"
+                faq_prose += "¿Cuál fue el logro más significativo en AcuaMattic?\n"
+                faq_prose += "¿Cuál dirías que fue el logro más significativo que conseguiste en AcuaMattic?\n"
+                faq_prose += "¿Cuáles fueron los logros más importantes en AcuaMattic?\n"
                 has_faq = True
 
             if project_id == 'proj_andes' or project_id == 'proj_spr':
