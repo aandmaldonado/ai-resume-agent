@@ -538,12 +538,12 @@ RESPUESTA:
             # logger.info(f"🔍 Consulta expandida: '{expanded_question[:100]}...'")
             expanded_question = question  # Usar pregunta original
 
-                    # Obtener contexto relevante del vector store SIN score threshold
-                    retriever = self.vector_store.as_retriever(
-                        search_kwargs={
-                            "k": settings.VECTOR_SEARCH_K
-                        },
-                    )
+            # Obtener contexto relevante del vector store SIN score threshold
+            retriever = self.vector_store.as_retriever(
+                search_kwargs={
+                    "k": settings.VECTOR_SEARCH_K
+                },
+            )
             docs = retriever.get_relevant_documents(expanded_question)
             
             # Re-ranking simple para mejorar estabilidad RAG (DESHABILITADO TEMPORALMENTE PARA DEBUG)
