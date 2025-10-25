@@ -527,10 +527,13 @@ RESPUESTA:
             # logger.info(f"🔍 Consulta expandida: '{expanded_question[:100]}...'")
             expanded_question = question  # Usar pregunta original
 
-            # Obtener contexto relevante del vector store
+            # Obtener contexto relevante del vector store con score threshold más bajo
             retriever = self.vector_store.as_retriever(
-                search_type="similarity",
-                search_kwargs={"k": settings.VECTOR_SEARCH_K},
+                search_type="similarity_score_threshold",
+                search_kwargs={
+                    "k": settings.VECTOR_SEARCH_K,
+                    "score_threshold": 0.3  # Threshold más bajo para capturar documentos con menor similitud semántica
+                },
             )
             docs = retriever.get_relevant_documents(expanded_question)
             
