@@ -3,10 +3,20 @@
 
 import yaml
 from langchain.docstore.document import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 import sys
 import os
 
 # --- 1. FUNCIONES DE ENRIQUECIMIENTO (EL ARREGLO FINAL) ---
+
+# Configurar text splitter para dividir chunks grandes
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=400,  # Tamaño ideal del chunk (en caracteres)
+    chunk_overlap=50,  # Solapamiento para mantener contexto entre chunks
+    length_function=len,
+    is_separator_regex=False,
+    separators=["\n\n", "\n", ". ", ", ", " ", ""],  # Prioridad de separadores
+)
 
 def create_personal_info_chunk(data):
     """Crea un chunk de prosa semánticamente rico para la información personal."""
@@ -25,7 +35,24 @@ def create_personal_info_chunk(data):
     personal_prose += "¿Quién eres?\n"
     personal_prose += "¿Puedes presentarte?\n"
 
-    return [Document(page_content=personal_prose, metadata={"source": "personal_info", "id": "personal_info"})]
+    # Dividir la prosa si es muy larga
+    sub_chunks_content = text_splitter.split_text(personal_prose)
+    
+    chunks = []
+    for i, sub_content in enumerate(sub_chunks_content):
+        chunks.append(
+            Document(
+                page_content=sub_content,
+                metadata={
+                    "source": "personal_info", 
+                    "id": f"personal_info_{i}",
+                    "chunk_index": i,
+                    "total_chunks": len(sub_chunks_content)
+                }
+            )
+        )
+    
+    return chunks
 
 def create_professional_summary_chunk(data):
     """Crea un chunk de prosa semánticamente rico para el resumen profesional."""
@@ -42,7 +69,24 @@ def create_professional_summary_chunk(data):
     ¿Quién eres profesionalmente?
     ¿Háblame de ti profesionalmente?
     """
-    return [Document(page_content=summary_prose, metadata={"source": "professional_summary", "id": "professional_summary"})]
+    # Dividir la prosa si es muy larga
+    sub_chunks_content = text_splitter.split_text(summary_prose)
+    
+    chunks = []
+    for i, sub_content in enumerate(sub_chunks_content):
+        chunks.append(
+            Document(
+                page_content=sub_content,
+                metadata={
+                    "source": "professional_summary", 
+                    "id": f"professional_summary_{i}",
+                    "chunk_index": i,
+                    "total_chunks": len(sub_chunks_content)
+                }
+            )
+        )
+    
+    return chunks
 
 
 def create_professional_conditions_chunk(data):
@@ -62,7 +106,24 @@ def create_professional_conditions_chunk(data):
     ¿Buscas trabajo remoto?
     ¿Cuál es tu disponibilidad?
     """
-    return [Document(page_content=conditions_prose, metadata={"source": "professional_conditions", "id": "professional_conditions"})]
+    # Dividir la prosa si es muy larga
+    sub_chunks_content = text_splitter.split_text(conditions_prose)
+    
+    chunks = []
+    for i, sub_content in enumerate(sub_chunks_content):
+        chunks.append(
+            Document(
+                page_content=sub_content,
+                metadata={
+                    "source": "professional_conditions", 
+                    "id": f"professional_conditions_{i}",
+                    "chunk_index": i,
+                    "total_chunks": len(sub_chunks_content)
+                }
+            )
+        )
+    
+    return chunks
 
 def create_philosophy_chunks(data):
     """Crea chunks enriquecidos para filosofía y motivación."""
@@ -89,8 +150,36 @@ def create_philosophy_chunks(data):
     philosophy_prose += "¿Cuáles son tus intereses personales?\n"
 
 
-    chunks.append(Document(page_content=motivation_prose, metadata={"source": "philosophy_and_interests", "id": "motivation"}))
-    chunks.append(Document(page_content=philosophy_prose, metadata={"source": "philosophy_and_interests", "id": "philosophy_general"}))
+    # Dividir motivation_prose si es muy larga
+    motivation_sub_chunks = text_splitter.split_text(motivation_prose)
+    for i, sub_content in enumerate(motivation_sub_chunks):
+        chunks.append(
+            Document(
+                page_content=sub_content,
+                metadata={
+                    "source": "philosophy_and_interests", 
+                    "id": f"motivation_{i}",
+                    "chunk_index": i,
+                    "total_chunks": len(motivation_sub_chunks)
+                }
+            )
+        )
+    
+    # Dividir philosophy_prose si es muy larga
+    philosophy_sub_chunks = text_splitter.split_text(philosophy_prose)
+    for i, sub_content in enumerate(philosophy_sub_chunks):
+        chunks.append(
+            Document(
+                page_content=sub_content,
+                metadata={
+                    "source": "philosophy_and_interests", 
+                    "id": f"philosophy_general_{i}",
+                    "chunk_index": i,
+                    "total_chunks": len(philosophy_sub_chunks)
+                }
+            )
+        )
+    
     return chunks
 
 def create_projects_chunks(data):
@@ -136,12 +225,21 @@ def create_projects_chunks(data):
             else:
                 project_prose += "- Logros no detallados.\n"
 
-            chunks.append(
-                Document(
-                    page_content=project_prose,
-                    metadata={"source": "project", "id": project_id}
+            # Dividir project_prose si es muy larga
+            project_sub_chunks = text_splitter.split_text(project_prose)
+            for i, sub_content in enumerate(project_sub_chunks):
+                chunks.append(
+                    Document(
+                        page_content=sub_content,
+                        metadata={
+                            "source": "project", 
+                            "id": f"{project_id}_{i}",
+                            "original_id": project_id,
+                            "chunk_index": i,
+                            "total_chunks": len(project_sub_chunks)
+                        }
+                    )
                 )
-            )
         except Exception as e:
             print(f"Error procesando el proyecto {project_id}: {e}")
             pass
@@ -163,16 +261,31 @@ def create_skills_showcase_chunks(data):
         if skill_id == 'ai_ml':
             skill_prose += "Could you elaborate on your experience with Artificial Intelligence, especially the practical projects you have led?\n"
             skill_prose += "¿Cuál es tu experiencia con IA?\n"
+            # --- REFUERZO Q6: Rol de Python en IA ---
+            skill_prose += "¿Qué rol ha jugado Python en tus proyectos de IA?\n"
+            skill_prose += "¿Cómo usas Python en Inteligencia Artificial?\n"
+            skill_prose += "Explica el papel de Python en tus trabajos de IA.\n"
+            skill_prose += "¿Qué importancia tiene Python en tus proyectos de IA?\n"
+            skill_prose += "¿Cómo aplicas Python en proyectos de Inteligencia Artificial?\n"
         if skill_id == 'java_backend':
             skill_prose += "¿Cuál es tu experiencia con Java?\n"
         # Añadir más hints si es necesario para otras skills
 
-        chunks.append(
-            Document(
-                page_content=skill_prose,
-                metadata={"source": "skill_showcase", "id": skill_id}
+        # Dividir skill_prose si es muy larga
+        skill_sub_chunks = text_splitter.split_text(skill_prose)
+        for i, sub_content in enumerate(skill_sub_chunks):
+            chunks.append(
+                Document(
+                    page_content=sub_content,
+                    metadata={
+                        "source": "skill_showcase", 
+                        "id": f"{skill_id}_{i}",
+                        "original_id": skill_id,
+                        "chunk_index": i,
+                        "total_chunks": len(skill_sub_chunks)
+                    }
+                )
             )
-        )
     return chunks
 
 def create_education_chunks(data):
@@ -195,24 +308,42 @@ def create_education_chunks(data):
         Háblame de tu educación.
         ¿Dónde estudiaste {edu_item.get('degree')}?
         """
-        chunks.append(
-            Document(
-                page_content=edu_prose,
-                metadata={"source": "education", "id": f"edu_{i}"}
+        # Dividir edu_prose si es muy larga
+        edu_sub_chunks = text_splitter.split_text(edu_prose)
+        for j, sub_content in enumerate(edu_sub_chunks):
+            chunks.append(
+                Document(
+                    page_content=sub_content,
+                    metadata={
+                        "source": "education", 
+                        "id": f"edu_{i}_{j}",
+                        "original_id": f"edu_{i}",
+                        "chunk_index": j,
+                        "total_chunks": len(edu_sub_chunks)
+                    }
+                )
             )
-        )
         general_education_prose += f"- {edu_item.get('degree')} en {edu_item.get('institution')} ({edu_item.get('period')})\n"
 
     # Chunk General Adicional
     general_education_prose += "\n--- Preguntas Frecuentes Relevantes ---\n"
     general_education_prose += "¿Cuál es tu formación académica general?\n"
     general_education_prose += "Resume tus estudios.\n"
-    chunks.append(
-        Document(
-            page_content=general_education_prose,
-            metadata={"source": "education", "id": "education_summary"}
+    # Dividir general_education_prose si es muy larga
+    general_sub_chunks = text_splitter.split_text(general_education_prose)
+    for i, sub_content in enumerate(general_sub_chunks):
+        chunks.append(
+            Document(
+                page_content=sub_content,
+                metadata={
+                    "source": "education", 
+                    "id": f"education_summary_{i}",
+                    "original_id": "education_summary",
+                    "chunk_index": i,
+                    "total_chunks": len(general_sub_chunks)
+                }
+            )
         )
-    )
     return chunks
 
 
