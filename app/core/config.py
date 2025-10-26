@@ -42,7 +42,7 @@ class Settings(BaseSettings):
 
     # Vector Store
     VECTOR_COLLECTION_NAME: str = "portfolio_knowledge"
-    VECTOR_SEARCH_K: int = 25  # Top K documentos a recuperar (optimizado para evitar fallbacks)
+    VECTOR_SEARCH_K: int = 3  # Top K documentos a recuperar (optimizado para evitar fallbacks)
 
     # Conversational Memory
     MAX_CONVERSATION_HISTORY: int = 5  # Últimos N pares de mensajes a recordar

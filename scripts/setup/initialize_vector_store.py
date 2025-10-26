@@ -74,7 +74,7 @@ def initialize_vector_store_script():
     """
     print("🚀 Inicializando vector store...\n")
 
-    print("📄 Procesando portfolio.yaml desde Cloud Storage...")
+    print("📄 Procesando portfolio.yaml desde archivo local...")
 
     # 2. Procesar portfolio en chunks
     try:
@@ -97,7 +97,7 @@ def initialize_vector_store_script():
     try:
         # Usar modelo local de HuggingFace - no requiere API ni internet
         embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
             model_kwargs={"device": "cpu"},
             encode_kwargs={"normalize_embeddings": True},
         )
@@ -153,7 +153,7 @@ def test_vector_store():
 
     try:
         embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
             model_kwargs={"device": "cpu"},
             encode_kwargs={"normalize_embeddings": True},
         )
@@ -255,7 +255,7 @@ async def initialize_vector_store(chunks: list[Document]) -> bool:
         
         # Configurar embeddings
         embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
+            model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
         )
         
         # Obtener connection string

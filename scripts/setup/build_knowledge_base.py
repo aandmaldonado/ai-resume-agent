@@ -19,219 +19,413 @@ text_splitter = RecursiveCharacterTextSplitter(
 )
 
 def create_personal_info_chunk(data):
-    """Crea un chunk de prosa semánticamente rico para la información personal."""
+    """Crea chunks fusionando FAQs y contenido para mejor recuperación semántica."""
     print("Creando chunk: personal_info...")
     personal_data = data.get("personal_info", {})
+    
+    # FAQs específicas para personal_info
+    faqs = [
+        "¿Quién eres?",
+        "¿Puedes presentarte?",
+        "¿Dónde vives?",
+        "¿Cuál es tu email?"
+    ]
+    
+    # Contenido de información personal
     personal_prose = f"""
-    Información personal y de contacto de Álvaro Maldonado.
     Mi nombre es {personal_data.get('name')}.
-    Mi ubicación actual y ciudad de residencia es: {personal_data.get('location')}.
-    Mi nacionalidad es: {personal_data.get('nationality')}.
-    Información de contacto: mi email es {personal_data.get('email')} y mi sitio web es {personal_data.get('website')}.
-    Mi LinkedIn es {personal_data.get('linkedin')}.
+    Mi ubicación actual es {personal_data.get('location')}.
+    Nacionalidad: {personal_data.get('nationality')}.
+    Email: {personal_data.get('email')}
+    Sitio web: {personal_data.get('website')}
+    LinkedIn: {personal_data.get('linkedin')}
+    
+    [Preguntas que responden este contenido: {', '.join(faqs)}]
     """
-    # FAQ Hint para "¿Quién eres?" (complementario al summary)
-    personal_prose += "\n--- Preguntas Frecuentes Relevantes ---\n"
-    personal_prose += "¿Quién eres?\n"
-    personal_prose += "¿Puedes presentarte?\n"
-
-    # Dividir la prosa si es muy larga
-    sub_chunks_content = text_splitter.split_text(personal_prose)
     
     chunks = []
-    for i, sub_content in enumerate(sub_chunks_content):
-        chunks.append(
-            Document(
-                page_content=sub_content,
-                metadata={
-                    "source": "personal_info", 
-                    "id": f"personal_info_{i}",
-                    "chunk_index": i,
-                    "total_chunks": len(sub_chunks_content)
-                }
-            )
+    chunks.append(
+        Document(
+            page_content=personal_prose,
+            metadata={
+                "source": "personal_info", 
+                "id": "personal_info_0",
+                "chunk_type": "qa_fused"
+            }
         )
+    )
     
+    print(f"   ✅ Generado 1 chunk fusionado para personal_info")
     return chunks
 
 def create_professional_summary_chunk(data):
-    """Crea un chunk de prosa semánticamente rico para el resumen profesional."""
+    """Crea chunks fusionando FAQs y contenido para mejor recuperación semántica."""
     print("Creando chunk: professional_summary...")
     summary_data = data.get("professional_summary", {})
+    
+    # Obtener FAQs del YAML (si existen) o usar FAQs de respaldo
+    faqs = summary_data.get('faqs', [])
+    if not faqs:
+        # FAQs de respaldo si no están en el YAML
+        faqs = [
+            "¿Quién eres?",
+            "¿Cómo te describirías profesionalmente?", 
+            "Describe tu perfil profesional.",
+            "¿Quién eres profesionalmente?",
+            "¿Háblame de ti profesionalmente?"
+        ]
+    
+    # Fusionar contenido y FAQs en un solo texto
     summary_prose = f"""
-    Resumen profesional de Álvaro Maldonado.
-    Descripción corta: {summary_data.get('short')}
-    Descripción detallada: {summary_data.get('detailed')}
-
-    --- Preguntas Frecuentes Relevantes ---
-    ¿Cómo te describirías profesionalmente?
-    Describe tu perfil profesional.
-    ¿Quién eres profesionalmente?
-    ¿Háblame de ti profesionalmente?
+    {summary_data.get('short', '')}
+    
+    {summary_data.get('detailed', '')}
+    
+    [Preguntas que responden este contenido: {', '.join(faqs)}]
     """
-    # Dividir la prosa si es muy larga
-    sub_chunks_content = text_splitter.split_text(summary_prose)
     
     chunks = []
-    for i, sub_content in enumerate(sub_chunks_content):
-        chunks.append(
-            Document(
-                page_content=sub_content,
-                metadata={
-                    "source": "professional_summary", 
-                    "id": f"professional_summary_{i}",
-                    "chunk_index": i,
-                    "total_chunks": len(sub_chunks_content)
-                }
-            )
+    chunks.append(
+        Document(
+            page_content=summary_prose,
+            metadata={
+                "source": "professional_summary", 
+                "id": "professional_summary_0",
+                "chunk_type": "qa_fused"
+            }
         )
+    )
     
+    print(f"   ✅ Generado 1 chunk fusionado para professional_summary")
     return chunks
 
 
 def create_professional_conditions_chunk(data):
-    """Crea un chunk de prosa semánticamente rico para las condiciones profesionales."""
-    print("Creando chunk: professional_conditions...")
-    conditions_data = data.get("professional_conditions", {})
-    conditions_prose = f"""
-    Información sobre mis condiciones profesionales, disponibilidad y expectativas salariales.
-    Mi disponibilidad o pre-aviso (notice period) es de: {conditions_data.get('availability', {}).get('notice_period')}.
-    Busco trabajo 100% remoto en {conditions_data.get('work_permit', {}).get('target_country')}.
-    Respecto a mis expectativas salariales: {conditions_data.get('salary_expectations', {}).get('notes')}.
-    Sobre mi permiso de trabajo o visado: {conditions_data.get('work_permit', {}).get('status')}.
-
-    --- Preguntas Frecuentes Relevantes ---
-    ¿Cuáles son tus expectativas salariales?
-    ¿Necesitas ayuda con el visado?
-    ¿Buscas trabajo remoto?
-    ¿Cuál es tu disponibilidad?
-    """
-    # Dividir la prosa si es muy larga
-    sub_chunks_content = text_splitter.split_text(conditions_prose)
-    
+    """Crea chunks atómicos Q&A por cada clave de professional_conditions."""
+    print("Creando chunks: professional_conditions...")
     chunks = []
-    for i, sub_content in enumerate(sub_chunks_content):
+    conditions_data = data.get("professional_conditions", {})
+    
+    # 1. Chunks granulares para availability (4 chunks separados)
+    if 'availability' in conditions_data:
+        availability_data = conditions_data['availability']
+        
+        # Chunk 1: Status + Notice Period (combinados porque se preguntan juntos)
+        status_faqs = [
+            "¿Cuál es tu disponibilidad?",
+            "¿Estás buscando trabajo?",
+            "¿Estás disponible?",
+            "¿Cuándo podrías empezar?"
+        ]
+        status_content = f"""
+        Disponibilidad: {availability_data.get('status', '')}
+        Periodo de pre-aviso: {availability_data.get('notice_period', '')}
+        
+        [Preguntas que responden este contenido: {', '.join(status_faqs)}]
+        """
         chunks.append(
             Document(
-                page_content=sub_content,
+                page_content=status_content,
                 metadata={
-                    "source": "professional_conditions", 
-                    "id": f"professional_conditions_{i}",
-                    "chunk_index": i,
-                    "total_chunks": len(sub_chunks_content)
+                    "source": "professional_conditions",
+                    "id": "availability_status",
+                    "chunk_type": "qa_fused"
+                }
+            )
+        )
+        
+        # Chunk 2: Remote Work (Chunk 2 porque notice está en Chunk 1)
+        remote_faqs = [
+            "¿Buscas trabajo remoto?",
+            "¿Trabajas remotamente?",
+            "¿Prefieres trabajo remoto?"
+        ]
+        remote_content = f"""
+        Trabajo remoto: {availability_data.get('remote_work', '')}
+        
+        [Preguntas que responden este contenido: {', '.join(remote_faqs)}]
+        """
+        chunks.append(
+            Document(
+                page_content=remote_content,
+                metadata={
+                    "source": "professional_conditions",
+                    "id": "availability_remote",
+                    "chunk_type": "qa_fused"
+                }
+            )
+        )
+        
+        # Chunk 3: Interview Scheduling
+        interview_faqs = [
+            "¿Cómo coordinamos una entrevista?",
+            "¿Tienes flexibilidad para entrevistas?",
+            "¿Cuándo podemos hacer la entrevista?"
+        ]
+        interview_content = f"""
+        Flexibilidad para entrevistas: {availability_data.get('interview_scheduling', '')}
+        
+        [Preguntas que responden este contenido: {', '.join(interview_faqs)}]
+        """
+        chunks.append(
+            Document(
+                page_content=interview_content,
+                metadata={
+                    "source": "professional_conditions",
+                    "id": "availability_interview",
+                    "chunk_type": "qa_fused"
                 }
             )
         )
     
+    # 2. Chunks granulares para work_permit (2 chunks separados)
+    if 'work_permit' in conditions_data:
+        work_permit_data = conditions_data['work_permit']
+        
+        # Chunk 1: Status del permiso
+        permit_status_faqs = work_permit_data.get('faqs', [
+            "¿Necesitas visado?",
+            "¿Tienes permiso de trabajo?",
+            "¿Necesitas sponsorship?"
+        ])
+        
+        permit_status_content = f"""
+        Permiso de trabajo: {work_permit_data.get('status', '')}
+        
+        [Preguntas que responden este contenido: {', '.join(permit_status_faqs)}]
+        """
+        
+        chunks.append(
+            Document(
+                page_content=permit_status_content,
+                metadata={
+                    "source": "professional_conditions",
+                    "id": "work_permit_status",
+                    "chunk_type": "qa_fused"
+                }
+            )
+        )
+        
+        # Chunk 2: País objetivo
+        country_faqs = [
+            "¿En qué país buscas trabajar?",
+            "¿Cuál es tu país objetivo?",
+            "¿Dónde quieres trabajar?"
+        ]
+        
+        country_content = f"""
+        País objetivo: {work_permit_data.get('target_country', '')}
+        
+        [Preguntas que responden este contenido: {', '.join(country_faqs)}]
+        """
+        
+        chunks.append(
+            Document(
+                page_content=country_content,
+                metadata={
+                    "source": "professional_conditions",
+                    "id": "work_permit_country",
+                    "chunk_type": "qa_fused"
+                }
+            )
+        )
+    
+    # 3. Chunk para salary_expectations
+    if 'salary_expectations' in conditions_data:
+        salary_data = conditions_data['salary_expectations']
+        salary_faqs = salary_data.get('faqs', [
+            "¿Cuáles son tus expectativas salariales?",
+            "¿Qué salario buscas?",
+            "¿Cuál es tu rango salarial?"
+        ])
+        
+        salary_content = f"""
+        Expectativas salariales: {salary_data.get('notes', '')}
+        
+        [Preguntas que responden este contenido: {', '.join(salary_faqs)}]
+        """
+        
+        chunks.append(
+            Document(
+                page_content=salary_content,
+                metadata={
+                    "source": "professional_conditions",
+                    "id": "salary_expectations",
+                    "chunk_type": "qa_fused"
+                }
+            )
+        )
+    
+    # 4. Chunk para motivation_for_change (si existe)
+    if 'motivation_for_change' in conditions_data:
+        motivation_faqs = [
+            "¿Cuál es tu motivación para un nuevo reto profesional?",
+            "¿Por qué buscas un nuevo reto?",
+            "¿Qué te motiva profesionalmente?"
+        ]
+        
+        motivation_content = f"""
+        Motivación para un nuevo reto profesional: {conditions_data.get('motivation_for_change', '')}
+        
+        [Preguntas que responden este contenido: {', '.join(motivation_faqs)}]
+        """
+        
+        chunks.append(
+            Document(
+                page_content=motivation_content,
+                metadata={
+                    "source": "professional_conditions",
+                    "id": "motivation_for_change",
+                    "chunk_type": "qa_fused"
+                }
+            )
+        )
+    
+    print(f"   ✅ Generados {len(chunks)} chunks atómicos para professional_conditions")
     return chunks
 
 def create_philosophy_chunks(data):
-    """Crea chunks enriquecidos para filosofía y motivación."""
+    """Crea chunks atómicos Q&A por cada ítem de philosophy_and_interests."""
     print("Creando chunks: philosophy...")
     chunks = []
     philosophy_data = data.get("philosophy_and_interests", [])
-    philosophy_prose = "Filosofía de trabajo, intereses y motivación profesional de Álvaro Maldonado.\n"
-    motivation_prose = "Mi motivación para aceptar un nuevo reto profesional.\n"
-
-    for item in philosophy_data:
-        title = item.get('title', '').lower()
+    
+    # Crear un chunk atómico por cada ítem
+    for i, item in enumerate(philosophy_data):
+        title = item.get('title', '')
         description = item.get('description', '')
-        philosophy_prose += f"Título: {item.get('title')}. Descripción: {description}\n"
-        if "motiv" in title or "resolución" in title or "pasión" in title or "product engineer" in title:
-            motivation_prose += f"- {description}\n"
+        
+        # Obtener FAQs del YAML o usar fallback
+        faqs = item.get('faqs', [])
+        if not faqs:
+            # Fallback según el tipo de ítem
+            title_lower = title.lower()
+            if "motiv" in title_lower or "resolución" in title_lower or "pasión" in title_lower:
+                faqs = [
+                    "¿Cuál es tu motivación para un nuevo reto profesional?",
+                    "¿Por qué buscas un nuevo reto?",
+                    "¿Qué te motiva profesionalmente?"
+                ]
+            elif "filosofía" in title_lower:
+                faqs = [
+                    "¿Cuál es tu filosofía de trabajo?",
+                    "¿Qué valores guían tu trabajo?",
+                    "¿Cuál es tu enfoque profesional?"
+                ]
+            elif "intereses" in title_lower or "personales" in title_lower:
+                faqs = [
+                    "¿Cuáles son tus intereses personales?",
+                    "¿Qué haces en tu tiempo libre?",
+                    "¿Cómo equilibrias vida personal y profesional?"
+                ]
+            else:
+                faqs = [
+                    f"¿Qué es {title.lower()}?",
+                    f"¿Puedes hablarme de {title.lower()}?",
+                    f"¿Cómo influye {title.lower()} en tu trabajo?"
+                ]
+        
+        # Generar ID único basado en el título
+        cleaned_title = title.replace(' ', '_').replace('(', '').replace(')', '').replace("'", '').lower()
+        item_id = f"philosophy_{i}_{cleaned_title}"
+        
+        # Crear chunk fusionado para este ítem
+        item_prose = f"""
+        {title}: {description}
 
-    # FAQ Hints
-    motivation_prose += "\n--- Preguntas Frecuentes Relevantes ---\n"
-    motivation_prose += "¿Cuál es tu motivación para un nuevo reto profesional?\n"
-    motivation_prose += "How does your Product Engineer mindset influence your approach?\n"
-
-    philosophy_prose += "\n--- Preguntas Frecuentes Relevantes ---\n"
-    philosophy_prose += "¿Cuál es tu filosofía de trabajo?\n"
-    philosophy_prose += "¿Cuáles son tus intereses personales?\n"
-
-
-    # Dividir motivation_prose si es muy larga
-    motivation_sub_chunks = text_splitter.split_text(motivation_prose)
-    for i, sub_content in enumerate(motivation_sub_chunks):
+        [Preguntas que responden este contenido: {', '.join(faqs)}]
+        """
+        
         chunks.append(
             Document(
-                page_content=sub_content,
+                page_content=item_prose,
                 metadata={
-                    "source": "philosophy_and_interests", 
-                    "id": f"motivation_{i}",
-                    "chunk_index": i,
-                    "total_chunks": len(motivation_sub_chunks)
+                    "source": "philosophy_and_interests",
+                    "id": item_id,
+                    "chunk_type": "qa_fused"
                 }
             )
         )
     
-    # Dividir philosophy_prose si es muy larga
-    philosophy_sub_chunks = text_splitter.split_text(philosophy_prose)
-    for i, sub_content in enumerate(philosophy_sub_chunks):
-        chunks.append(
-            Document(
-                page_content=sub_content,
-                metadata={
-                    "source": "philosophy_and_interests", 
-                    "id": f"philosophy_general_{i}",
-                    "chunk_index": i,
-                    "total_chunks": len(philosophy_sub_chunks)
-                }
-            )
-        )
-    
+    print(f"   ✅ Generados {len(chunks)} chunks atómicos para philosophy_and_interests")
     return chunks
 
 def create_projects_chunks(data):
-    """Crea chunks con Hyper-Enrichment v2 (Preguntas FAQ) para proyectos."""
-    print("Creando chunks: projects (con Hyper-Enrichment v2)...")
+    """Crea chunks fusionando FAQs y contenido de proyectos."""
+    print("Creando chunks: projects (con Q&A fusionado)...")
     chunks = []
     projects_data = data.get("projects", {})
 
     for project_id, project_data in projects_data.items():
         try:
-            project_prose = f"Proyecto: {project_data.get('name')}. Mi rol fue: {project_data.get('role')}.\n"
-            project_prose += f"Descripción del proyecto: {project_data.get('description')}.\n"
+            # Obtener FAQs del YAML o usar fallback
+            faqs = project_data.get('faqs', [])
+            if not faqs:
+                # Fallback para preguntas comunes de comportamiento
+                if project_id == 'proj_acuamattic':
+                    faqs = [
+                        "¿Cuál fue el logro más significativo en AcuaMattic?",
+                        "¿Qué logros conseguiste en AcuaMattic?"
+                    ]
+                elif project_id == 'proj_andes' or project_id == 'proj_spr':
+                    faqs = [
+                        "¿Describe una situación donde actuaste como puente entre negocio y tecnología?",
+                        "¿Cómo manejaste la comunicación con stakeholders no técnicos?"
+                    ]
+                elif project_id == 'proj_taa' or project_id == 'proj_migracion_tbk':
+                    faqs = [
+                        "¿Cuáles fueron los desafíos técnicos en este proyecto?",
+                        "¿Qué logros conseguiste en este proyecto?"
+                    ]
+                else:
+                    faqs = [
+                        f"¿Qué logros conseguiste en {project_data.get('name')}?",
+                        f"¿Cuál fue tu rol en {project_data.get('name')}?"
+                    ]
             
-            # Agregar tecnologías utilizadas
-            technologies = project_data.get('technologies', [])
-            if technologies:
-                project_prose += f"Tecnologías utilizadas: {', '.join(technologies)}.\n"
-
-            faq_prose = "\n--- Preguntas Frecuentes Relevantes ---\n"
-            has_faq = False
-
-            if project_id == 'proj_acuamattic':
-                faq_prose += "¿Cuáles fueron los mayores desafíos técnicos al construir el dataset para AcuaMattic y cómo los superaste?\n"
-                faq_prose += "¿Dame un ejemplo de un desafío técnico en un proyecto de IA?\n"
-                faq_prose += "¿Cuál fue el logro más significativo en AcuaMattic?\n"
-                faq_prose += "¿Cuál dirías que fue el logro más significativo que conseguiste en AcuaMattic?\n"
-                faq_prose += "¿Cuáles fueron los logros más importantes en AcuaMattic?\n"
-                has_faq = True
-
-            if project_id == 'proj_andes' or project_id == 'proj_spr':
-                faq_prose += "¿Describe una situación donde actuaste como puente entre un equipo técnico y stakeholders no técnicos?\n"
-                faq_prose += "¿Cómo manejaste la comunicación con stakeholders no técnicos?\n"
-                has_faq = True
-
-            if project_id == 'proj_taa':
-                faq_prose += "¿Cuáles fueron los desafíos técnicos al migrar el sistema de tiempo y asistencia en Falabella?\n"
-                faq_prose += "¿Dame un ejemplo de modernización de un sistema legacy?\n"
-                has_faq = True
-
-            if has_faq:
-                project_prose += faq_prose
-
-            project_prose += "\n--- Logros Clave ---\n"
+            # Construir contenido con ORDEN ÓPTIMO: FAQs PRIMERO, luego Identidad, luego Detalles
+            project_prose_parts = []
+            
+            # 1. FAQs AL PRINCIPIO (máxima prioridad semántica)
+            project_prose_parts.append(f"[Preguntas que responden este contenido: {', '.join(faqs)}]")
+            project_prose_parts.append("")  # Línea en blanco
+            
+            # 2. Identidad del proyecto (Nombre, Rol, Descripción)
+            project_prose_parts.append(f"{project_data.get('name')}")
+            project_prose_parts.append(f"Mi rol fue: {project_data.get('role')}")
+            if project_data.get('description'):
+                project_prose_parts.append(f"\nDescripción: {project_data.get('description')}")
+            project_prose_parts.append("")  # Línea en blanco
+            
+            # 3. Logros (detalles importantes pero después de FAQs e Identidad)
             achievements = project_data.get('achievements', [])
             if achievements:
+                project_prose_parts.append("Logros clave:")
                 for achievement in achievements:
-                    project_prose += f"- {achievement}\n"
-            else:
-                project_prose += "- Logros no detallados.\n"
-
-            # Dividir project_prose si es muy larga
-            project_sub_chunks = text_splitter.split_text(project_prose)
+                    project_prose_parts.append(f"- {achievement}")
+            
+            # 4. Tecnologías e Impacto
+            if project_data.get('technologies'):
+                techs = ', '.join(project_data.get('technologies', []))
+                project_prose_parts.append(f"\nTecnologías utilizadas: {techs}")
+            
+            if project_data.get('business_impact'):
+                project_prose_parts.append(f"\nImpacto de negocio: {project_data.get('business_impact')}")
+            
+            # Juntar todo
+            project_prose = "\n".join(project_prose_parts)
+            
+            # Aplicar text_splitter con chunk_size AUMENTADO para proyectos (más riqueza, menos splitting)
+            from langchain_text_splitters import RecursiveCharacterTextSplitter
+            large_text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=1000,  # Aumentado desde 400 para proyectos más ricos
+                chunk_overlap=200,  # Aumentado desde 50 para mantener más contexto
+                length_function=len,
+                is_separator_regex=False,
+                separators=["\n\n", "\n", ". ", ", ", " ", ""],
+            )
+            project_sub_chunks = large_text_splitter.split_text(project_prose)
+            
             for i, sub_content in enumerate(project_sub_chunks):
                 chunks.append(
                     Document(
@@ -241,27 +435,70 @@ def create_projects_chunks(data):
                             "id": f"{project_id}_{i}",
                             "original_id": project_id,
                             "chunk_index": i,
-                            "total_chunks": len(project_sub_chunks)
+                            "total_chunks": len(project_sub_chunks),
+                            "chunk_type": "qa_fused"
                         }
                     )
                 )
+                
         except Exception as e:
             print(f"Error procesando el proyecto {project_id}: {e}")
             pass
+    
+    print(f"   ✅ Generados {len(chunks)} chunks de proyectos")
     return chunks
 
 def create_skills_showcase_chunks(data):
-    """Crea chunks para cada habilidad en el showcase."""
-    print("Creando chunks: skills_showcase...")
+    """Crea chunks fusionando FAQs y contenido de skills_showcase."""
+    print("Creando chunks: skills_showcase (con Q&A fusionado)...")
     chunks = []
     skills_data = data.get("skills_showcase", {})
     projects_data = data.get("projects", {})
     
     for skill_id, skill_data in skills_data.items():
-        skill_prose = f"Información sobre mi habilidad y experiencia en {skill_id}.\n"
-        skill_prose += f"Descripción: {skill_data.get('description')}\n"
+        # Obtener FAQs del YAML o usar fallback
+        faqs = skill_data.get('faqs', [])
+        if not faqs:
+            # Fallback según el tipo de skill
+            if skill_id == 'ai_ml':
+                faqs = [
+                    "¿Cuál es tu experiencia con IA?",
+                    "¿Qué proyectos de IA has liderado?",
+                    "What is your experience with Artificial Intelligence?",
+                    "How do you use Python in AI projects?"
+                ]
+            elif skill_id == 'java_backend':
+                faqs = [
+                    "¿Cuál es tu experiencia con Java?",
+                    "What is your Java experience?",
+                    "¿Qué frameworks Java has utilizado?"
+                ]
+            elif skill_id == 'microservices':
+                faqs = [
+                    "¿Cuál es tu experiencia con microservicios?",
+                    "What is your experience with microservices?",
+                    "¿Has trabajado con arquitecturas de microservicios?"
+                ]
+            else:
+                faqs = [
+                    f"¿Cuál es tu experiencia con {skill_id}?",
+                    f"What is your experience with {skill_id}?"
+                ]
         
-        # Convertir IDs de proyectos a nombres reales para más naturalidad
+        # Construir contenido con ORDEN ÓPTIMO: FAQs PRIMERO, luego Identidad, luego Detalles
+        skill_prose_parts = []
+        
+        # 1. FAQs AL PRINCIPIO (máxima prioridad semántica)
+        skill_prose_parts.append(f"[Preguntas que responden este contenido: {', '.join(faqs)}]")
+        skill_prose_parts.append("")  # Línea en blanco
+        
+        # 2. Identidad del skill (ID y Descripción)
+        skill_prose_parts.append(f"Habilidad: {skill_id}")
+        if skill_data.get('description'):
+            skill_prose_parts.append(f"Descripción: {skill_data.get('description')}")
+        skill_prose_parts.append("")  # Línea en blanco
+        
+        # 3. Proyectos (convertir IDs a nombres reales)
         project_ids = skill_data.get('projects', [])
         project_names = []
         for proj_id in project_ids:
@@ -270,26 +507,31 @@ def create_skills_showcase_chunks(data):
             else:
                 project_names.append(proj_id)
         
-        skill_prose += f"Proyectos relacionados: {', '.join(project_names)}\n"
-        skill_prose += f"Tecnologías clave: {', '.join(skill_data.get('key_technologies', []))}\n"
-
-        # FAQ Hints (Ej: para Q2 IA en Inglés)
-        skill_prose += "\n--- Preguntas Frecuentes Relevantes ---\n"
-        if skill_id == 'ai_ml':
-            skill_prose += "Could you elaborate on your experience with Artificial Intelligence, especially the practical projects you have led?\n"
-            skill_prose += "¿Cuál es tu experiencia con IA?\n"
-            # --- REFUERZO Q6: Rol de Python en IA ---
-            skill_prose += "¿Qué rol ha jugado Python en tus proyectos de IA?\n"
-            skill_prose += "¿Cómo usas Python en Inteligencia Artificial?\n"
-            skill_prose += "Explica el papel de Python en tus trabajos de IA.\n"
-            skill_prose += "¿Qué importancia tiene Python en tus proyectos de IA?\n"
-            skill_prose += "¿Cómo aplicas Python en proyectos de Inteligencia Artificial?\n"
-        if skill_id == 'java_backend':
-            skill_prose += "¿Cuál es tu experiencia con Java?\n"
-        # Añadir más hints si es necesario para otras skills
-
-        # Dividir skill_prose si es muy larga
-        skill_sub_chunks = text_splitter.split_text(skill_prose)
+        if project_names:
+            skill_prose_parts.append(f"Proyectos donde aplico esta habilidad: {', '.join(project_names)}")
+        
+        # 4. Tecnologías y Skills adicionales
+        if skill_data.get('key_technologies'):
+            techs = ', '.join(skill_data.get('key_technologies', []))
+            skill_prose_parts.append(f"\nTecnologías clave: {techs}")
+        
+        if skill_data.get('key_skills'):
+            skills_list = ', '.join(skill_data.get('key_skills', []))
+            skill_prose_parts.append(f"Habilidades adicionales: {skills_list}")
+        
+        # Juntar todo
+        skill_prose = "\n".join(skill_prose_parts)
+        
+        # Aplicar text_splitter con chunk_size AUMENTADO para skills (más riqueza, menos splitting)
+        from langchain_text_splitters import RecursiveCharacterTextSplitter
+        large_text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000,  # Aumentado desde 400 para skills más ricos
+            chunk_overlap=200,  # Aumentado desde 50 para mantener más contexto
+            length_function=len,
+            is_separator_regex=False,
+            separators=["\n\n", "\n", ". ", ", ", " ", ""],
+        )
+        skill_sub_chunks = large_text_splitter.split_text(skill_prose)
         for i, sub_content in enumerate(skill_sub_chunks):
             chunks.append(
                 Document(
@@ -299,68 +541,85 @@ def create_skills_showcase_chunks(data):
                         "id": f"{skill_id}_{i}",
                         "original_id": skill_id,
                         "chunk_index": i,
-                        "total_chunks": len(skill_sub_chunks)
+                        "total_chunks": len(skill_sub_chunks),
+                        "chunk_type": "qa_fused"
                     }
                 )
             )
+    
+    print(f"   ✅ Generados {len(chunks)} chunks de skills_showcase")
     return chunks
 
 def create_education_chunks(data):
-    """Crea chunks enriquecidos para la educación."""
+    """Crea chunks fusionando FAQs y contenido de educación."""
     print("Creando chunks: education...")
     chunks = []
     education_data = data.get("education", [])
-    general_education_prose = "Resumen de la formación académica de Álvaro Maldonado.\n"
+    
+    # Obtener FAQs del YAML o usar fallback
+    education_summary_data = data.get("education_summary", {})
+    general_faqs = education_summary_data.get('faqs', [])
+    if not general_faqs:
+        # Fallback
+        general_faqs = [
+            "¿Cuál es tu formación académica?",
+            "¿Qué estudios tienes?",
+            "Háblame de tu educación",
+            "What is your academic background?",
+            "Tell me about your education"
+        ]
+    
+    # Construir resumen general de educación
+    education_summary = []
+    for edu_item in education_data:
+        education_summary.append(f"- {edu_item.get('degree')} en {edu_item.get('institution')} ({edu_item.get('period')})")
+    
+    # Crear chunk general fusionado
+    general_prose = f"""Formación académica de Álvaro Maldonado:
 
+{chr(10).join(education_summary)}
+
+[Preguntas que responden este contenido: {', '.join(general_faqs)}]"""
+    
+    chunks.append(
+        Document(
+            page_content=general_prose,
+            metadata={
+                "source": "education",
+                "id": "education_summary",
+                "chunk_type": "qa_fused"
+            }
+        )
+    )
+    
+    # Crear chunks para cada ítem educativo con FAQs específicas
     for i, edu_item in enumerate(education_data):
-        edu_prose = f"""
-        Formación académica: {edu_item.get('degree')} en {edu_item.get('institution')}.
-        Periodo: {edu_item.get('period')}.
-        Detalles: {edu_item.get('details', 'N/A')}.
-        Conocimientos adquiridos: {edu_item.get('knowledge_acquired', [])}
+        specific_faqs = [
+            f"¿Dónde estudiaste {edu_item.get('degree')}?",
+            f"¿Qué aprendiste en {edu_item.get('degree')}?",
+            f"¿Cuándo estudiaste {edu_item.get('degree')}?",
+            f"¿En qué institución estudiaste {edu_item.get('degree')}?"
+        ]
+        
+        edu_prose = f"""{edu_item.get('degree')} en {edu_item.get('institution')}.
+Periodo: {edu_item.get('period')}.
+Detalles: {edu_item.get('details', 'N/A')}.
+Conocimientos adquiridos: {', '.join(edu_item.get('knowledge_acquired', []))}
 
-        --- Preguntas Frecuentes Relevantes ---
-        ¿Cuál es tu formación académica?
-        ¿Qué estudios tienes?
-        Háblame de tu educación.
-        ¿Dónde estudiaste {edu_item.get('degree')}?
-        """
-        # Dividir edu_prose si es muy larga
-        edu_sub_chunks = text_splitter.split_text(edu_prose)
-        for j, sub_content in enumerate(edu_sub_chunks):
-            chunks.append(
-                Document(
-                    page_content=sub_content,
-                    metadata={
-                        "source": "education", 
-                        "id": f"edu_{i}_{j}",
-                        "original_id": f"edu_{i}",
-                        "chunk_index": j,
-                        "total_chunks": len(edu_sub_chunks)
-                    }
-                )
-            )
-        general_education_prose += f"- {edu_item.get('degree')} en {edu_item.get('institution')} ({edu_item.get('period')})\n"
-
-    # Chunk General Adicional
-    general_education_prose += "\n--- Preguntas Frecuentes Relevantes ---\n"
-    general_education_prose += "¿Cuál es tu formación académica general?\n"
-    general_education_prose += "Resume tus estudios.\n"
-    # Dividir general_education_prose si es muy larga
-    general_sub_chunks = text_splitter.split_text(general_education_prose)
-    for i, sub_content in enumerate(general_sub_chunks):
+[Preguntas que responden este contenido: {', '.join(specific_faqs)}]"""
+        
         chunks.append(
             Document(
-                page_content=sub_content,
+                page_content=edu_prose,
                 metadata={
-                    "source": "education", 
-                    "id": f"education_summary_{i}",
-                    "original_id": "education_summary",
-                    "chunk_index": i,
-                    "total_chunks": len(general_sub_chunks)
+                    "source": "education",
+                    "id": f"edu_{i}",
+                    "chunk_type": "qa_fused"
                 }
             )
         )
+    
+    print(f"   ✅ Generados {len(chunks)} chunks fusionados para education")
     return chunks
 
 def create_languages_chunks(data):

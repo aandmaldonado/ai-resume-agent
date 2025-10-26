@@ -1,12 +1,14 @@
 # Professional Portfolio - Structured Knowledge Base for AI Chatbot
 # Version 3.0 - Enriched Project Details & Optimized Structure
 
+# === INFORMACIÓN PERSONAL ===
+# Datos básicos de identidad, contacto y ubicación
 personal_info:
   name: "Álvaro Andrés Maldonado Pinto"
   nationality: "Chilena"
   marital_status: "Información disponible bajo petición en fases avanzadas del proceso."
   children: "Información disponible bajo petición en fases avanzadas del proceso."
-  age: "Nacido en 1988" # Ajustado según YAML anterior, revisa si es 1984 o 1988
+  age: "Nacido en 1988"
   title: "Senior Software Engineer | Product Engineer & AI Specialist"
   email: "alvaro@almapi.dev"
   location: "Gandía, Valencia, España"
@@ -14,14 +16,25 @@ personal_info:
   linkedin: "https://linkedin.com/in/almapidev"
   github: "https://github.com/aandmaldonado"
 
+# === RESUMEN PROFESIONAL ===
+# Resumen corto y detallado del perfil profesional con FAQs para el chatbot
 professional_summary:
   short: "Senior Software Engineer experto en IA y Product Engineering. +15 años de experiencia construyendo soluciones de negocio escalables."
   detailed: |
     Soy un Ingeniero de Software Senior y Product Engineer con 15 años de experiencia construyendo puentes entre desafíos de negocio complejos y soluciones tecnológicas de alto impacto. Mi misión es simple: utilizar la tecnología para resolver problemas reales.
     Mi carrera me ha llevado desde roles de desarrollo backend hasta posiciones de liderazgo como Líder Técnico y CTO. Esta trayectoria me enseñó que la mejor tecnología es la que sirve a un propósito claro, lo que me llevó a adoptar una mentalidad de 'Product Engineer': mi prioridad es entender a fondo el 'porqué' del negocio antes de diseñar el 'cómo' técnico.
     Hoy, mi pasión se centra en la Inteligencia Artificial como un acelerador estratégico para automatizar lo complejo y potenciar la autonomía y productividad de los equipos. Busco aplicar esta visión en un rol estratégico 100% remoto en España, donde pueda liderar iniciativas de IA y arquitectura.
+  faqs:
+    - "¿Quién eres?"
+    - "¿Cómo te describirías?"
+    - "Háblame de ti"
+    - "Who are you?"
+    - "How would you describe yourself?"
+    - "Tell me about yourself."
 
-# --- FUENTE ÚNICA DE VERDAD PARA PROYECTOS ---
+# === PROYECTOS ===
+# Cada proyecto incluye: descripción, rol, tecnologías, logros e impacto de negocio
+# Los logros están en primera persona y describen contribuciones concretas
 projects:
   proj_andes:
     id: "proj_andes"
@@ -48,9 +61,9 @@ projects:
     technologies: ["Docker", "Kubernetes", "Arquitectura Hexagonal", "Java", "Spring Boot", "Microservicios", "DevOps", "Agile", "CI/CD", "Testing", "Clean Code", "Jenkins", "SonarQube", "Veracode", "Shift-Left Testing", "Github Actions", "Github", "Spock", "Karate Framework", "Github Copilot", "Dynatrace", "Jira", "Confluence", "Gradle", "API REST", "Postman"]
     hardware: []
     achievements:
-      - "Desafío Modernización: Diseñé e implementé microservicios resilientes con APIs seguras, facilitando la comunicación inter-sistemas."
-      - "Desafío Calidad: Apliqué 'shift-left testing', mejorando calidad y seguridad del código tempranamente."
-      - "Desafío Comunicación: Actué como puente Negocio-Tecnología, traduciendo requerimientos financieros complejos."
+      - "Diseñé e implementé microservicios resilientes con APIs seguras, facilitando la comunicación inter-sistemas."
+      - "Apliqué 'shift-left testing', mejorando calidad y seguridad del código tempranamente."
+      - "Actué como puente Negocio-Tecnología, traduciendo requerimientos financieros complejos."
     business_impact: "Facilitar la transición a una arquitectura moderna, mejorando la velocidad de procesamiento y reduciendo errores operativos en el core de tarjetas."
     tags: ["industria_bancaria", "tipo_modernizacion", "arquitectura_microservicios", "rol_integracion", "metodologia_agile", "java"]
 
@@ -78,9 +91,9 @@ projects:
     technologies: ["Docker", "Kubernetes", "API REST", "Agile", "Oracle Database", "SQL", "IA/ML", "NLP", "Visión por Computador/OCR", "Java", "Spring Boot", "Elasticsearch", "Splunk", "Dynatrace", "Bitbucket", "Bamboo", "Jira", "Confluence", "JPA/Hibernate", "Maven", "Veracode", "SonarQube", "Postman", "Python", "TensorFlow"]
     hardware: []
     achievements:
-      - "Desafío Innovación: Lideré la PoC de IA, definiendo arquitectura y enfoque técnico."
-      - "Desafío Calidad: Implementé microservicios robustos asegurando altos estándares."
-      - "Desafío Operacional: Implementé monitoreo proactivo reduciendo downtime potencial."
+      - "Lideré la PoC de IA, definiendo arquitectura y enfoque técnico."
+      - "Implementé microservicios robustos asegurando altos estándares."
+      - "Implementé monitoreo proactivo reduciendo downtime potencial."
     business_impact: "Demostrar viabilidad técnica y ROI potencial de automatización IA para redefinir servicios a clientes PYME."
     tags: ["industria_bancaria", "tipo_poc", "tipo_innovacion", "ai_ml", "nlp", "computer_vision", "ocr", "java", "python"]
 
@@ -108,9 +121,9 @@ projects:
     technologies: ["Arquitectura Hexagonal", "Arquitectura Event-Driven", "DDD", "Microservicios", "GCP", "Agile", "SaaS Integration", "Pub/Sub", "Kafka", "Oracle Database", "SQL", "PL/SQL", "Gitlab", "Jira", "Confluence", "Swagger", "OpenAPI", "Postman", "API First", "API REST", "Java", "Spring Boot"]
     hardware: []
     achievements:
-      - "Desafío Liderazgo/Entrega: Lideré la entrega del sistema T&A, optimizando eficiencia operacional de RRHH."
-      - "Desafío Arquitectura: Impulsé la modernización aplicando DDD y arquitectura basada en eventos."
-      - "Desafío Integración: Dirigí con éxito la compleja integración técnica con el proveedor SaaS."
+      - "Lideré la entrega del sistema T&A, optimizando eficiencia operacional de RRHH."
+      - "Impulsé la modernización aplicando DDD y arquitectura basada en eventos."
+      - "Dirigí con éxito la compleja integración técnica con el proveedor SaaS."
     business_impact: "Mejora significativa de gestión de asistencia y experiencia laboral para miles de empleados, reduciendo errores y optimizando procesos RRHH."
     tags: ["industria_retail", "industria_hr", "tipo_modernizacion", "tipo_integracion", "arquitectura_microservicios", "arquitectura_event_driven", "ddd", "rol_liderazgo", "java"]
 
@@ -129,32 +142,30 @@ projects:
       - "Gestión del ciclo de vida de datos: adquisición, preprocesamiento, etiquetado, augmentation."
       - "Integración del modelo IA con hardware (Raspberry Pi Pico, MicroPython)."
       - "Diseño y prototipado de componentes físicos (Impresión 3D)."
-      # --- ESTA ES LA LÍNEA ACTUALIZADA ---
       - "Liderazgo y mentoría de proyectos de fin de máster: Gestión de grupos de estudiantes (IA, DevOps, UX/UI) asignados a funcionalidades reales de Neurogenesis. Esto incluía la definición de lineamientos técnicos, creación y seguimiento de tableros (Trello) y la actualización de la documentación del proyecto."
     key_challenges:
       - "Crear un dataset de alta calidad desde cero sin datos públicos."
       - "Alcanzar alta precisión en clasificación de imágenes en condiciones variables."
       - "Integrar eficientemente Deep Learning en microcontrolador de bajos recursos."
       - "Gestionar múltiples roles (técnico, estratégico, liderazgo) en startup."
-    technologies: ["Python", "TensorFlow", "PyTorch", "Visión por Computador", "AWS", "EC2", "S3", "RDS", "Sagemaker", "Rekognition", "CNN", "Deep Learning", "Robótica", "MicroPython", "Trello"] # Añadido Trello
+    technologies: ["Python", "TensorFlow", "PyTorch", "Visión por Computador", "AWS", "EC2", "S3", "RDS", "Sagemaker", "Rekognition", "CNN", "Deep Learning", "Robótica", "MicroPython", "Trello"] 
     hardware: ["Raspberry Pi Pico", "Cámaras", "Sensores", "Impresión 3D"]
     achievements:
-      - "Desafío Emprendimiento: Co-fundé la startup y definí su estrategia tecnológica."
-      - "Desafío Datos: Creé un dataset propietario único de +10.000 imágenes."
-      - "Desafío Modelo IA: Entrené un modelo CNN que alcanzó 92% de precisión."
-      - "Desafío Infraestructura: Lideré la migración a AWS, creando base escalable para IA."
-      - "Desafío Integración: Logré la integración HW/SW del modelo IA con el prototipo."
-      # --- ESTE ES EL NUEVO LOGRO AÑADIDO ---
-      - "Desafío Mentoría: Gestioné con éxito grupos multidisciplinarios de estudiantes de máster, integrando sus proyectos académicos con el roadmap de un producto real."
+      - "Co-fundé la startup y definí su estrategia tecnológica."
+      - "Creé un dataset propietario único de +10.000 imágenes."
+      - "Entrené un modelo CNN que alcanzó 92% de precisión."
+      - "Lideré la migración a AWS, creando base escalable para IA."
+      - "Logré la integración HW/SW del modelo IA con el prototipo."
+      - "Gestioné con éxito grupos multidisciplinarios de estudiantes de máster, integrando sus proyectos académicos con el roadmap de un producto real."
     business_impact: "Validación del MVP y establecimiento de base tecnológica, atrayendo interés inicial."
-    tags: ["industria_ia", "industria_robotica", "tipo_startup", "tipo_producto_nuevo", "ai_ml", "computer_vision", "python", "aws", "hardware_raspberry_pi", "rol_liderazgo", "rol_cto", "mentoria"] # Añadido tag 'mentoria'
+    tags: ["industria_ia", "industria_robotica", "tipo_startup", "tipo_producto_nuevo", "ai_ml", "computer_vision", "python", "aws", "hardware_raspberry_pi", "rol_liderazgo", "rol_cto", "mentoria"]
 
   proj_juezsw:
     id: "proj_juezsw"
     name: "JuezSW"
     company_ref: "comp_neurogenesis"
     role: "Ingeniero de IA (Conceptualización)"
-    duration: "2021 - 2022" # Coincide con CTO
+    duration: "2021 - 2022" 
     description: |
       Participación en la fase de concepción y diseño estratégico de JuezSW, un sistema de IA planificado para automatizar la creación de planes de liquidación de activos en procesos concursales. Mi rol se centró en analizar la viabilidad técnica de utilizar modelos de NLP para interpretar la compleja legislación concursal española.
     key_responsibilities:
@@ -175,7 +186,7 @@ projects:
     name: "on-premise2cloud Migration"
     company_ref: "comp_neurogenesis"
     role: "CTO"
-    duration: "2021" # Dentro del periodo CTO
+    duration: "2021" 
     description: |
       Como CTO, lideré la migración estratégica de toda la infraestructura de desarrollo y entrenamiento de modelos de IA de Neurogenesis desde servidores on-premise a la nube de AWS. El objetivo era ganar escalabilidad, flexibilidad y reducir costes operativos.
     key_responsibilities:
@@ -215,9 +226,9 @@ projects:
     technologies: ["Java", "Spring Boot", "Spring Security", "Spring Batch", "JWT", "Oracle Database", "SQL", "WebLogic", "OWASP", "PCI", "Microservicios", "JPA/Hibernate", "Maven", "SonarQube", "Gitlab", "Jira", "Confluence", "Kiuwan", "Fortify", "API REST", "Postman"]
     hardware: []
     achievements:
-      - "Desafío Escalabilidad: Diseñé e implementé soluciones de alta disponibilidad (+1M tx/día)."
-      - "Desafío Seguridad: Apliqué con éxito estándares OWASP y PCI."
-      - "Desafío Calidad: Reduje deuda técnica mediante establecimiento de estándares y uso de SAST."
+      - "Diseñé e implementé soluciones de alta disponibilidad (+1M tx/día)."
+      - "Apliqué con éxito estándares OWASP y PCI."
+      - "Reduje deuda técnica mediante establecimiento de estándares y uso de SAST."
     business_impact: "Mejora drástica de seguridad y mantenibilidad de la plataforma core bancaria, resultando en una reducción significativa de los tiempos de respuesta del sistema."
     tags: ["industria_bancaria", "tipo_modernizacion", "arquitectura_microservicios", "rol_senior", "java", "security", "high_availability"]
 
@@ -226,7 +237,7 @@ projects:
     name: "Anulaciones 2.0 (Transbank)"
     company_ref: "comp_ntt_data"
     role: "Ingeniero de Software Senior"
-    duration: "2019 - 2021" # Dentro del periodo Transbank
+    duration: "2019 - 2021" 
     description: |
       Desarrollo de un nuevo sistema de backoffice para la gestión optimizada del proceso de anulaciones de ventas con tarjeta en Transbank, reemplazando un flujo manual y propenso a errores.
     key_responsibilities:
@@ -263,8 +274,8 @@ projects:
     technologies: ["Java", "MVC", "Servicios Web", "Oracle database", "SQL", "PL/SQL", "Gestión de Proyectos", "Integración", "SVN"]
     hardware: []
     achievements:
-      - "Desafío Liderazgo/Entrega: Lideré el desarrollo exitoso de una plataforma corporativa clave."
-      - "Desafío Comunicación: Actué como el principal puente efectivo con stakeholders no técnicos."
+      - "Lideré el desarrollo exitoso de una plataforma corporativa clave."
+      - "Actué como el principal puente efectivo con stakeholders no técnicos."
     business_impact: "Unificación y mejora significativa de la eficiencia en la gestión de RRHH a nivel corporativo."
     tags: ["industria_retail", "industria_hr", "tipo_desarrollo_nuevo", "tipo_integracion", "rol_liderazgo_funcional", "java", "project_management"]
 
@@ -319,7 +330,7 @@ projects:
     name: "S-Box (Proyecto de Tesis)"
     company_ref: "comp_usach"
     role: "Estudiante Investigador"
-    duration: "2017" # Aproximado
+    duration: "2017" 
     description: |
       Desarrollo de mi proyecto de tesis de Ingeniería Civil Informática, S-Box. Fue mi primera incursión en la Inteligencia Artificial, creando un entorno de computación afectiva que utilizaba Visión por Computador (OpenCV) para analizar secuencias de video y detectar automáticamente episodios de sonrisas genuinas, con fines de investigación psicológica o de interacción humano-computador.
     key_responsibilities:
@@ -355,14 +366,15 @@ projects:
       - "Creación de sistema de expansión de consultas para mejorar la recuperación semántica de información específica."
     business_impact: "Demostración práctica de aplicación de IA generativa en recursos humanos, validando la viabilidad de chatbots inteligentes para screening inicial de candidatos."
     tags: ["ai_ml", "rag", "llms", "python", "fastapi", "postgresql", "gcp", "docker", "chatbot", "hr_tech", "product_engineering"]
-    
-# --- DEFINICIÓN DE COMPAÑÍAS ---
+
+# === COMPAÑÍAS ===
+# Empresas donde he trabajado con posiciones, duraciones y proyectos asociados
 companies:
   comp_inadvance:
     id: "comp_inadvance"
     name: "InAdvance Consulting Group"
     positions:
-      - role: "Ingeniero de Software Senior" # Para Banco BCI
+      - role: "Ingeniero de Software Senior" 
         duration: "2024 - Presente"
         location: "Santiago, Chile (Remoto)"
         projects_worked_on: ["proj_andes"]
@@ -371,7 +383,7 @@ companies:
     id: "comp_imagemaker"
     name: "Imagemaker"
     positions:
-      - role: "Ingeniero de Software Senior" # Para Banco de Chile
+      - role: "Ingeniero de Software Senior" 
         duration: "2023 - 2024"
         location: "Santiago, Chile (Remoto)"
         projects_worked_on: ["proj_facultades"]
@@ -402,30 +414,30 @@ companies:
     id: "comp_ntt_data"
     name: "NTT DATA Europe & LATAM"
     positions:
-      - role: "Ingeniero de Software Senior" # Para Transbank
+      - role: "Ingeniero de Software Senior" 
         duration: "2019 - 2021"
         location: "Santiago, Chile"
-        projects_worked_on: ["proj_migracion_tbk", "proj_anulaciones"] # Añadido proj_anulaciones
-      - role: "Analista de Soluciones" # Para Movistar
+        projects_worked_on: ["proj_migracion_tbk", "proj_anulaciones"] 
+      - role: "Analista de Soluciones" 
         duration: "2010 - 2014"
         location: "Santiago, Chile"
         projects_worked_on: ["proj_movistar"]
 
   comp_usach:
-    id: "comp_usach"
-    name: "Universidad de Santiago de Chile"
-    positions:
-      - role: "Estudiante Investigador (Tesis)"
-        duration: "2017" # Aproximado
-        location: "Santiago, Chile"
-        projects_worked_on: ["proj_sbox"]
+      id: "comp_usach"
+      name: "Universidad de Santiago de Chile"
+      positions:
+        - role: "Estudiante Investigador (Tesis)"
+          duration: "2017" 
+          location: "Santiago, Chile"
+          projects_worked_on: ["proj_sbox"]
 
   comp_lidr:
     id: "comp_lidr"
     name: "LIDR.co"
     positions:
       - role: "Estudiante (Proyecto de titulación)"
-        duration: "2025" # Aproximado
+        duration: "2025"
         location: "España, Remoto"
         projects_worked_on: ["proj_airesumeagent"]
   
@@ -433,12 +445,14 @@ companies:
     id: "comp_freelance"
     name: "Freelance"
     positions:
-      - role: "Consultor TI Senior" # Para Walmart
+      - role: "Consultor TI Senior" 
         duration: "2017"
         location: "Santiago, Chile"
         projects_worked_on: ["proj_supervisor"]
 
-# --- SHOWCASE DE HABILIDADES CON REFERENCIAS ---
+# === HABILIDADES DESTACADAS ===
+# Showcase de habilidades técnicas con proyectos específicos como referencias
+# Cada skill incluye: descripción, proyectos donde se aplicó y tecnologías clave
 skills_showcase:
   ai_ml:
     description: |
@@ -447,16 +461,16 @@ skills_showcase:
       Más recientemente, he desarrollado chatbots inteligentes con arquitecturas RAG (como el AI Resume Agent), implementando el backend con Python y FastAPI.
     projects: ["proj_acuamattic", "proj_juezsw", "proj_facultades", "proj_sbox", "proj_airesumeagent"]
     key_technologies: ["Python", "FastAPI", "TensorFlow", "PyTorch", "OpenCV", "Visión por Computador", "NLP", "CNN", "LangChain", "RAG", "LLMs", "Gemini", "HuggingFace", "sentence-transformers"]
-  
+
   microservices:
     description: "Amplia experiencia diseñando, implementando y modernizando sistemas con arquitecturas de microservicios en entornos de alta demanda (banca, retail)."
     projects: ["proj_andes", "proj_facultades", "proj_taa", "proj_migracion_tbk"]
-    key_technologies: ["Java", "Spring Boot", "DDD", "Event-Driven", "API First", "Arquitectura Hexagonal"] # Añadido Hexagonal
+    key_technologies: ["Java", "Spring Boot", "DDD", "Event-Driven", "API First", "Arquitectura Hexagonal"] 
 
   java_backend:
     description: "Más de 15 años de experiencia en el ecosistema Java, construyendo aplicaciones backend robustas, seguras y escalables para grandes empresas."
-    projects: ["proj_andes", "proj_facultades", "proj_migracion_tbk", "proj_spr", "proj_supervisor", "proj_movistar", "proj_anulaciones", "proj_sbox"] # Añadido Anulaciones y SBox
-    key_technologies: ["Java (8, 11, 17, 21)", "Spring Boot", "JPA/Hibernate", "Maven/Gradle", "JUnit/Mockito/Spock/Karate Framework"] # Añadido 21
+    projects: ["proj_andes", "proj_facultades", "proj_migracion_tbk", "proj_spr", "proj_supervisor", "proj_movistar", "proj_anulaciones", "proj_sbox"] 
+    key_technologies: ["Java (8, 11, 17, 21)", "Spring Boot", "JPA/Hibernate", "Maven/Gradle", "JUnit/Mockito/Spock/Karate Framework"] 
 
   cloud_aws:
     description: "Experiencia diseñando y gestionando infraestructuras en AWS, incluyendo migraciones y despliegue de aplicaciones y modelos de ML."
@@ -471,12 +485,12 @@ skills_showcase:
   technical_leadership:
     description: "Experiencia demostrada liderando y mentorizando equipos técnicos pequeños (2-4 personas) en roles como Líder Técnico (Falabella) y CTO (Neurogenesis). Mi liderazgo se centra en definir la estrategia tecnológica, guiar a los miembros del equipo y mentorizar talento emergente (ej. estudiantes de máster) en proyectos reales, asegurando la alineación con los objetivos del producto."
     projects: ["proj_taa", "proj_acuamattic", "proj_migracion_tbk", "proj_onpremise2cloud"]
-    key_skills: ["Liderazgo de Equipos", "Mentoría Técnica", "Arquitectura de Software", "Gestión de Proyectos Ágiles", "Comunicación", "Estrategia Tecnológica"] # Actualizado
-  
+    key_skills: ["Liderazgo de Equipos", "Mentoría Técnica", "Arquitectura de Software", "Gestión de Proyectos Ágiles", "Comunicación", "Estrategia Tecnológica"] 
+
   hardware_integration:
-    description: "Experiencia práctica integrando software de IA con hardware físico en prototipos, utilizando microcontroladores y sensores."
-    projects: ["proj_acuamattic"]
-    key_technologies: ["Raspberry Pi Pico", "MicroPython", "Sensores", "Impresión 3D"]
+      description: "Experiencia práctica integrando software de IA con hardware físico en prototipos, utilizando microcontroladores y sensores."
+      projects: ["proj_acuamattic"]
+      key_technologies: ["Raspberry Pi Pico", "MicroPython", "Sensores", "Impresión 3D"]
 
   rag_chatbots:
     description: |
@@ -484,27 +498,37 @@ skills_showcase:
       He implementado arquitecturas RAG (Retrieval Augmented Generation) completas, construyendo el backend y las APIs con Python y FastAPI, y orquestando los flujos de LLMs con LangChain.
       Mi trabajo incluye la implementación de vectorización semántica (con pgvector y HuggingFace) y sistemas de memoria conversacional para mantener el contexto.
     projects: ["proj_airesumeagent"]
-    key_technologies: ["Python", "FastAPI", "RAG", "LLMs", "Gemini", "LangChain", "PostgreSQL", "pgvector", "HuggingFace", "sentence-transformers", "Docker", "Google Cloud Run"] # Añadí Python al inicio
+    key_technologies: ["Python", "FastAPI", "RAG", "LLMs", "Gemini", "LangChain", "PostgreSQL", "pgvector", "HuggingFace", "sentence-transformers", "Docker", "Google Cloud Run"] 
 
-# --- NUEVA SECCIÓN: Resumen de Educación ---
+# === RESUMEN DE EDUCACIÓN ===
+# Resumen general de la formación académica con FAQs para el chatbot
 education_summary:
   short: "Ingeniería Civil en Informática y Máster en Inteligencia Artificial, complementado con bootcamps en IA y Ciberseguridad."
   detailed: |
     Mi formación principal se compone de una Ingeniería Civil en Informática y un Máster en Inteligencia Artificial.
     Además, mantengo un enfoque de aprendizaje continuo, habiendo completado recientemente bootcamps y cursos especializados en áreas de alta demanda como Desarrollo de IA, Ciberseguridad y AI-Powered Development (AI4DEVS).
-# --- SECCIONES RESTANTES ---
+  faqs:  
+    - "¿Cuál es tu formación académica?"
+    - "¿Qué estudiaste?"
+    - "Háblame de tus estudios"
+    - "What is your academic background?"
+    - "What did you study?"
+    - "Tell me about your education"
+
+# === EDUCACIÓN DETALLADA ===
+# Lista completa de estudios con grados, instituciones, períodos y conocimientos adquiridos
 education:
   - degree: "AI4DEVS"
     institution: "LIDR.co"
-    period: "2025 - 2025" # Ajustado a finalizado
+    period: "2025 - 2025" 
     knowledge_acquired:
       - "Aplicación estratégica y práctica de la IA en todo el ciclo de vida del desarrollo de software (SDLC)."
       - "Optimización de la productividad y calidad del código mediante el uso avanzado de asistentes de IA."
       - "Generación eficiente de código, pruebas unitarias, documentación técnica y análisis de logs con IA."
       - "Comprensión de los principios de Prompt Engineering para interactuar eficazmente con LLMs en tareas de desarrollo."
     tools_technologies: ["GitHub Copilot", "ChatGPT", "Cursor", "LLMs", "Prompt Engineering"]
-    tags: ["ai_ml", "devops", "testing", "rag_chatbots", "sdlc", "prompt_engineering", "ai_powered_development"] # Conexión a skills_showcase
-
+    tags: ["ai_ml", "devops", "testing", "rag_chatbots", "sdlc", "prompt_engineering", "ai_powered_development"]
+  
   - degree: "Bootcamp en Desarrollo de IA"
     institution: "Hackio by thePower"
     period: "2025"
@@ -541,7 +565,7 @@ education:
       - "Especialización en Visión por Computador y Procesamiento del Lenguaje Natural (NLP)."
       - "Gestión e implementación de proyectos de IA complejos de extremo a extremo."
     tools_technologies: ["Python", "R", "TensorFlow", "Keras", "PyTorch", "Scikit-learn", "OpenCV", "NLTK", "spaCy"]
-    tags: ["ai_ml", "computer_vision", "nlp", "deep_learning", "python", "leadership"] # Añadido leadership por impacto
+    tags: ["ai_ml", "computer_vision", "nlp", "deep_learning", "python", "leadership"] 
 
   - degree: "Ingeniería Civil en Informática"
     institution: "Universidad de Santiago de Chile"
@@ -566,7 +590,7 @@ education:
     tools_technologies: ["MATLAB", "Mathematical Modeling Software"]
     tags: ["foundational_engineering", "problem_solving"]
 
-  - degree: "Ingeniería en Informática" # (Ejecución)
+  - degree: "Ingeniería en Informática"
     institution: "INACAP"
     period: "2006 - 2010"
     knowledge_acquired:
@@ -578,7 +602,7 @@ education:
     tools_technologies: ["Java", "PHP", ".NET (básico)", "SQL Server", "MySQL", "Project Management Software"]
     tags: ["java_backend", "project_management", "software_development_lifecycle"]
 
-skills: # Lista categorizada general
+skills: 
   - category: "Lenguajes y Frameworks Principales"
     items: ["Java", "Spring Boot", "Python", "FastAPI", "JavaScript", "React"]
   - category: "IA / ML"
@@ -588,7 +612,7 @@ skills: # Lista categorizada general
   - category: "Infraestructura Cloud y DevOps"
     items: ["AWS", "GCP", "Cloud Run", "Cloud SQL", "Secret Manager", "Cloud Build", "pgvector", "Docker", "Kubernetes", "Jenkins", "GitHub Actions", "Elasticsearch", "CI/CD"]
   - category: "Bases de Datos y Almacenamiento"
-    items: ["SQL", "Oracle", "PostgreSQL", "MongoDB", "JPA", "Hibernate", "Redis"] # Añadido Redis
+    items: ["SQL", "Oracle", "PostgreSQL", "MongoDB", "JPA", "Hibernate"]
   - category: "Pruebas y Calidad de Código"
     items: ["JUnit", "Mockito", "Spock/Groovy", "SonarQube", "Veracode", "Fortify", "Kiuwan", "TDD", "Shift-Left Testing", "Karate Framework", "Pruebas unitarias", "Pruebas funcionales", "Pruebas de carga/performance"]
   - category: "Metodologías y Gestión Ágil"
@@ -598,16 +622,16 @@ skills: # Lista categorizada general
   - category: "Hardware y Robótica (Básico)"
     items: ["Raspberry Pi Pico", "MicroPython", "Impresión 3D"]
 
-# --- NUEVA SECCIÓN: NIVELES DE EXPERTISE Y AÑOS POR TECNOLOGÍA ---
-expertise_levels:
-  # Lenguajes Principales
+# === HABILIDADES GENERALES ===
+# Lista categorizada de todas las tecnologías y habilidades técnicas
+expertise_levels: 
   java:
     level: "Experto"
     years: 15+
     note: "Lenguaje principal a lo largo de toda mi carrera, usado en sistemas backend complejos y de misión crítica."
   python:
     level: "Avanzado"
-    years: 5 # Estimado basado en Máster + Neurogenesis + PoCs + Bootcamps
+    years: 5
     note: "Mi lenguaje principal para IA/ML, Visión por Computador, NLP y scripting. Experiencia sólida en producción (AcuaMattic) y PoCs."
   sql:
     level: "Experto"
@@ -615,114 +639,151 @@ expertise_levels:
     note: "Dominio de SQL estándar y dialectos específicos (Oracle PL/SQL, PostgreSQL). Usado en todos mis roles."
   javascript:
     level: "Intermedio"
-    years: 4 # Estimado basado en Movistar + React básico
+    years: 4 
     note: "Experiencia principalmente en frontend (JSP, React básico) y algo en Node.js (exploratorio)."
-  # Frameworks Backend
   spring_boot:
     level: "Experto"
-    years: 7 # Estimado desde que se popularizó + roles recientes
+    years: 7 
     note: "Mi framework principal en Java para microservicios y APIs REST. Amplia experiencia."
   fastapi:
-    level: "Intermedio" # Nivel intermedio porque la experiencia es más reciente
-    years: 2 # Estimado basado en Bootcamp IA + posible uso en PoCs
+    level: "Intermedio" 
+    years: 2 
     note: "Framework Python preferido para construir APIs de IA/ML rápidas. Usado en Bootcamps y proyectos personales."
-  # IA / ML
   ai_ml_general:
     level: "Avanzado"
-    years: 5 # Desde el Máster + Neurogenesis + PoCs + Bootcamps
+    years: 5 
     note: "Sólida base teórica (Máster) y experiencia práctica liderando proyectos (CTO) y PoCs."
   computer_vision:
     level: "Avanzado"
-    years: 4 # Desde S-Box + Máster + AcuaMattic
+    years: 4 
     note: "Experiencia práctica significativa en clasificación de imágenes (CNNs), OpenCV. Proyecto AcuaMattic es mi principal caso de estudio."
   nlp:
     level: "Intermedio"
-    years: 3 # Desde Máster + JuezSW + Motor Facultades + Bootcamp
+    years: 3 
     note: "Experiencia en conceptualización (JuezSW) y desarrollo de PoCs (Motor Facultades). Conocimiento de LangChain/RAG."
   tensorflow_pytorch:
-    level: "Intermedio" # Profundo en AcuaMattic, pero quizás no uso diario continuo
-    years: 3 # Desde Máster + AcuaMattic
+    level: "Intermedio"
+    years: 3 
     note: "Experiencia práctica en entrenamiento y despliegue de modelos (principalmente CNNs) con ambos frameworks."
   langchain_rag:
-    level: "Intermedio" # Reciente pero intensivo
-    years: 1 # Basado en Bootcamps/AI4DEVS y autoaprendizaje
+    level: "Intermedio" 
+    years: 1 
     note: "Conocimiento práctico reciente y en profundización activa. Entiendo la arquitectura y aplicación."
-  # Cloud & DevOps
   aws:
     level: "Avanzado"
-    years: 4 # Desde Neurogenesis
+    years: 4 
     note: "Experiencia sólida en servicios core (EC2, S3, RDS) y algunos de IA (SageMaker, Rekognition). Lideré migración completa."
-  # ... dentro de expertise_levels
   gcp:
-    level: "Intermedio" # O "Avanzado" si te sientes cómodo, pero "Intermedio" es muy defendible
-    years: 2 # 1 año del proyecto T&A + 1 año del proyecto AI Resume Agent
+    level: "Intermedio" 
+    years: 2 
     note: "Mi experiencia principal es con el despliegue de aplicaciones de IA en Google Cloud. Utilicé Cloud Run, Cloud SQL (con pgvector), Cloud Build para CI/CD y Secret Manager en el proyecto 'AI Resume Agent'. También tuve exposición a Pub/Sub en Falabella."
   docker_kubernetes:
     level: "Avanzado"
-    years: 5 # Uso generalizado en los últimos años
+    years: 5 
     note: "Uso diario de Docker. Experiencia trabajando en entornos orquestados con Kubernetes."
   ci_cd:
     level: "Avanzado"
-    years: 6 # Experiencia trabajando DENTRO de pipelines
+    years: 6 
     note: "Amplia experiencia utilizando pipelines CI/CD (Jenkins, GitHub Actions, Bamboo). Entiendo el flujo completo."
-  # Arquitectura y Diseño
   microservices:
     level: "Experto"
-    years: 6 # Desde NTT/Transbank aprox
+    years: 6 
     note: "Amplia experiencia diseñando e implementando arquitecturas de microservicios en banca y retail."
   ddd_hexagonal_event_driven:
     level: "Avanzado"
-    years: 3 # Desde Falabella T&A aprox
+    years: 3 
     note: "Experiencia práctica aplicando DDD y Arquitectura Hexagonal/Event-Driven en proyectos de modernización complejos (T&A)."
   api_design_rest:
     level: "Experto"
-    years: 8+ # Desde que REST se estandarizó
+    years: 8+ 
     note: "Dominio del diseño de APIs RESTful (API First, OpenAPI/Swagger). Foco en claridad y mantenibilidad."
-  # Hardware (Básico)
   raspberry_pi_micropython:
     level: "Básico"
-    years: 1 # Durante AcuaMattic
+    years: 1
     note: "Experiencia práctica en integración HW/SW para prototipo AcuaMattic."
 
+# === IDIOMAS ===
+# Idiomas que manejo con nivel de competencia y contexto de uso
 languages:
   - name: "Español"
     level: "Nativo"
     context_of_use: ["Lengua materna, utilizada en todos los ámbitos profesionales y personales."]
   - name: "Inglés"
-    level: "Competencia Profesional (B2)" # Ser un poco más optimista si aplica
-    details: | # Usar bloque multilínea para más detalle
+    level: "Competencia Profesional (B2)" 
+    details: | 
       Poseo un nivel que me permite desenvolverme con confianza en entornos técnicos:
       - Lectura y escritura de documentación técnica compleja.
       - Participación activa en reuniones técnicas y discusiones de arquitectura.
       - Comunicación por escrito (emails, chat) fluida.
       Estoy comprometido con la mejora continua y actualmente recibo clases particulares 3 veces por semana para alcanzar la fluidez total a corto plazo.
     context_of_use: ["Documentación técnica", "Reuniones de equipo", "Comunicación escrita", "Formación autodidacta (cursos, artículos)"]
-    # NUEVO CAMPO: Conexión con skills_showcase (si aplica, aunque aquí es más general)
-    # showcase_tags: ["communication"] # Podría conectar con la skill de comunicación en technical_leadership
 
+# === CONDICIONES PROFESIONALES ===
+# Disponibilidad, permisos de trabajo, expectativas salariales y motivación
 professional_conditions:
   availability:
     status: "Buscando activamente una oportunidad a largo plazo en España"
-    notice_period: "15 días (negociable si el proyecto requiere urgencia)." # Versión directa
-    remote_work: "Busco exclusivamente posiciones 100% remotas. Excepcionalmente, consideraría híbrido si la ubicación es cercana y la presencialidad mínima." # Versión directa
-    interview_scheduling: "Generalmente tengo flexibilidad para entrevistas con 1-2 días de antelación. Contáctame directamente a alvaro@almapi.dev para coordinar una hora específica." # <-- NUEVO
+    notice_period: "15 días (negociable si el proyecto requiere urgencia)."
+    remote_work: "Busco exclusivamente posiciones 100% remotas. Excepcionalmente, consideraría híbrido si la ubicación es cercana y la presencialidad mínima."
+    interview_scheduling: "Generalmente tengo flexibilidad para coordinar entrevistas. Prefiero que me contacten por email para agendar." 
+    faqs:
+      - "¿Cuál es tu disponibilidad?"
+      - "¿Cuándo podrías empezar?"
+      - "¿Cómo coordinamos una entrevista?"
+      - "¿Cuál es tu periodo de preaviso?"
+
   work_permit:
     status: "Actualmente no tengo permiso de trabajo para España. Mi objetivo es encontrar una empresa que pueda patrocinar un visado para Profesionales Altamente Cualificados (PAC)."
     target_country: "España"
-  salary_expectations:
-    notes: "Mi rango es flexible y prefiero discutirlo en una entrevista formal, considerando el paquete total de compensación y los detalles específicos del rol y proyecto." # Versión directa
-  motivation_for_change: | # <-- NUEVO
-     Busco un rol estratégico (Senior Engineer, Tech Lead, Architect) 100% remoto en España donde pueda aplicar mi mentalidad 'Product Engineer' y mi especialización en IA para resolver problemas de negocio complejos. Me motiva unirme a un equipo innovador con una cultura de autonomía, aprendizaje continuo y donde pueda generar un impacto tangible, asegurando además mi estabilidad profesional en España a través del visado PAC.
+    faqs:
+      - "¿Necesitas visado?"
+      - "¿Tienes permiso de trabajo para España?"
+      - "¿Necesitas sponsorship?"
 
+  salary_expectations:
+    notes: "Mi rango es flexible y prefiero discutirlo en una entrevista formal, considerando el paquete total de compensación y los detalles específicos del rol y proyecto."
+    faqs:
+      - "¿Cuáles son tus expectativas salariales?"
+      - "¿Qué salario buscas?"
+      - "¿Cuál es tu rango salarial?"
+
+  motivation_for_change: |
+    Busco un rol estratégico (Senior Engineer, Tech Lead, Architect) 100% remoto en España donde pueda aplicar mi mentalidad 'Product Engineer' y mi especialización en IA para resolver problemas de negocio complejos. Me motiva unirme a un equipo innovador con una cultura de autonomía, aprendizaje continuo y donde pueda generar un impacto tangible, asegurando además mi estabilidad profesional en España a través del visado PAC.
+    faqs: 
+      - "¿Cuál es tu motivación para un nuevo reto profesional?"
+      - "¿Por qué buscas un nuevo reto?"
+      - "¿Qué te motiva profesionalmente?"
+
+# === FILOSOFÍA E INTERESES ===
+# Valores, motivación profesional, filosofía de trabajo e intereses personales
+# Cada item incluye FAQs para facilitar la recuperación semántica
 philosophy_and_interests:
   - title: "Filosofía de Trabajo ('Product Engineer')"
     description: "Mi filosofía se centra en la mentalidad de 'Product Engineer'. Creo que la mejor tecnología nace de un entendimiento profundo del problema de negocio. Mi objetivo no es solo construir software, sino construir la solución correcta que aporte un valor medible y real."
+    faqs:
+      - "¿Cuál es tu filosofía de trabajo?"
+      - "¿Qué es la mentalidad 'Product Engineer'?"
+      - "¿Qué valores guían tu trabajo?"
+      - "¿Cuál es tu enfoque profesional?"
 
   - title: "Pasión por el Aprendizaje Continuo"
     description: "Soy un profesional autodidacta por naturaleza. Dedico gran parte de mi tiempo libre al aprendizaje continuo sobre las últimas tendencias en Inteligencia Artificial, investigando nuevas arquitecturas de software y leyendo blogs técnicos para mantenerme siempre a la vanguardia."
+    faqs:
+      - "¿Cómo te mantienes actualizado?"
+      - "¿Sigues aprendiendo?"
+      - "¿Eres autodidacta?"
 
   - title: "Resolución de Problemas Complejos"
     description: "Lo que más me motiva es enfrentarme a problemas que no tienen una solución obvia. Disfruto del proceso de análisis, la colaboración con el equipo y la aplicación de la tecnología para encontrar soluciones creativas a desafíos complejos."
+    faqs: 
+      - "¿Cuál es tu motivación para un nuevo reto profesional?"
+      - "¿Qué te motiva en el trabajo?"
+      - "¿Qué tipo de problemas te gusta resolver?"
     
   - title: "Intereses Personales"
     description: "Fuera del mundo del código, mi mayor prioridad es mi familia. Disfruto mucho de las actividades al aire libre, ya sea viajando para descubrir nuevos paisajes o simplemente conectando con la naturaleza en una ruta de senderismo. Este balance me permite recargar energías y volver a los desafíos tecnológicos con una perspectiva fresca y renovada."
+    faqs:
+      - "¿Cuáles son tus intereses personales?"
+      - "¿Qué haces en tu tiempo libre?"
+      - "¿Cómo equilibras vida personal y profesional?"
+      - "¿Cuáles son tus hobbies?"
