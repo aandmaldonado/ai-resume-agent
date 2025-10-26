@@ -24,9 +24,9 @@ class Settings(BaseSettings):
     # Google Gemini API (LLM alternativo)
     GEMINI_API_KEY: str = ""
     GEMINI_MODEL: str = "gemini-2.5-flash"  # Modelo más rápido y menos restrictivo
-    GEMINI_TEMPERATURE: float = 0.4  # Más confianza para sintetizar respuestas STAR
-    GEMINI_TOP_P: float = 0.7  # Ventana más amplia para construcción de frases
-    GEMINI_MAX_TOKENS: int = 512  # Espacio suficiente para respuestas detalladas
+    GEMINI_TEMPERATURE: float = 0.3  # Conserador para mayor adherencia al contexto
+    GEMINI_TOP_P: float = 0.7  # Ventana equilibrada para respuestas precisas
+    GEMINI_MAX_TOKENS: int = 1024  # Más espacio para respuestas detalladas
 
     # Cloud SQL (PostgreSQL + pgvector)
     CLOUD_SQL_CONNECTION_NAME: Optional[str] = None  # Para Cloud Run
@@ -42,7 +42,7 @@ class Settings(BaseSettings):
 
     # Vector Store
     VECTOR_COLLECTION_NAME: str = "portfolio_knowledge"
-    VECTOR_SEARCH_K: int = 20  # Top K documentos a recuperar (aumentado para resolver casos específicos de IA)
+    VECTOR_SEARCH_K: int = 25  # Top K documentos a recuperar (optimizado para evitar fallbacks)
 
     # Conversational Memory
     MAX_CONVERSATION_HISTORY: int = 5  # Últimos N pares de mensajes a recordar

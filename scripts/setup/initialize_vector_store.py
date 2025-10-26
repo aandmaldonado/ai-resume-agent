@@ -16,12 +16,22 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.docstore.document import Document
 
 # Importación opcional para evitar errores en producción
+# Intentar importar desde el mismo directorio primero
+load_and_prepare_chunks = None  # type: ignore
+BUILD_KNOWLEDGE_BASE_AVAILABLE = False
+
 try:
-    from build_knowledge_base import load_and_prepare_chunks
+    # Intentar importar desde el mismo directorio (scripts/setup/)
+    from scripts.setup.build_knowledge_base import load_and_prepare_chunks  # type: ignore
     BUILD_KNOWLEDGE_BASE_AVAILABLE = True
 except ImportError:
-    BUILD_KNOWLEDGE_BASE_AVAILABLE = False
-    print("⚠️ build_knowledge_base no disponible - funcionando en modo limitado")
+    try:
+        # Intentar importar sin el path completo
+        from build_knowledge_base import load_and_prepare_chunks  # type: ignore
+        BUILD_KNOWLEDGE_BASE_AVAILABLE = True
+    except ImportError:
+        BUILD_KNOWLEDGE_BASE_AVAILABLE = False
+        print("⚠️ build_knowledge_base no disponible - funcionando en modo limitado")
 
 
 def get_connection_string() -> str:
@@ -69,7 +79,7 @@ def initialize_vector_store_script():
     # 2. Procesar portfolio en chunks
     try:
         # Usar el nuevo script con Hyper-Enrichment v2 si está disponible
-        if BUILD_KNOWLEDGE_BASE_AVAILABLE:
+        if BUILD_KNOWLEDGE_BASE_AVAILABLE and load_and_prepare_chunks:
             yaml_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'portfolio.yaml')
             chunks = load_and_prepare_chunks(yaml_path)
             if not chunks:

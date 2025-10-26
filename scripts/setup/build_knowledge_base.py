@@ -255,10 +255,22 @@ def create_skills_showcase_chunks(data):
     print("Creando chunks: skills_showcase...")
     chunks = []
     skills_data = data.get("skills_showcase", {})
+    projects_data = data.get("projects", {})
+    
     for skill_id, skill_data in skills_data.items():
         skill_prose = f"Información sobre mi habilidad y experiencia en {skill_id}.\n"
         skill_prose += f"Descripción: {skill_data.get('description')}\n"
-        skill_prose += f"Proyectos relacionados: {', '.join(skill_data.get('projects', []))}\n"
+        
+        # Convertir IDs de proyectos a nombres reales para más naturalidad
+        project_ids = skill_data.get('projects', [])
+        project_names = []
+        for proj_id in project_ids:
+            if proj_id in projects_data:
+                project_names.append(projects_data[proj_id].get('name', proj_id))
+            else:
+                project_names.append(proj_id)
+        
+        skill_prose += f"Proyectos relacionados: {', '.join(project_names)}\n"
         skill_prose += f"Tecnologías clave: {', '.join(skill_data.get('key_technologies', []))}\n"
 
         # FAQ Hints (Ej: para Q2 IA en Inglés)
