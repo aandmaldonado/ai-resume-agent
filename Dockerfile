@@ -42,8 +42,8 @@ RUN useradd -m -u 1000 appuser && \
 USER appuser
 
 # CRÍTICO: Descargar modelo como appuser (después de cambiar de usuario)
-# Esto descarga el modelo en el cache del usuario correcto (~90MB)
-RUN python -c "from sentence_transformers import SentenceTransformer; model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2'); print(f'✓ Modelo descargado: {model}')"
+# Esto descarga el modelo en el cache del usuario correcto (~414MB)
+RUN python -c "from sentence_transformers import SentenceTransformer; model = SentenceTransformer('sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'); print(f'✓ Modelo descargado: {model}')"
 
 # Cloud Run usa la variable PORT
 ENV PORT=8080
