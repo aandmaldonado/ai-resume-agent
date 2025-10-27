@@ -73,7 +73,7 @@ Transformar el portfolio estático en una experiencia interactiva y personalizad
 
 #### **🧠 RAG Avanzado (Retrieval Augmented Generation)**
 - **Vector Store** con pgvector para búsqueda semántica
-- **Embeddings locales** con HuggingFace all-MiniLM-L6-v2 (384-dim)
+- **Embeddings locales** con HuggingFace paraphrase-multilingual-MiniLM-L12-v2 (multilingüe)
 - **LLM Gemini 2.5 Flash** para generación de respuestas (~1-2s)
 - **Knowledge Base** indexada desde portfolio.yaml (~190+ chunks)
 
@@ -208,12 +208,12 @@ graph TB
 #### **Backend & AI**
 - **Framework**: FastAPI 0.115+ (Python 3.11)
 - **LLM**: Gemini 2.5 Flash (~1-2s respuesta)
-- **Embeddings**: HuggingFace sentence-transformers (all-MiniLM-L6-v2, 384-dim, local)
+- **Embeddings**: HuggingFace paraphrase-multilingual-MiniLM-L12-v2 (multilingüe, local)
 - **Vector DB**: pgvector 0.5+ en PostgreSQL 15 (Cloud SQL)
 - **RAG Framework**: LangChain 0.3+
 
 #### **Infrastructure (GCP)**
-- **Compute**: Cloud Run (1GB RAM, 1 vCPU, europe-west1)
+- **Compute**: Cloud Run (2Gi RAM, 1 vCPU, europe-west1)
 - **Database**: Cloud SQL (PostgreSQL + pgvector, f1-micro)
 - **Registry**: Artifact Registry (europe-west1)
 - **Build**: Cloud Build (CI/CD automático)
@@ -292,37 +292,60 @@ ai-resume-agent/           # Repositorio actual
 │   ├── main.py                # Punto de entrada FastAPI
 │   ├── api/                   # Endpoints de la API
 │   │   └── v1/
-│   │       ├── endpoints/     # Endpoints específicos
-│   │       │   ├── chat.py    # Endpoints de chat
-│   │       │   ├── analytics.py # Métricas
-│   │       │   └── health.py  # Health checks
-│   │       └── dependencies.py # Dependencias de FastAPI
+│   │       └── endpoints/     # Endpoints específicos
+│   │           ├── chat.py    # Endpoints de chat
+│   │           └── analytics.py # Métricas
 │   ├── core/                  # Configuración y utilidades
 │   │   ├── config.py          # Configuración
-│   │   ├── security.py        # Funciones de seguridad
-│   │   └── database.py        # Configuración de BD
+│   │   └── secrets.py         # Gestión de secretos
 │   ├── models/                # Modelos de datos
-│   │   ├── analytics.py       # Modelos de analytics
-│   │   └── chat.py            # Modelos de chat
+│   │   └── analytics.py       # Modelos de analytics
 │   ├── services/              # Lógica de negocio
 │   │   ├── rag_service.py     # Lógica del RAG
 │   │   ├── analytics_service.py # Servicios de analytics
-│   │   └── flow_controller.py # Controlador de flujo
+│   │   ├── flow_controller.py # Controlador de flujo
+│   │   └── gdpr_service.py    # Servicios GDPR
 │   └── schemas/               # Schemas Pydantic
 │       ├── chat.py            # Schemas de chat
 │       └── analytics.py       # Schemas de analytics
+├── data/                       # Datos del proyecto
+│   └── portfolio.yaml         # Base de conocimiento
 ├── scripts/                    # Scripts de utilidad
 │   ├── setup/                 # Scripts de configuración
+│   │   ├── build_knowledge_base.py
 │   │   ├── initialize_vector_store.py
-│   │   └── prepare_knowledge_base.py
-│   └── deploy/                # Scripts de deployment
+│   │   ├── setup-gcp.sh
+│   │   └── start-local.sh
+│   └── test/                  # Scripts de testing
+│       └── test_comprehensive.py
 ├── docs/                       # Documentación del proyecto
-├── tests/                      # Tests unitarios e integración
-├── alembic/                    # Migraciones de base de datos
-├── cloudbuild.yaml             # Configuración Cloud Build
-├── Dockerfile                  # Docker para Cloud Run
+│   ├── 01-PROJECT-OVERVIEW.md
+│   ├── 02-ARCHITECTURE.md
+│   ├── 03-DATA-MODEL.md
+│   ├── 04-API-SPECIFICATION.md
+│   ├── 05-FRONTEND-INTEGRATION.md
+│   ├── 06-USER-STORIES.md
+│   ├── 07-WORK-TICKETS.md
+│   ├── 08-INSTALLATION-GUIDE.md
+│   └── 09-SECURITY-TESTING.md
+├── images/                     # Capturas del bot en funcionamiento
+│   ├── saludo inicial.png
+│   ├── pregunta sobre experiencia.png
+│   ├── respuesta sobre experiencia.png
+│   ├── captura de datos y GDPR.png
+│   └── ...
+├── output/                     # Resultados de tests
+│   └── test_results_*.md
+├── tests/                       # Tests unitarios e integración
+│   ├── test_basic.py
+│   └── test_coverage_basic.py
+├── alembic/                     # Migraciones de base de datos
+│   └── versions/
+├── alembic.ini                  # Configuración Alembic
+├── cloudbuild.yaml              # Configuración Cloud Build
+├── Dockerfile                   # Docker para Cloud Run
 ├── requirements.txt             # Dependencias Python
-└── README.md                   # Documentación del proyecto
+└── README.md                    # Documentación del proyecto
 ```
 
 **Frontend (Repositorio Separado):**
@@ -434,7 +457,7 @@ graph TB
 ```
 
 **2. Configuración de Cloud Run:**
-- **Memoria**: 1GB RAM
+- **Memoria**: 2Gi RAM
 - **CPU**: 1 vCPU
 - **Timeout**: 300 segundos
 - **Max Instances**: 10
