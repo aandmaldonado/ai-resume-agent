@@ -77,7 +77,7 @@ substitutions:
   _CLOUD_SQL_USER: 'postgres'
   _PORTFOLIO_BUCKET: 'almapi-portfolio-data'
   _VECTOR_COLLECTION_NAME: 'portfolio_knowledge'
-  _VECTOR_SEARCH_K: '3'
+  _VECTOR_SEARCH_K: '5'
 
 # Options
 options:

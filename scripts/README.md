@@ -1,110 +1,64 @@
 # Scripts del Proyecto AI Resume Agent
 
-Este directorio contiene todos los scripts organizados por categoría.
+Este directorio contiene los scripts esenciales del proyecto organizados por categoría.
 
 ## 📁 Estructura
 
 ```
 scripts/
 ├── test/           # Scripts de testing
-├── debug/          # Scripts de debugging e investigación
-├── monitoring/      # Scripts de monitoreo (por implementar)
-├── deploy/         # Scripts de despliegue
-├── dev/            # Scripts de desarrollo
-└── setup/          # Scripts de configuración inicial
+├── setup/          # Scripts de configuración y vectorización
 ```
 
 ## 🧪 Testing (`scripts/test/`)
 
-Scripts para probar el sistema localmente:
+Scripts para probar el sistema:
 
-- **`test_comprehensive.py`**: Testing completo con 21 preguntas. Genera reporte en markdown con contexto, vectores y veredicto por cada test.
-- **`test_config.py`**: Verificación de configuración y variables de entorno.
-- **`test_server_local.sh`**: Test del servidor FastAPI local.
-- **`setup_local_testing.sh`**: Configuración de variables de entorno para testing local.
+- **`test_comprehensive.py`**: Testing completo con 30 preguntas distribuidas en múltiples categorías (identidad, experiencia, comportamiento, educación, condiciones profesionales, off-topic, seguridad, multilingüe). Genera reporte detallado en markdown con contexto recuperado, vectores y veredicto por cada test.
 
 **Uso:**
 ```bash
-# Testing completo (genera reporte en output/test_results_YYYYMMDD.md)
+# Ejecutar desde la raíz del proyecto
 python scripts/test/test_comprehensive.py
-
-# Verificar configuración
-python scripts/test/test_config.py
-
-# Test servidor local
-bash scripts/test/test_server_local.sh
-
-# Configurar entorno local
-bash scripts/test/setup_local_testing.sh
-```
-
-## 🐛 Debugging (`scripts/debug/`)
-
-Scripts para investigar y debuggear el sistema:
-
-- **`debug_chunks.py`**: Debug de chunks específicos.
-- **`verify_chunks.py`**: Verificación de chunks en vector store.
-- **`investigate_context.py`**: Investigación del contexto recuperado.
-- **`investigate_projects.py`**: Investigación de chunks de proyectos.
-
-**Uso:**
-```bash
-# Verificar chunks
-python scripts/debug/verify_chunks.py
-
-# Debug de chunks específicos
-python scripts/debug/debug_chunks.py
-
-# Investigar contexto
-python scripts/debug/investigate_context.py
-```
-
-## 🚀 Deploy (`scripts/deploy/`)
-
-Scripts para desplegar el sistema:
-
-- **`update_vector_store.sh`**: Actualizar vector store en producción.
-
-**Uso:**
-```bash
-bash scripts/deploy/update_vector_store.sh
-```
-
-## 👨‍💻 Dev (`scripts/dev/`)
-
-Scripts para desarrollo:
-
-- **`query_vectors.sh`**: Queryar vectores directamente.
-
-**Uso:**
-```bash
-bash scripts/dev/query_vectors.sh
+# Genera reporte en: output/test_results_YYYYMMDD_HHMMSS.md
 ```
 
 ## ⚙️ Setup (`scripts/setup/`)
 
-Scripts de configuración inicial:
+Scripts para configuración inicial y vectorización:
 
-- **`build_knowledge_base.py`**: Construir chunks del knowledge base.
-- **`initialize_vector_store.py`**: Inicializar el vector store.
-- **`setup-gcp.sh`**: Setup de GCP.
-- **`start-local.sh`**: Iniciar entorno local.
+- **`build_knowledge_base.py`**: Procesa `data/portfolio.yaml` y genera chunks semánticos ricos con estrategia "Q&A Fused Chunking". Incluye FAQs relevantes en cada chunk.
+- **`initialize_vector_store.py`**: Inicializa el vector store (PGVector) con los chunks generados. Elimina vectores antiguos antes de añadir nuevos.
+- **`setup-gcp.sh`**: Script de configuración inicial de GCP (opcional).
+- **`start-local.sh`**: Inicia el servidor FastAPI local para desarrollo.
 
 **Uso:**
 ```bash
-# Construir knowledge base
+# 1. Construir knowledge base (procesa portfolio.yaml)
 python scripts/setup/build_knowledge_base.py
 
-# Inicializar vector store
+# 2. Inicializar vector store (guarda chunks en PGVector)
 python scripts/setup/initialize_vector_store.py
 
-# Setup GCP
+# 3. Iniciar servidor local (opcional)
+bash scripts/setup/start-local.sh
+
+# 4. Setup GCP (solo primera vez)
 bash scripts/setup/setup-gcp.sh
 ```
 
-## 📝 Notas
+## 📝 Flujo de Trabajo
+
+1. **Modificar knowledge base**: Edita `data/portfolio.yaml`
+2. **Regenerar chunks**: `python scripts/setup/build_knowledge_base.py`
+3. **Actualizar vector store**: `python scripts/setup/initialize_vector_store.py`
+4. **Probar cambios**: `python scripts/test/test_comprehensive.py`
+5. **Desplegar**: Push a `main` triggera Cloud Build automático
+
+## 🔧 Notas
 
 - Todos los scripts deben ejecutarse desde la raíz del proyecto.
-- Los scripts de testing usan variables de entorno del archivo `.env`.
-- Los scripts de deploy requieren autenticación con GCP.
+- Las variables de entorno se cargan automáticamente desde `.env`.
+- El deployment en Cloud Run es automático via Cloud Build (ver `cloudbuild.yaml`).
+- Los tests de producción se deben ejecutar manualmente contra la URL desplegada.
 

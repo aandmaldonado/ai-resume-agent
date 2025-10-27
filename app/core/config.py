@@ -42,7 +42,7 @@ class Settings(BaseSettings):
 
     # Vector Store
     VECTOR_COLLECTION_NAME: str = "portfolio_knowledge"
-    VECTOR_SEARCH_K: int = 3  # Top K documentos a recuperar (optimizado para evitar fallbacks)
+    VECTOR_SEARCH_K: int = 5  # Top K documentos a recuperar (aumentado para incluir más contexto relevante)
 
     # Conversational Memory
     MAX_CONVERSATION_HISTORY: int = 5  # Últimos N pares de mensajes a recordar
@@ -96,14 +96,15 @@ class Settings(BaseSettings):
         import os
         logger = logging.getLogger(__name__)
         
-        # Debug logging para variables de entorno (solo en desarrollo)
+        # Debug logging para variables de entorno (solo en desarrollo - SIN EXPONER SECRETOS)
         if not self.CLOUD_SQL_CONNECTION_NAME:  # Solo en desarrollo local
             logger.debug(f"DEBUG: CLOUD_SQL_CONNECTION_NAME exists: {'CLOUD_SQL_CONNECTION_NAME' in os.environ}")
             logger.debug(f"DEBUG: CLOUD_SQL_CONNECTION_NAME value: {self.CLOUD_SQL_CONNECTION_NAME}")
             logger.debug(f"DEBUG: CLOUD_SQL_PASSWORD exists: {'CLOUD_SQL_PASSWORD' in os.environ}")
-            logger.debug(f"DEBUG: CLOUD_SQL_PASSWORD length: {len(self.CLOUD_SQL_PASSWORD) if self.CLOUD_SQL_PASSWORD else 'Not Set'}")
+            # NO exponer la longitud de la contraseña ni su valor
             logger.debug(f"DEBUG: CLOUD_SQL_USER: {self.CLOUD_SQL_USER}")
             logger.debug(f"DEBUG: CLOUD_SQL_DB: {self.CLOUD_SQL_DB}")
+            logger.debug(f"DEBUG: CLOUD_SQL_HOST: {self.CLOUD_SQL_HOST}")
         
         if self.CLOUD_SQL_CONNECTION_NAME:
             # Cloud Run con Cloud SQL Proxy (Unix socket)

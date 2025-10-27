@@ -30,9 +30,14 @@ class ComprehensiveTester:
     def __init__(self):
         self.rag_service: RAGService | None = None
         self.test_results: List[Dict[str, Any]] = []
-        self.session_id = f"test_comprehensive_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        self.base_session_id = f"test_comprehensive_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        self.session_counter = 0
+        self.session_id = self.base_session_id
         self.prompt_template: Any = None
         self.llm_params: Dict[str, Any] | None = None
+        
+        # Cambiar session_id cada 5 preguntas para evitar problemas de memoria conversacional
+        self.SESSION_ROTATION_INTERVAL = 5
         
     async def setup(self):
         """Configurar el servicio RAG"""
@@ -63,6 +68,11 @@ class ComprehensiveTester:
     
     async def test_question(self, question: str, category: str) -> Dict[str, Any]:
         """Probar una pregunta y capturar toda la información"""
+        # Rotar session_id cada cierta cantidad de preguntas
+        if self.session_counter % self.SESSION_ROTATION_INTERVAL == 0 and self.session_counter > 0:
+            self.session_id = f"{self.base_session_id}_session{self.session_counter // self.SESSION_ROTATION_INTERVAL}"
+            print(f"\n🔄 Rotando session_id a: {self.session_id}")
+        
         print(f"\n🧪 Test {len(self.test_results) + 1}/30: {question[:50]}...")
         
         if self.rag_service is None:
@@ -99,48 +109,38 @@ class ComprehensiveTester:
             sources = result.get("sources", [])
             fidelity_check = result.get("fidelity_check", "unknown")
             
-            # Determinar veredicto con lógica mejorada
+            # Usar el conteo real de docs recuperados (más preciso)
+            docs_count = len(docs)
+            
+            # Determinar veredicto con lógica simplificada
             # Verificar si la respuesta es un fallback genérico
-            is_fallback = "contactarme directamente" in response or "contact me directly" in response
+            is_fallback = (
+                "contactarme directamente" in response or 
+                "contact me directly" in response or
+                "Para estos temas específicos" in response
+            )
             
-            # Verificar si hay contenido real recuperado (no solo FAQs)
-            has_real_content = False
-            for doc in docs:
-                content_preview = doc.page_content[:500].lower()
-                # Excluir chunks que solo tienen FAQs o son muy vacíos
-                if "--- preguntas frecuentes relevantes ---" not in content_preview or len(content_preview) > 300:
-                    # Verificar si tiene contenido sustancial antes de las FAQs
-                    if "--- preguntas frecuentes relevantes ---" in content_preview:
-                        real_content = content_preview.split("--- preguntas frecuentes relevantes ---")[0]
-                        if len(real_content.strip()) > 50:
-                            has_real_content = True
-                            break
-                    else:
-                        has_real_content = True
-                        break
-            
-            # Criterios de éxito mejorados
-            # 1. No debe ser fallback genérico
-            # 2. SI tiene contenido real recuperado O la respuesta no es genérica (es específica y útil)
-            # 3. Respuesta debe tener longitud mínima razonable (> 50)
-            # 4. Debe tener al menos 1 source
-            # 
-            # Si la respuesta es específica y útil (no genérica), es válida incluso sin "contenido real" en chunk
-            # porque puede haber sido recuperado correctamente por el LLM del contexto disponible
+            # Verificar si la respuesta es específica y útil
             response_lower = response.lower()
             is_specific_useful = (
                 not is_fallback and
                 len(response) > 50 and
                 "no tengo ese detalle" not in response_lower and
-                "contactarme directamente" not in response_lower and
-                "contact me directly" not in response_lower
+                "no tengo información" not in response_lower and
+                "for these specific topics" not in response_lower
             )
             
+            # Criterios de éxito simplificados
+            # 1. No debe ser fallback genérico
+            # 2. Respuesta debe ser específica y útil (no genérica)
+            # 3. Debe tener al menos 1 doc recuperado (indica que se recuperó contexto)
+            # 
+            # Confiamos en que si hay docs + respuesta no-fallback + respuesta específica = ÉXITO
             is_valid_response = (
                 not is_fallback and 
-                (has_real_content or is_specific_useful) and
+                is_specific_useful and
                 len(response) > 50 and 
-                len(sources) > 0
+                docs_count > 0
             )
             
             verdict = "✅ PASÓ" if is_valid_response else "❌ FALLÓ"
@@ -163,7 +163,7 @@ class ComprehensiveTester:
                 "question": question,
                 "response": response,
                 "context_info": context_info,
-                "sources_count": len(sources),
+                "sources_count": docs_count,  # Usar docs_count real en lugar de len(sources)
                 "verdict": verdict,
                 "fidelity_check": fidelity_check,
                 "category": category,
@@ -171,6 +171,7 @@ class ComprehensiveTester:
             }
             
             self.test_results.append(test_result)
+            self.session_counter += 1  # Incrementar contador de sesión
             return test_result
             
         except Exception as e:

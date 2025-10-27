@@ -121,12 +121,28 @@ def initialize_vector_store_script():
     print(f"   Esto puede tardar varios minutos ({len(chunks)} chunks)...\n")
 
     try:
+        # Primero, intentar borrar la colección existente si existe
+        print("🧹 Eliminando vectores antiguos de la base de datos...")
+        try:
+            temp_store = PGVector(
+                connection_string=connection_string,
+                embedding_function=embeddings,
+                collection_name="portfolio_knowledge",
+            )
+            temp_store.delete_collection()
+            print("✓ Vectores antiguos eliminados\n")
+        except Exception as e:
+            # Si no existe la colección, es normal - continuar
+            print(f"   (No había vectores antiguos o error al limpiar: {e})\n")
+        
+        # Ahora crear el nuevo vector store con los chunks actualizados
+        print("📚 Guardando nuevos chunks en pgvector...\n")
         vector_store = PGVector.from_documents(
             documents=chunks,
             embedding=embeddings,
             connection_string=connection_string,
             collection_name="portfolio_knowledge",
-            pre_delete_collection=True,  # Limpia colección existente
+            pre_delete_collection=False,  # Ya limpiamos manualmente arriba
         )
         print(f"✅ Vector store inicializado exitosamente!")
         print(f"   - {len(chunks)} chunks guardados")

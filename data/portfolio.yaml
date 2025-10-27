@@ -159,6 +159,13 @@ projects:
       - "Gestioné con éxito grupos multidisciplinarios de estudiantes de máster, integrando sus proyectos académicos con el roadmap de un producto real."
     business_impact: "Validación del MVP y establecimiento de base tecnológica, atrayendo interés inicial."
     tags: ["industria_ia", "industria_robotica", "tipo_startup", "tipo_producto_nuevo", "ai_ml", "computer_vision", "python", "aws", "hardware_raspberry_pi", "rol_liderazgo", "rol_cto", "mentoria"]
+    faqs:
+      - "¿Cuál fue el logro más significativo en AcuaMattic?"
+      - "¿Qué logros conseguiste en AcuaMattic?"
+      - "¿Puedes hablarme de los resultados clave de AcuaMattic?"
+      - "¿Qué destacarías del proyecto AcuaMattic?"
+      - "¿Cuál fue el impacto de AcuaMattic?"
+      - "¿Cuáles fueron los logros más importantes en AcuaMattic?"
 
   proj_juezsw:
     id: "proj_juezsw"

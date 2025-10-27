@@ -400,9 +400,12 @@ def create_projects_chunks(data):
             # 3. Logros (detalles importantes pero después de FAQs e Identidad)
             achievements = project_data.get('achievements', [])
             if achievements:
-                project_prose_parts.append("Logros clave:")
+                project_prose_parts.append("")  # Línea en blanco adicional
+                project_prose_parts.append("Logros y resultados clave del proyecto:")
+                project_prose_parts.append("══════ LOGROS CLAVE ══════")
                 for achievement in achievements:
-                    project_prose_parts.append(f"- {achievement}")
+                    project_prose_parts.append(f"• {achievement}")
+                project_prose_parts.append("")  # Línea en blanco después de logros
             
             # 4. Tecnologías e Impacto
             if project_data.get('technologies'):
