@@ -54,7 +54,7 @@ Transformar el portfolio estático en una experiencia interactiva y personalizad
 
 #### **🧠 RAG Avanzado (Retrieval Augmented Generation)**
 - **Vector Store** con pgvector para búsqueda semántica
-- **Embeddings locales** con HuggingFace all-MiniLM-L6-v2 (384-dim)
+- **Embeddings locales** con HuggingFace paraphrase-multilingual-MiniLM-L12-v2 (multilingüe)
 - **LLM Gemini 2.5 Flash** para generación de respuestas (~1-2s)
 - **Knowledge Base** indexada desde portfolio.yaml (~190+ chunks)
 
@@ -74,7 +74,7 @@ Transformar el portfolio estático en una experiencia interactiva y personalizad
 - **Cache inteligente** para respuestas frecuentes
 - **Latencia < 2 segundos** end-to-end
 - **Throughput 30-50 requests/minuto**
-- **Costos optimizados** ($6-17/mes)
+- **Costos optimizados** ($15-25/mes)
 
 ### 1.3. Diseño y Experiencia de Usuario
 
