@@ -113,28 +113,34 @@ Transformar el portfolio estático en una experiencia interactiva y personalizad
 #### **📸 Capturas del Sistema**
 
 **🎥 Video Demostrativo del Sistema:**
+
 [📥 Ver Video del Funcionamiento del Bot](./images/funcionamiento.mov)
 
 **Carga Inicial del Bot:**
+
 ![Carga Inicial del Bot](./images/carga%20inicial%20bot.png)
 
 **Saludo Inicial:**
+
 ![Saludo Inicial](./images/saludo%20inicial.png)
 
 **Conversación de Ejemplo:**
-![Pregunta sobre Experiencia](./images/pregunta%20sobre%20experiencia.png)
-![Respuesta sobre Experiencia](./images/respuesta%20sobre%20experiencia.png)
+
+- ![Pregunta sobre Experiencia](./images/pregunta%20sobre%20experiencia.png)
+- ![Respuesta sobre Experiencia](./images/respuesta%20sobre%20experiencia.png)
 
 **Captura de Datos y GDPR:**
-![Popup Captura de Datos](./images/popup%20captura%20de%20datos.png)
-![Formulario Captura de Datos](./images/formulario%20captura%20de%20datos.png)
-![Popup GDPR](./images/popup%20GDPR.png)
-![Formulario Ley de Protección de Datos](./images/formulario%20ley%20de%20proteccion%20de%20datos.png)
-![Mensajes tras Aceptación](./images/mensajes%20tras%20aceptacion%20captura%20de%20datos%20y%20GDPR.png)
+
+- ![Popup Captura de Datos](./images/popup%20captura%20de%20datos.png)
+- ![Formulario Captura de Datos](./images/formulario%20captura%20de%20datos.png)
+- ![Popup GDPR](./images/popup%20GDPR.png)
+- ![Formulario Ley de Protección de Datos](./images/formulario%20ley%20de%20proteccion%20de%20datos.png)
+- ![Mensajes tras Aceptación](./images/mensajes%20tras%20aceptacion%20captura%20de%20datos%20y%20GDPR.png)
 
 **Validación de IA y Seguridad:**
-![Validación IA o Humano](./images/validacion%20IA%20o%20humano.png)
-![Hacking Ético](./images/hacking%20etico.png)
+
+- ![Validación IA o Humano](./images/validacion%20IA%20o%20humano.png)
+- ![Hacking Ético](./images/hacking%20etico.png)
 
 #### **📱 Experiencia Multiplataforma**
 - **Desktop**: Interfaz completa con sidebar de chat
