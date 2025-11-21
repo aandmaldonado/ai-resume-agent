@@ -22,21 +22,16 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 
-class GeminiLLMWrapper:
-    """Wrapper para hacer compatible Gemini con LangChain"""
+from abc import ABC, abstractmethod
+import requests
+
+class LLMInterface(ABC):
+    """Interfaz abstracta para LLMs"""
     
-    def __init__(self, model_name: str, temperature: float, max_tokens: int, api_key: str, top_p: float = 0.3):
-        import os
-        os.environ['GOOGLE_API_KEY'] = api_key
-        # Configurar la API key usando el método correcto
-        import google.generativeai as genai
-        if hasattr(genai, 'configure'):
-            genai.configure(api_key=api_key)  # type: ignore
-        self.model = GenerativeModel(model_name)
-        self.temperature = temperature
-        self.max_tokens = max_tokens
-        self.top_p = top_p
-    
+    @abstractmethod
+    def generate_content(self, prompt: str) -> str:
+        pass
+        
     def __call__(self, messages, **kwargs):
         """Método para compatibilidad con LangChain"""
         # Extraer el último mensaje del usuario
@@ -48,8 +43,35 @@ class GeminiLLMWrapper:
                 prompt = str(last_message)
         else:
             prompt = str(messages)
+            
+        response_text = self.generate_content(prompt)
         
-        # Generar respuesta con Gemini
+        # Crear objeto compatible con LangChain
+        class MockMessage:
+            def __init__(self, content):
+                self.content = content
+        
+        return MockMessage(response_text)
+
+
+class GeminiLLMWrapper(LLMInterface):
+    """Wrapper para Google Gemini"""
+    
+    def __init__(self, model_name: str, temperature: float, max_tokens: int, api_key: str, top_p: float = 0.3):
+        import os
+        if api_key:
+            os.environ['GOOGLE_API_KEY'] = api_key
+            # Configurar la API key usando el método correcto
+            import google.generativeai as genai
+            if hasattr(genai, 'configure'):
+                genai.configure(api_key=api_key)  # type: ignore
+        
+        self.model = GenerativeModel(model_name)
+        self.temperature = temperature
+        self.max_tokens = max_tokens
+        self.top_p = top_p
+        
+    def generate_content(self, prompt: str) -> str:
         response = self.model.generate_content(
             prompt,
             generation_config=GenerationConfig(
@@ -58,13 +80,31 @@ class GeminiLLMWrapper:
                 max_output_tokens=self.max_tokens,
             )
         )
+        return response.text
+
+
+class OllamaLLMWrapper(LLMInterface):
+    """Wrapper para Ollama (Local)"""
+    
+    def __init__(self, base_url: str, model: str):
+        self.base_url = base_url
+        self.model = model
         
-        # Crear objeto compatible con LangChain
-        class MockMessage:
-            def __init__(self, content):
-                self.content = content
-        
-        return MockMessage(response.text)
+    def generate_content(self, prompt: str) -> str:
+        try:
+            response = requests.post(
+                f"{self.base_url}/api/generate",
+                json={
+                    "model": self.model,
+                    "prompt": prompt,
+                    "stream": False
+                }
+            )
+            response.raise_for_status()
+            return response.json().get("response", "")
+        except Exception as e:
+            logger.error(f"Error llamando a Ollama: {e}")
+            return "Lo siento, estoy teniendo problemas para procesar tu solicitud localmente."
 
 
 class RAGService:
@@ -86,15 +126,22 @@ class RAGService:
         self.cache_hits: int = 0
         self.cache_misses: int = 0
 
-        # 1. LLM: Google Gemini Pro (gratis y confiable)
-        logger.info(f"Configurando LLM: {settings.GEMINI_MODEL}")
-        self.llm = GeminiLLMWrapper(
-            model_name=settings.GEMINI_MODEL,
-            temperature=settings.GEMINI_TEMPERATURE,
-            max_tokens=settings.GEMINI_MAX_TOKENS,
-            api_key=settings.GEMINI_API_KEY,
-            top_p=settings.GEMINI_TOP_P,
-        )
+        # 1. LLM Configuration
+        if settings.LLM_PROVIDER == "ollama":
+            logger.info(f"Configurando LLM Local: Ollama ({settings.OLLAMA_MODEL})")
+            self.llm = OllamaLLMWrapper(
+                base_url=settings.OLLAMA_BASE_URL,
+                model=settings.OLLAMA_MODEL
+            )
+        else:
+            logger.info(f"Configurando LLM Cloud: Gemini ({settings.GEMINI_MODEL})")
+            self.llm = GeminiLLMWrapper(
+                model_name=settings.GEMINI_MODEL,
+                temperature=settings.GEMINI_TEMPERATURE,
+                max_tokens=settings.GEMINI_MAX_TOKENS,
+                api_key=settings.GEMINI_API_KEY,
+                top_p=settings.GEMINI_TOP_P,
+            )
 
         # 2. Embeddings: HuggingFace (local, 100% gratis, sin APIs)
         logger.info("Configurando HuggingFace Embeddings (local) - Modelo multilingüe")
@@ -618,41 +665,19 @@ RESPUESTA:
             logger.debug(f"📝 Prompt completo: {len(full_prompt)} caracteres")
 
 
-            # Generar respuesta con Gemini directamente
-            response = self.llm.model.generate_content(
-                full_prompt,
-                generation_config=GenerationConfig(
-                    temperature=settings.GEMINI_TEMPERATURE,
-                    top_p=settings.GEMINI_TOP_P,
-                    max_output_tokens=settings.GEMINI_MAX_TOKENS,
-                )
-            )
+            # Generar respuesta con el LLM configurado (Gemini u Ollama)
+            response_text = self.llm.generate_content(full_prompt)
 
             # Actualizar memoria
             from langchain.schema import HumanMessage, AIMessage
             memory.chat_memory.add_user_message(question)
             
-            # Verificar si la respuesta es válida
-            if hasattr(response, 'candidates') and response.candidates:
-                candidate = response.candidates[0]
-                if hasattr(candidate, 'finish_reason') and candidate.finish_reason == 2:
-                    # Gemini bloqueó la respuesta por políticas de seguridad
-                    logger.warning(f"⚠️ Gemini bloqueó respuesta por filtros (finish_reason=2) | Pregunta: '{question[:50]}...'")
-                    fallback_response = "Para estos temas específicos, por favor contáctame a alvaro@almapi.dev. ¿En qué más te puedo ayudar?"
-                    memory.chat_memory.add_ai_message(fallback_response)
-                    sanitized_response = self._sanitize_response(fallback_response)
-                    
-                    return {
-                        "response": sanitized_response,
-                        "sources": [],
-                        "session_id": session_id,
-                        "model": settings.GEMINI_MODEL,
-                        "error": "content_filtered"
-                    }
+            # (Opcional) Aquí se podría agregar lógica de filtrado genérica si fuera necesario
+            # Por ahora confiamos en que el LLM retorna texto válido o un mensaje de error manejado en el wrapper
             
             # SIN VALIDACIÓN DE FIDELIDAD - Solo usar respuesta del LLM
-            memory.chat_memory.add_ai_message(response.text)
-            sanitized_response = self._sanitize_response(response.text)
+            memory.chat_memory.add_ai_message(response_text)
+            sanitized_response = self._sanitize_response(response_text)
 
             # Formatear sources
             sources = self._format_sources(docs)
@@ -667,7 +692,7 @@ RESPUESTA:
                 "response": sanitized_response,
                 "sources": sources,
                 "session_id": session_id,
-                "model": settings.GEMINI_MODEL,
+                "model": settings.OLLAMA_MODEL if settings.LLM_PROVIDER == "ollama" else settings.GEMINI_MODEL,
                 "fidelity_check": "disabled",  # Sin validación de fidelidad
             }
 

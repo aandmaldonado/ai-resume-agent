@@ -208,16 +208,32 @@ if __name__ == "__main__":
     load_dotenv()
 
     # Verificar variables de entorno críticas
+    # Base vars always required
     required_vars = [
-        "GCP_PROJECT_ID",
         "CLOUD_SQL_DB",
         "CLOUD_SQL_USER",
-        "CLOUD_SQL_PASSWORD",
     ]
+    
+    # Check if running in Cloud Run / Production (using Cloud SQL Proxy socket)
+    is_production = bool(os.getenv("CLOUD_SQL_CONNECTION_NAME"))
+    
+    if is_production:
+        print("🌍 Modo Producción detectado (CLOUD_SQL_CONNECTION_NAME definido)")
+        required_vars.extend([
+            "GCP_PROJECT_ID",
+            "CLOUD_SQL_PASSWORD",
+        ])
+    else:
+        print("💻 Modo Local detectado")
+        # In local, password might be optional or different, but let's warn if missing but not block
+        # if using standard postgres image, password is usually required unless trusted auth
+        if not os.getenv("CLOUD_SQL_PASSWORD"):
+             print("⚠️ Advertencia: CLOUD_SQL_PASSWORD no está definido (ok si es entorno local sin pass)")
+
     missing_vars = [var for var in required_vars if not os.getenv(var)]
 
     if missing_vars:
-        print("❌ Faltan variables de entorno:")
+        print("❌ Faltan variables de entorno requeridas para este entorno:")
         for var in missing_vars:
             print(f"   - {var}")
         print("\nConfigura las variables en .env o como variables de entorno")
@@ -258,11 +274,18 @@ async def initialize_vector_store(chunks: list[Document]) -> bool:
         
         # Verificar variables de entorno
         required_vars = [
-            "GCP_PROJECT_ID",
             "CLOUD_SQL_DB", 
             "CLOUD_SQL_USER",
-            "CLOUD_SQL_PASSWORD"
         ]
+        
+        # Check if running in Cloud Run / Production
+        is_production = bool(os.getenv("CLOUD_SQL_CONNECTION_NAME"))
+        
+        if is_production:
+            required_vars.extend([
+                "GCP_PROJECT_ID",
+                "CLOUD_SQL_PASSWORD"
+            ])
         
         missing_vars = [var for var in required_vars if not os.getenv(var)]
         if missing_vars:

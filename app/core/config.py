@@ -21,20 +21,27 @@ class Settings(BaseSettings):
     GCP_PROJECT_ID: str = ""
     GCP_REGION: str = "europe-west1"  # Misma región que el portfolio
 
-    # Google Gemini API (LLM alternativo)
-    GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-2.5-flash"  # Modelo más rápido y menos restrictivo
-    GEMINI_TEMPERATURE: float = 0.3  # Conserador para mayor adherencia al contexto
-    GEMINI_TOP_P: float = 0.7  # Ventana equilibrada para respuestas precisas
-    GEMINI_MAX_TOKENS: int = 1024  # Más espacio para respuestas detalladas
+    # LLM Provider
+    LLM_PROVIDER: str = "gemini"  # "gemini" or "ollama"
 
-    # Cloud SQL (PostgreSQL + pgvector)
-    CLOUD_SQL_CONNECTION_NAME: Optional[str] = None  # Para Cloud Run
-    CLOUD_SQL_HOST: Optional[str] = "localhost"  # Para desarrollo local
+    # Google Gemini API
+    GEMINI_API_KEY: Optional[str] = None
+    GEMINI_MODEL: str = "gemini-2.5-flash"
+    GEMINI_TEMPERATURE: float = 0.3
+    GEMINI_TOP_P: float = 0.7
+    GEMINI_MAX_TOKENS: int = 1024
+
+    # Ollama (Local LLM)
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    OLLAMA_MODEL: str = "llama3:8b"
+
+    # Cloud SQL / Database
+    CLOUD_SQL_CONNECTION_NAME: Optional[str] = None
+    CLOUD_SQL_HOST: Optional[str] = "localhost"
     CLOUD_SQL_PORT: str = "5432"
     CLOUD_SQL_DB: str = "chatbot_db"
     CLOUD_SQL_USER: str = "postgres"
-    CLOUD_SQL_PASSWORD: str = ""
+    CLOUD_SQL_PASSWORD: Optional[str] = None
 
     # Cloud Storage
     PORTFOLIO_BUCKET: str = "almapi-portfolio-data"
@@ -47,6 +54,10 @@ class Settings(BaseSettings):
     # Conversational Memory
     MAX_CONVERSATION_HISTORY: int = 5  # Últimos N pares de mensajes a recordar
     SESSION_TIMEOUT_MINUTES: int = 60  # Limpiar sesiones inactivas después de 60 min
+
+    # Security & Config
+    SECRET_KEY: str = "dev_secret_key_change_me"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
 
     # CORS
     CORS_ORIGINS: list = [
@@ -116,8 +127,9 @@ class Settings(BaseSettings):
             return url
         else:
             # Desarrollo local o conexión directa
+            password_part = f":{self.CLOUD_SQL_PASSWORD}" if self.CLOUD_SQL_PASSWORD else ""
             url = (
-                f"postgresql://{self.CLOUD_SQL_USER}:{self.CLOUD_SQL_PASSWORD}@"
+                f"postgresql://{self.CLOUD_SQL_USER}{password_part}@"
                 f"{self.CLOUD_SQL_HOST}:{self.CLOUD_SQL_PORT}/{self.CLOUD_SQL_DB}"
             )
             logger.debug(f"DEBUG: Using direct TCP connection")
@@ -137,8 +149,9 @@ class Settings(BaseSettings):
             )
         else:
             # Desarrollo local o conexión directa
+            password_part = f":{self.CLOUD_SQL_PASSWORD}" if self.CLOUD_SQL_PASSWORD else ""
             return (
-                f"postgresql+asyncpg://{self.CLOUD_SQL_USER}:{self.CLOUD_SQL_PASSWORD}@"
+                f"postgresql+asyncpg://{self.CLOUD_SQL_USER}{password_part}@"
                 f"{self.CLOUD_SQL_HOST}:{self.CLOUD_SQL_PORT}/{self.CLOUD_SQL_DB}"
             )
 

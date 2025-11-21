@@ -20,8 +20,13 @@ class SecretManager:
     def __init__(self):
         self.client = None
         try:
-            self.client = secretmanager.SecretManagerServiceClient()
-            logger.info("✓ Secret Manager client inicializado")
+            # Solo intentar conectar a Secret Manager si estamos en GCP o tenemos credenciales explícitas
+            # y NO estamos en modo local puro (indicado por falta de configuración GCP o flag explícito)
+            if settings.GCP_PROJECT_ID:
+                self.client = secretmanager.SecretManagerServiceClient()
+                logger.info("✓ Secret Manager client inicializado")
+            else:
+                logger.info("ℹ️ Modo local detectado: Secret Manager deshabilitado")
         except Exception as e:
             logger.warning(
                 f"⚠️ Secret Manager no disponible: {e}. Usando variables de entorno."
